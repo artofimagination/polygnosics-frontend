@@ -1,0 +1,5 @@
+setuptools
+flake8
+seleniumbase
+pytest-soft-assertions
+

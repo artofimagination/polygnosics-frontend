@@ -1,0 +1,8 @@
+.env
+user-store
+
+__pycache__
+.pytest_cache
+geckodriver.log
+archived_logs
+latest_logs
