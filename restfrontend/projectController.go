@@ -1,15 +1,14 @@
-package restcontrollers
+package restfrontend
 
 import (
 	"fmt"
 	"net/http"
-	"polygnosics/app/businesslogic"
-	"polygnosics/web/contents"
+	"polygnosics-frontend/contents"
 
 	"github.com/pkg/errors"
 )
 
-func (c *RESTController) MyProjects(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) MyProjects(w http.ResponseWriter, r *http.Request) {
 	content, err := c.ContentController.BuildMyProjectsContent()
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to get project content. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
@@ -18,7 +17,7 @@ func (c *RESTController) MyProjects(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, MyProjects, content)
 }
 
-func (c *RESTController) ProjectDetails(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) ProjectDetails(w http.ResponseWriter, r *http.Request) {
 	projectID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse project id. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
@@ -34,7 +33,7 @@ func (c *RESTController) ProjectDetails(w http.ResponseWriter, r *http.Request) 
 	c.RenderTemplate(w, UserMainProjectDetails, content)
 }
 
-func (c *RESTController) CreateProject(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) CreateProject(w http.ResponseWriter, r *http.Request) {
 	productID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse product id. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
@@ -54,48 +53,13 @@ func (c *RESTController) CreateProject(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := contents.ValidateVisibility(r.FormValue(businesslogic.ProjectVisibilityKey)); err != nil {
+		if err := contents.ValidateVisibility(r.FormValue(contents.ProjectVisibilityKey)); err != nil {
 			c.HandleError(w, fmt.Sprintf("Failed to parse visibility. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
 			return
 		}
 
-		projectData, err := c.UserDBController.CreateProject(
-			r.FormValue(businesslogic.ProjectNameKey),
-			r.FormValue(businesslogic.ProjectVisibilityKey),
-			&c.ContentController.UserData.ID,
-			productID,
-			businesslogic.GeneratePath)
-		if err != nil {
+		if err := c.RESTBackend.CreateProject(r); err != nil {
 			c.HandleError(w, fmt.Sprintf("Failed to create project. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
-			return
-		}
-
-		err = c.BackendContext.UploadFile(projectData.Assets, businesslogic.ProjectAvatar, businesslogic.DefaultProjectAvatarPath, r)
-		if err != nil {
-			if errDelete := c.UserDBController.DeleteProject(&projectData.ID); errDelete != nil {
-				err = errors.Wrap(errors.WithStack(err), errDelete.Error())
-				c.HandleError(w, fmt.Sprintf("Failed to delete project. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
-			}
-			c.HandleError(w, fmt.Sprintf("Failed to upload avatar. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
-			return
-		}
-
-		containerID, err := c.BackendContext.CreateDockerContainer(&c.ContentController.UserData.ID, &projectData.ProductID)
-		if err != nil {
-			if errDelete := c.BackendContext.DeleteProject(projectData); errDelete != nil {
-				err = errors.Wrap(errors.WithStack(err), errDelete.Error())
-				c.HandleError(w, fmt.Sprintf("Failed to delete project. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
-			}
-			c.HandleError(w, fmt.Sprintf("Failed to create project container. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
-			return
-		}
-
-		if err := c.BackendContext.UpdateProjectData(projectData, containerID, r); err != nil {
-			if errDelete := c.BackendContext.DeleteProject(projectData); errDelete != nil {
-				err = errors.Wrap(errors.WithStack(err), errDelete.Error())
-				c.HandleError(w, fmt.Sprintf("Failed to delete project. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
-			}
-			c.HandleError(w, fmt.Sprintf("Failed to update project data. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
 			return
 		}
 
@@ -103,20 +67,20 @@ func (c *RESTController) CreateProject(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c *RESTController) HandleStatusRequest(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) HandleStatusRequest(w http.ResponseWriter, r *http.Request) {
 	projectID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse project id. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
 		return
 	}
 
-	reachable, err := c.BackendContext.CheckProject(projectID)
+	state, err := c.RESTBackend.CheckProjectState(projectID)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to access project. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
 		return
 	}
 
-	if !reachable {
+	if state == "unreachable" {
 		c.HandleError(w, "Failed to access project", http.StatusNoContent, UserMainPath)
 		return
 	}
@@ -124,14 +88,14 @@ func (c *RESTController) HandleStatusRequest(w http.ResponseWriter, r *http.Requ
 	w.WriteHeader(http.StatusOK)
 }
 
-func (c *RESTController) RunProject(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) RunProject(w http.ResponseWriter, r *http.Request) {
 	projectID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse project id. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
 		return
 	}
 
-	if err := c.BackendContext.RunProject(&c.ContentController.UserData.ID, projectID); err != nil {
+	if err := c.RESTBackend.RunProject(c.ContentController.User.ID, projectID); err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to run project. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
 		return
 	}
@@ -145,7 +109,7 @@ func (c *RESTController) RunProject(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, "show", content)
 }
 
-func (c *RESTController) ShowProject(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) ShowProject(w http.ResponseWriter, r *http.Request) {
 	projectID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse project id. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
@@ -161,7 +125,7 @@ func (c *RESTController) ShowProject(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, "show", content)
 }
 
-func (c *RESTController) DeleteProject(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	if r.Method == POST {
 		projectID, err := parseItemID(r)
 		if err != nil {
@@ -169,13 +133,7 @@ func (c *RESTController) DeleteProject(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		project, err := c.UserDBController.GetProject(projectID)
-		if err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to get project. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
-			return
-		}
-
-		if err := c.BackendContext.DeleteProject(project); err != nil {
+		if err := c.RESTBackend.DeleteProject(projectID); err != nil {
 			c.HandleError(w, fmt.Sprintf("Failed to delete project. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
 			return
 		}
@@ -184,7 +142,7 @@ func (c *RESTController) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c *RESTController) EditProject(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) EditProject(w http.ResponseWriter, r *http.Request) {
 	projectID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse project id. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
@@ -200,19 +158,9 @@ func (c *RESTController) EditProject(w http.ResponseWriter, r *http.Request) {
 
 		c.RenderTemplate(w, "project-edit", content)
 	} else {
-		project, err := c.UserDBController.GetProject(projectID)
+		err := c.RESTBackend.UpdateProject(r)
 		if err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to get project. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
-			return
-		}
-
-		if err := c.BackendContext.UploadFiles(project.Assets, r); err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to upload assets. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
-			return
-		}
-
-		if err := c.BackendContext.EditProjectData(project, r); err != nil {
-			c.HandleError(w, err.Error(), http.StatusInternalServerError, UserMainPath)
+			c.HandleError(w, fmt.Sprintf("Failed to update project. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
 			return
 		}
 

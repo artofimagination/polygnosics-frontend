@@ -1,4 +1,4 @@
-package restcontrollers
+package restfrontend
 
 import (
 	"flag"
@@ -35,7 +35,7 @@ func (m FileSystem) Open(name string) (result http.File, err error) {
 }
 
 // CreateRouter creates the page path structure.
-func CreateRouter(c *RESTController) *mux.Router {
+func CreateRouter(c *RESTFrontend) *mux.Router {
 	r := mux.NewRouter()
 	// Publicly accessable pages
 	r.HandleFunc("/auth_signup", c.MakeHandler(c.SignupHandler, r, true))

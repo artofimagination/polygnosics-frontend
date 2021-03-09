@@ -1,28 +1,20 @@
-package restcontrollers
+package restfrontend
 
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
 
 // ProfileHandler renders the profile page template.
-func (c *RESTController) ProfileHandler(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent(ErrFailedToParseForm))
 		return
 	}
 
-	userIDString := r.FormValue("user")
-	userUUID, err := uuid.Parse(userIDString)
-	if err != nil {
-		c.HandleError(w, fmt.Sprintf("Failed to get user id. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
-		return
-	}
-
-	content, err := c.ContentController.BuildProfileContent(&userUUID)
+	content, err := c.ContentController.BuildProfileContent(r.FormValue("user"))
 	if err != nil {
 		errString := fmt.Sprintf("Failed to get profile page content. %s", errors.WithStack(err))
 		c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent(errString))
@@ -31,9 +23,9 @@ func (c *RESTController) ProfileHandler(w http.ResponseWriter, r *http.Request) 
 	c.RenderTemplate(w, "profile", content)
 }
 
-func (c *RESTController) ProfileEdit(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) ProfileEdit(w http.ResponseWriter, r *http.Request) {
 	if r.Method == GET {
-		content, err := c.ContentController.BuildProfileContent(&c.ContentController.UserData.ID)
+		content, err := c.ContentController.BuildProfileContent(c.ContentController.User.ID)
 		if err != nil {
 			errString := fmt.Sprintf("Failed to get profile page content. %s", errors.WithStack(err))
 			c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent(errString))
@@ -46,13 +38,9 @@ func (c *RESTController) ProfileEdit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := c.ContentController.StoreUserInfo(r); err != nil {
-			errString := fmt.Sprintf("Failed to get store user info. %s", errors.WithStack(err))
-			c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent(errString))
-			return
-		}
+		c.ContentController.StoreUserInfo(r)
 
-		content, err := c.ContentController.BuildProfileContent(&c.ContentController.UserData.ID)
+		content, err := c.ContentController.BuildProfileContent(c.ContentController.User.ID)
 		if err != nil {
 			errString := fmt.Sprintf("Failed to get profile page content. %s", errors.WithStack(err))
 			c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent(errString))

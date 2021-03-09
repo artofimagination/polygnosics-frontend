@@ -2,11 +2,7 @@ package contents
 
 import (
 	"fmt"
-
-	"polygnosics/app/businesslogic"
-
-	"github.com/artofimagination/mysql-user-db-go-interface/models"
-	"github.com/google/uuid"
+	"polygnosics-frontend/restbackend"
 )
 
 // Details and assets field keys
@@ -22,6 +18,7 @@ const (
 	ProjectDeleteSuccessTextKey = "delete_success_text"
 	ProjectDeleteURLKey         = "delete_url"
 	ProjectEditPageKey          = "edit_path"
+	ProjectVisibilityKey        = "visibility"
 )
 
 // Visibility values of a project
@@ -30,31 +27,6 @@ const (
 	Protected = "Protected"
 	Private   = "Private"
 )
-
-type StateContent struct {
-	text  string
-	badge string
-}
-
-// GetProjectStateContent returns UI color of the project state based on the state value.
-func GetProjectStateContent(stateString string) *StateContent {
-	state := &StateContent{
-		text: stateString,
-	}
-	switch stateString {
-	case businesslogic.NotRunning:
-		state.badge = "badge-warning" // orange
-	case businesslogic.Paused:
-		state.badge = "badge-primary" // lightblue
-	case businesslogic.Running:
-		state.badge = "badge-success" // green
-	case businesslogic.Stopped:
-		state.badge = "badge-danger" // red
-	default:
-		state.badge = "badge-secondary" // lightgray
-	}
-	return state
-}
 
 // ValidateVisibility validates the visibility string
 func ValidateVisibility(value string) error {
@@ -65,23 +37,17 @@ func ValidateVisibility(value string) error {
 }
 
 // generateProjectContent fills a string nested map with all project details and assets info
-func (c *ContentController) generateProjectContent(projectData *models.ProjectData) map[string]interface{} {
-	content := make(map[string]interface{})
-	content[businesslogic.ProjectAvatar] = c.UserDBController.ModelFunctions.GetFilePath(projectData.Assets, businesslogic.ProjectAvatar, businesslogic.DefaultProjectAvatarPath)
-	content[businesslogic.ProjectNameKey] = c.UserDBController.ModelFunctions.GetField(projectData.Details, businesslogic.ProjectNameKey, "")
-	content[businesslogic.ProjectVisibilityKey] = c.UserDBController.ModelFunctions.GetField(projectData.Details, businesslogic.ProjectVisibilityKey, "")
-	content[businesslogic.ProjectContainerID] = c.UserDBController.ModelFunctions.GetField(projectData.Details, businesslogic.ProjectContainerID, "")
-	content[businesslogic.ProjectState] = c.UserDBController.ModelFunctions.GetField(projectData.Details, businesslogic.ProjectState, "")
-	content[businesslogic.ProductCategoriesKey] = c.UserDBController.ModelFunctions.GetField(projectData.Details, businesslogic.ProductCategoriesKey, "")
-	content[businesslogic.ProjectServerLogging] = convertToCheckboxValue(c.UserDBController.ModelFunctions.GetField(projectData.Details, businesslogic.ProjectServerLogging, "").(string))
-	content[businesslogic.ProjectClientLogging] = convertToCheckboxValue(c.UserDBController.ModelFunctions.GetField(projectData.Details, businesslogic.ProjectClientLogging, "").(string))
+func (c *ContentController) generateProjectContent(projectData *restbackend.Project) map[string]interface{} {
+	content := projectData.Details
+	for k, v := range projectData.Assets {
+		content[k] = v
+	}
 
-	content[ProjectDetailsPageKey] = fmt.Sprintf("/user-main/my-projects/details?item-id=%s", projectData.ID.String())
-	content[ProjectStateBadge] = GetProjectStateContent(c.UserDBController.ModelFunctions.GetField(projectData.Details, businesslogic.ProjectState, "").(string)).badge
-	content[ProjectEditPageKey] = fmt.Sprintf("/user-main/my-projects/edit?item-id=%s", projectData.ID.String())
-	content[RunProject] = fmt.Sprintf("/user-main/my-projects/run?item-id=%s", projectData.ID.String())
-	content[ShowProject] = fmt.Sprintf("/user-main/my-projects/show?item-id=%s", projectData.ID.String())
-	content[ProjectDeleteIDKey] = projectData.ID.String()
+	content[ProjectDetailsPageKey] = fmt.Sprintf("/user-main/my-projects/details?item-id=%s", projectData.ID)
+	content[ProjectEditPageKey] = fmt.Sprintf("/user-main/my-projects/edit?item-id=%s", projectData.ID)
+	content[RunProject] = fmt.Sprintf("/user-main/my-projects/run?item-id=%s", projectData.ID)
+	content[ShowProject] = fmt.Sprintf("/user-main/my-projects/show?item-id=%s", projectData.ID)
+	content[ProjectDeleteIDKey] = projectData.ID
 	content[ProjectDeleteTextKey] = "The project will not be accessible anymore"
 	content[ProjectDeleteSuccessTextKey] = "Your project has been deleted"
 	content[ProjectDeleteURLKey] = "/user-main/my-projects/delete"
@@ -89,8 +55,8 @@ func (c *ContentController) generateProjectContent(projectData *models.ProjectDa
 }
 
 // GetProjectContent returns the selected project details and assets info.
-func (c *ContentController) GetProjectContent(projectID *uuid.UUID) (map[string]interface{}, error) {
-	project, err := c.UserDBController.GetProject(projectID)
+func (c *ContentController) GetProjectContent(projectID string) (map[string]interface{}, error) {
+	project, err := c.RESTBackend.GetProject(projectID)
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +64,8 @@ func (c *ContentController) GetProjectContent(projectID *uuid.UUID) (map[string]
 }
 
 // GetUserProjectContent gathers the contents of all projects belonging to the specified user.
-func (c *ContentController) GetUserProjectContent(userID *uuid.UUID, limit int) ([]map[string]interface{}, error) {
-	projects, err := c.UserDBController.GetProjectsByUserID(userID)
+func (c *ContentController) GetUserProjectContent(userID string, limit int) ([]map[string]interface{}, error) {
+	projects, err := c.RESTBackend.GetProjectsByUserID(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -118,34 +84,37 @@ func (c *ContentController) GetUserProjectContent(userID *uuid.UUID, limit int) 
 			break
 		}
 		limit--
-		projectContent[i] = c.generateProjectContent(project.ProjectData)
+		projectContent[i] = c.generateProjectContent(project)
 	}
 
 	return projectContent, nil
 }
 
 // GetProjectsByCategory organizes project contents by categories. This is just a placeholder solution until proper search is introduced.
-func (c *ContentController) GetProjectsByCategory(userID *uuid.UUID) (map[string]interface{}, error) {
-	projects, err := c.UserDBController.GetProjectsByUserID(userID)
+func (c *ContentController) GetProjectsByCategory(userID string) (map[string]interface{}, error) {
+	projects, err := c.RESTBackend.GetProjectsByUserID(userID)
 	if err != nil {
 		return nil, err
 	}
 
 	categorizedProjects := make(map[string]interface{})
-	categories := businesslogic.CreateCategoriesMap()
+	categories, err := c.RESTBackend.GetCategoriesMap()
+	if err != nil {
+		return nil, err
+	}
 	for k, v := range categories {
 		if categorizedProjects[k] == nil {
 			categorizedProjects[k] = make(map[string]interface{})
 		}
 		categorizedProjects[k].(map[string]interface{})["name"] = v
 		for _, project := range projects {
-			for _, categoryKey := range c.UserDBController.ModelFunctions.GetField(project.ProjectData.Details, businesslogic.ProductCategoriesKey, "").([]interface{}) {
+			for _, categoryKey := range project.Details[ProductCategoriesKey].([]interface{}) {
 				if categoryKey.(string) == k {
 					_, ok := categorizedProjects[k].(map[string]interface{})["projects"]
 					if !ok {
 						categorizedProjects[k].(map[string]interface{})["projects"] = make([]map[string]interface{}, 0)
 					}
-					categorizedProjects[k].(map[string]interface{})["projects"] = append(categorizedProjects[k].(map[string]interface{})["projects"].([]map[string]interface{}), c.generateProjectContent(project.ProjectData))
+					categorizedProjects[k].(map[string]interface{})["projects"] = append(categorizedProjects[k].(map[string]interface{})["projects"].([]map[string]interface{}), c.generateProjectContent(project))
 					break
 				}
 			}
@@ -155,8 +124,8 @@ func (c *ContentController) GetProjectsByCategory(userID *uuid.UUID) (map[string
 }
 
 // GetRecentProjectsContent gathers the content of the latest 4 projects
-func (c *ContentController) GetRecentProjectsContent(userID *uuid.UUID) ([]map[string]interface{}, error) {
-	projects, err := c.UserDBController.GetProjectsByUserID(userID)
+func (c *ContentController) GetRecentProjectsContent(userID string) ([]map[string]interface{}, error) {
+	projects, err := c.RESTBackend.GetProjectsByUserID(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -171,17 +140,17 @@ func (c *ContentController) GetRecentProjectsContent(userID *uuid.UUID) ([]map[s
 			break
 		}
 		limit--
-		projectContent[i] = c.generateProjectContent(project.ProjectData)
-		projectContent[i][ProductOwnerNameKey] = c.UserData.Name
-		projectContent[i][ProductOwnerPageNameKey] = fmt.Sprintf("/user-main/profile?user=%s", c.UserData.ID)
-		projectContent[i][ProjectDetailsPageKey] = fmt.Sprintf("/user-main/project?item-id=%s", project.ProjectData.ID)
+		projectContent[i] = c.generateProjectContent(project)
+		projectContent[i][ProductOwnerNameKey] = c.User.Settings[UserNameKey]
+		projectContent[i][ProductOwnerPageNameKey] = fmt.Sprintf("/user-main/profile?user=%s", c.User.ID)
+		projectContent[i][ProjectDetailsPageKey] = fmt.Sprintf("/user-main/project?item-id=%s", project.ID)
 	}
 
 	return projectContent, nil
 }
 
-func (c *ContentController) GetRecommendedProjectsContent(userID *uuid.UUID) ([]map[string]interface{}, error) {
-	projects, err := c.UserDBController.GetProjectsByUserID(userID)
+func (c *ContentController) GetRecommendedProjectsContent(userID string) ([]map[string]interface{}, error) {
+	projects, err := c.RESTBackend.GetProjectsByUserID(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -196,10 +165,10 @@ func (c *ContentController) GetRecommendedProjectsContent(userID *uuid.UUID) ([]
 			break
 		}
 		limit--
-		projectContent[i] = c.generateProjectContent(project.ProjectData)
-		projectContent[i][ProductOwnerNameKey] = c.UserData.Name
-		projectContent[i][ProductOwnerPageNameKey] = fmt.Sprintf("/user-main/profile?user=%s", c.UserData.ID)
-		projectContent[i][ProjectDetailsPageKey] = fmt.Sprintf("/user-main/project?item-id=%s", project.ProjectData.ID)
+		projectContent[i] = c.generateProjectContent(project)
+		projectContent[i][ProductOwnerNameKey] = c.User.Settings[UserNameKey]
+		projectContent[i][ProductOwnerPageNameKey] = fmt.Sprintf("/user-main/profile?user=%s", c.User.ID)
+		projectContent[i][ProjectDetailsPageKey] = fmt.Sprintf("/user-main/project?item-id=%s", project.ID)
 	}
 
 	return projectContent, nil

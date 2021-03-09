@@ -9,19 +9,21 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/artofimagination/polygnosics-frontend/app/restcontrollers"
+	serverContext "polygnosics-frontend/context"
+	"polygnosics-frontend/restfrontend"
+
 	"github.com/pkg/errors"
 )
 
 func main() {
-	context, err := app.NewContext()
+	context, err := serverContext.NewContext()
 	if err != nil {
 		log.Fatalf("Failed to initiate context. %s\n", errors.WithStack(err))
 	}
 
 	// Create Server and Route Handlers
 	srv := &http.Server{
-		Handler:      restcontrollers.CreateRouter(context.RESTController),
+		Handler:      restfrontend.CreateRouter(context.RESTFrontend),
 		Addr:         ":8081",
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,

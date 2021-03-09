@@ -1,24 +1,21 @@
-package restcontrollers
+package restfrontend
 
 import (
 	"fmt"
 	"net/http"
 	"os"
-	"polygnosics/app/businesslogic"
-	"polygnosics/app/restcontrollers/session"
-	"polygnosics/web/contents"
+	"polygnosics-frontend/contents"
+	"polygnosics-frontend/restbackend"
+	"polygnosics-frontend/restfrontend/session"
 	"text/template"
 
-	"github.com/artofimagination/mysql-user-db-go-interface/dbcontrollers"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
 
-type RESTController struct {
-	UserDBController  *dbcontrollers.MYSQLController
+type RESTFrontend struct {
 	ContentController *contents.ContentController
-	BackendContext    *businesslogic.Context
+	RESTBackend       *restbackend.RESTBackend
 }
 
 var ErrFailedToParseForm = "Failed to parse form"
@@ -133,38 +130,34 @@ const (
 )
 
 const (
-	IndexPath    = "/index"
-	IndexPage    = "index"
-	IndexContact = "general-contact"
-	IndexNews    = "general-news"
+	IndexPath      = "/index"
+	IndexLoginPath = "/auth_login"
+	IndexPage      = "index"
+	IndexContact   = "general-contact"
+	IndexNews      = "general-news"
 )
 
-func parseItemID(r *http.Request) (*uuid.UUID, error) {
+func parseItemID(r *http.Request) (string, error) {
 	if err := r.ParseForm(); err != nil {
-		return nil, err
+		return "", err
 	}
-	itemID, err := uuid.Parse(r.FormValue("item-id"))
-	if err != nil {
-		return nil, err
-	}
-	return &itemID, nil
+	return r.FormValue("item-id"), nil
 }
 
-func NewRESTController(userDB *dbcontrollers.MYSQLController) *RESTController {
-	controller := &RESTController{
-		UserDBController: userDB,
+func NewRESTController() *RESTFrontend {
+	backend := &restbackend.RESTBackend{}
+
+	controller := &RESTFrontend{
 		ContentController: &contents.ContentController{
-			UserDBController: userDB,
+			RESTBackend: backend,
 		},
-		BackendContext: &businesslogic.Context{
-			UserDBController: userDB,
-		},
+		RESTBackend: backend,
 	}
 	return controller
 }
 
 // MakeHandler creates the page handler and check the route validity.
-func (c *RESTController) MakeHandler(fn func(http.ResponseWriter, *http.Request), router *mux.Router, isPublicPage bool) http.HandlerFunc {
+func (c *RESTFrontend) MakeHandler(fn func(http.ResponseWriter, *http.Request), router *mux.Router, isPublicPage bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// TODO Issue#71: Figure out the proper settings and fix UI code that breaks because of CSP
 		//w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -191,13 +184,7 @@ func (c *RESTController) MakeHandler(fn func(http.ResponseWriter, *http.Request)
 				return
 			}
 
-			userUUID, err := uuid.Parse(uuidString)
-			if err != nil {
-				c.HandleError(w, fmt.Sprintf("Failed to get user id. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexPath)
-				return
-			}
-
-			user, err := c.UserDBController.GetUser(&userUUID)
+			user, err := c.RESTBackend.GetUserByID(uuidString, uuidString)
 			if err != nil {
 				c.HandleError(w, "Unable to retrieve user info", http.StatusInternalServerError, IndexPath)
 				return
@@ -220,7 +207,7 @@ func (c *RESTController) MakeHandler(fn func(http.ResponseWriter, *http.Request)
 }
 
 // RenderTemplate renders html.
-func (c *RESTController) RenderTemplate(w http.ResponseWriter, tmpl string, p map[string]interface{}) {
+func (c *RESTFrontend) RenderTemplate(w http.ResponseWriter, tmpl string, p map[string]interface{}) {
 	wd, err := os.Getwd()
 	if err != nil {
 		c.HandleError(w, err.Error(), http.StatusInternalServerError, IndexPath)
@@ -241,7 +228,7 @@ func (c *RESTController) RenderTemplate(w http.ResponseWriter, tmpl string, p ma
 }
 
 // HandleError creates page details and renders html template for an error modal.
-func (c *RESTController) HandleError(w http.ResponseWriter, errorStr string, statusCode int, backPage string) {
+func (c *RESTFrontend) HandleError(w http.ResponseWriter, errorStr string, statusCode int, backPage string) {
 	content := make(map[string]interface{})
 	content["parent_page"] = "Error"
 	content["status_code"] = statusCode

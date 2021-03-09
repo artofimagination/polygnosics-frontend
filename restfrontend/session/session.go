@@ -8,7 +8,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 )
 
@@ -17,9 +16,9 @@ var (
 	Store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")), []byte(os.Getenv("SESSION_ENCRYPTION")))
 )
 
-func EncryptUserAndOrigin(userid uuid.UUID, origin string) (string, error) {
+func EncryptUserAndOrigin(userid string, origin string) (string, error) {
 	data := make(map[string]interface{})
-	data["userid"] = userid.String()
+	data["userid"] = userid
 	data["origin"] = strings.Split(origin, ":")[0]
 
 	binary, err := json.Marshal(data)
@@ -32,9 +31,9 @@ func EncryptUserAndOrigin(userid uuid.UUID, origin string) (string, error) {
 	return encoded, nil
 }
 
-func matchingUserAndOrigin(userid uuid.UUID, origin string, cookieData string) (bool, error) {
+func matchingUserAndOrigin(userid string, origin string, cookieData string) (bool, error) {
 	data := make(map[string]interface{})
-	data["userid"] = userid.String()
+	data["userid"] = userid
 	data["origin"] = strings.Split(origin, ":")[0]
 
 	binary, err := json.Marshal(data)
@@ -50,7 +49,7 @@ func matchingUserAndOrigin(userid uuid.UUID, origin string, cookieData string) (
 	return true, nil
 }
 
-func IsAuthenticated(userID uuid.UUID, session *sessions.Session, r *http.Request) (bool, error) {
+func IsAuthenticated(userID string, session *sessions.Session, r *http.Request) (bool, error) {
 	// Check if user is authenticated
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		return false, nil

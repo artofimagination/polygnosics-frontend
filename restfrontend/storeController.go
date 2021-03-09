@@ -1,4 +1,4 @@
-package restcontrollers
+package restfrontend
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (c *RESTController) StoreHandler(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) StoreHandler(w http.ResponseWriter, r *http.Request) {
 	content, err := c.ContentController.BuildStoreContent()
 	if err != nil {
 		errString := fmt.Sprintf("Failed to get product content. %s", errors.WithStack(err))
@@ -17,7 +17,7 @@ func (c *RESTController) StoreHandler(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, "store", content)
 }
 
-func (c *RESTController) BrowseProjects(w http.ResponseWriter, r *http.Request) {
+func (c *RESTFrontend) BrowseProjects(w http.ResponseWriter, r *http.Request) {
 	content, err := c.ContentController.BuildProjectBrowserContent()
 	if err != nil {
 		errString := fmt.Sprintf("Failed to get project content. %s", errors.WithStack(err))
