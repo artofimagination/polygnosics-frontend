@@ -70,7 +70,7 @@ func (c *RESTFrontend) CreateProduct(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := c.RESTBackend.AddProduct(c.ContentController.User.ID, r); err != nil {
+		if err := c.RESTBackend.AddProduct(w, r); err != nil {
 			c.HandleError(w, err.Error(), http.StatusInternalServerError, UserMainPath)
 			return
 		}

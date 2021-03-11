@@ -20,6 +20,7 @@ func (c *RESTFrontend) ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent(errString))
 		return
 	}
+	prettyPrint(content)
 	c.RenderTemplate(w, "profile", content)
 }
 
@@ -31,6 +32,7 @@ func (c *RESTFrontend) ProfileEdit(w http.ResponseWriter, r *http.Request) {
 			c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent(errString))
 			return
 		}
+		prettyPrint(content)
 		c.RenderTemplate(w, "profile-edit", content)
 	} else {
 		if err := r.ParseForm(); err != nil {
@@ -46,6 +48,7 @@ func (c *RESTFrontend) ProfileEdit(w http.ResponseWriter, r *http.Request) {
 			c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent(errString))
 			return
 		}
+		prettyPrint(content)
 		c.RenderTemplate(w, "profile", content)
 	}
 

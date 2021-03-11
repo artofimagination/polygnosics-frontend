@@ -14,6 +14,7 @@ const (
 	UserProfileEditPathKey     = "profile_edit"
 	UserProfileAvatarUploadKey = "avatar_upload"
 	UserNameKey                = "username"
+	UserEmailKey               = "email"
 	UserFullNameKey            = "full_name"
 	UserCountryKey             = "country"
 	UserCityKey                = "city"
@@ -23,6 +24,7 @@ const (
 	UserFacebookKey            = "facebook_link"
 	UserTwitterKey             = "twitter_link"
 	UserGithubKey              = "github_link"
+	UserProductWizardPathKey   = "wizard"
 )
 
 // GetUserContent fills a string nested map with all user details and assets info
@@ -32,6 +34,7 @@ func (c *ContentController) GetUserContent(user *restbackend.User) map[string]in
 	content[UserMapKey] = make(map[string]interface{})
 	userData := content[UserMapKey].(map[string]interface{})
 	userData[UserNameKey] = user.UserName
+	userData[UserEmailKey] = user.Email
 	for k, v := range user.Settings {
 		userData[k] = v
 	}
@@ -41,6 +44,7 @@ func (c *ContentController) GetUserContent(user *restbackend.User) map[string]in
 	userData[UserProfileAvatarUploadKey] = "Upload your avatar"
 	userData[UserProfilePathKey] = fmt.Sprintf("/user-main/profile?user=%s", user.ID)
 	userData[UserProfileEditPathKey] = "/user-main/profile-edit"
+	userData[UserProductWizardPathKey] = fmt.Sprintf("/user-main/product-wizard?user=%s", user.ID)
 	return content
 }
 

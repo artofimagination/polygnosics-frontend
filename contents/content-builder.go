@@ -179,9 +179,13 @@ func (c *ContentController) BuildProjectDetailsContent(projectID string) (map[st
 }
 
 func (c *ContentController) BuildProfileContent(id string) (map[string]interface{}, error) {
-	user, err := c.RESTBackend.GetUserByID(id, c.User.ID)
-	if err != nil {
-		return nil, err
+	user := c.User
+	if id != c.User.ID {
+		userNew, err := c.RESTBackend.GetUserByID(id)
+		if err != nil {
+			return nil, err
+		}
+		user = userNew
 	}
 	content := c.GetUserContent(user)
 	content = c.prepareContentHeader(content, UserPageName, UserPageProfileName)

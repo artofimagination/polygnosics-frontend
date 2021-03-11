@@ -25,7 +25,8 @@ func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		user, err := c.RESTBackend.Login(email, pwd)
 		if err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to get cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexLoginPath)
+			c.HandleError(w, fmt.Sprintf("Failed to login. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexLoginPath)
+			return
 		}
 		c.ContentController.User = user
 

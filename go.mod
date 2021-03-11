@@ -3,6 +3,8 @@ module polygnosics-frontend
 go 1.15
 
 require (
+	github.com/artofimagination/mysql-user-db-go-interface v0.0.15
+	github.com/google/uuid v1.1.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/sessions v1.2.1
 	github.com/kr/pretty v0.2.1
