@@ -30,14 +30,17 @@ func (c *ContentController) GetUserContent(user *restbackend.User) map[string]in
 	content := make(map[string]interface{})
 	content[FutureFeature] = 1
 	content[UserMapKey] = make(map[string]interface{})
-	content[UserMapKey] = user.Settings
-	content = user.Settings
-	for k, v := range user.Assets {
-		content[UserMapKey].(map[string]interface{})[k] = v
+	userData := content[UserMapKey].(map[string]interface{})
+	userData[UserNameKey] = user.UserName
+	for k, v := range user.Settings {
+		userData[k] = v
 	}
-	content[UserProfileAvatarUploadKey] = "Upload your avatar"
-	content[UserProfilePathKey] = fmt.Sprintf("/user-main/profile?user=%s", user.ID)
-	content[UserProfileEditPathKey] = "/user-main/profile-edit"
+	for k, v := range user.Assets {
+		userData[k] = v
+	}
+	userData[UserProfileAvatarUploadKey] = "Upload your avatar"
+	userData[UserProfilePathKey] = fmt.Sprintf("/user-main/profile?user=%s", user.ID)
+	userData[UserProfileEditPathKey] = "/user-main/profile-edit"
 	return content
 }
 

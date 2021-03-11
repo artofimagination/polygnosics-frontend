@@ -16,12 +16,8 @@ func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == GET {
 		c.RenderTemplate(w, "auth_login", content)
 	} else {
-		name := "confirm"
-		p := make(map[string]interface{})
-
 		if err := r.ParseForm(); err != nil {
-			p["message"] = ErrFailedToParseForm
-			c.RenderTemplate(w, name, p)
+			c.HandleError(w, fmt.Sprintf("Failed to parse form. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexLoginPath)
 			return
 		}
 		email := r.FormValue("email")
@@ -36,25 +32,22 @@ func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		// Create session cookie.
 		sess, err := session.Store.Get(r, "cookie-name")
 		if err != nil {
-			p["message"] = fmt.Sprintf("Failed to create cookie. %s", errors.WithStack(err))
-			c.RenderTemplate(w, name, p)
+			c.HandleError(w, fmt.Sprintf("Failed to create cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexLoginPath)
 			return
 		}
 		sess.Options.MaxAge = 60000
 		sess.Values["authenticated"] = true
-		sess.Values["user"] = user.ID
+		sess.Values["user"] = c.ContentController.User.ID
 
-		cookieKey, err := session.EncryptUserAndOrigin(user.ID, r.RemoteAddr)
+		cookieKey, err := session.EncryptUserAndOrigin(c.ContentController.User.ID, r.RemoteAddr)
 		if err != nil {
-			p["message"] = fmt.Sprintf("Failed to generate cookie data. %s", errors.WithStack(err))
-			c.RenderTemplate(w, name, p)
+			c.HandleError(w, fmt.Sprintf("Failed to generate cookie data. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexLoginPath)
 			return
 		}
 		sess.Values["cookie_key"] = cookieKey
 
 		if err := sess.Save(r, w); err != nil {
-			p["message"] = fmt.Sprintf("Failed to save cookie. %s", errors.WithStack(err))
-			c.RenderTemplate(w, name, p)
+			c.HandleError(w, fmt.Sprintf("Failed to save cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexLoginPath)
 			return
 		}
 
@@ -75,6 +68,7 @@ func (c *RESTFrontend) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		c.HandleError(w, fmt.Sprintf("Failed to save cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexPath)
 		return
 	}
+	c.ContentController.User = nil
 
 	http.Redirect(w, r, IndexPath, http.StatusSeeOther)
 }
@@ -91,7 +85,7 @@ func (c *RESTFrontend) SignupHandler(w http.ResponseWriter, r *http.Request) {
 		uName := r.FormValue("username")
 		email := r.FormValue("email")
 		pwd := []byte(r.FormValue("psw"))
-		group := r.FormValue("developer")
+		group := r.FormValue("group")
 		if group == "" {
 			group = "client"
 		}

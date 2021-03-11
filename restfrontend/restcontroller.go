@@ -1,6 +1,7 @@
 package restfrontend
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -21,66 +22,65 @@ type RESTFrontend struct {
 var ErrFailedToParseForm = "Failed to parse form"
 
 var htmls = []string{
-	"/web/templates/about/about.html",
-	"/web/templates/about/career.html",
-	"/web/templates/about/contact.html",
-	"/web/templates/error.html",
-	"/web/templates/index.html",
-	"/web/templates/confirm.html",
-	"/web/templates/terms.html",
-	"/web/templates/general-contact.html",
-	"/web/templates/general-news.html",
-	"/web/templates/user/user-main.html",
-	"/web/templates/user/profile.html",
-	"/web/templates/user/profile-side-bar.html",
-	"/web/templates/user/profile-edit.html",
-	"/web/templates/user/profile-edit-avatar.html",
-	"/web/templates/user/settings.html",
-	"/web/templates/user/mail-inbox.html",
-	"/web/templates/user/mail-compose.html",
-	"/web/templates/user/mail-read.html",
-	"/web/templates/admin/dashboard.html",
-	"/web/templates/project/show.html",
-	"/web/templates/project/browser.html",
-	"/web/templates/project/project-details.html",
-	"/web/templates/project/my-projects.html",
-	"/web/templates/project/project-edit.html",
-	"/web/templates/project/project-wizard.html",
-	"/web/templates/project/documentation.html",
-	"/web/templates/project/resources.html",
-	"/web/templates/auth_signup.html",
-	"/web/templates/auth_login.html",
-	"/web/templates/products/store.html",
-	"/web/templates/products/product-wizard.html",
-	"/web/templates/products/product-edit.html",
-	"/web/templates/products/my-products.html",
-	"/web/templates/products/details.html",
-	"/web/templates/products/documentation.html",
-	"/web/templates/products/resources.html",
-	"/web/templates/components/side-bar.html",
-	"/web/templates/components/content-header.html",
-	"/web/templates/components/header-info.html",
-	"/web/templates/components/main-header.html",
-	"/web/templates/components/footer.html",
-	"/web/templates/components/news-feed.html",
-	"/web/templates/components/index-header.html",
-	"/web/templates/components/index-footer.html",
-	"/web/templates/resources/news.html",
-	"/web/templates/resources/news-content.html",
-	"/web/templates/resources/docs.html",
-	"/web/templates/resources/tutorials.html",
-	"/web/templates/resources/faq.html",
-	"/web/templates/resources/instructions.html",
-	"/web/templates/resources/examples.html",
-	"/web/templates/resources/files.html",
-	"/web/templates/stats/project-stats.html",
-	"/web/templates/stats/product-stats.html",
-	"/web/templates/stats/user-stats.html",
-	"/web/templates/stats/system-health.html",
-	"/web/templates/stats/accounting.html",
-	"/web/templates/stats/ui-stats.html",
-	"/web/templates/stats/misuse-metrics.html",
-	"/web/templates/stats/product-project-stats.html",
+	"/templates/about/about.html",
+	"/templates/about/career.html",
+	"/templates/about/contact.html",
+	"/templates/error.html",
+	"/templates/index.html",
+	"/templates/terms.html",
+	"/templates/general-contact.html",
+	"/templates/general-news.html",
+	"/templates/user/user-main.html",
+	"/templates/user/profile.html",
+	"/templates/user/profile-side-bar.html",
+	"/templates/user/profile-edit.html",
+	"/templates/user/profile-edit-avatar.html",
+	"/templates/user/settings.html",
+	"/templates/user/mail-inbox.html",
+	"/templates/user/mail-compose.html",
+	"/templates/user/mail-read.html",
+	"/templates/admin/dashboard.html",
+	"/templates/project/show.html",
+	"/templates/project/browser.html",
+	"/templates/project/project-details.html",
+	"/templates/project/my-projects.html",
+	"/templates/project/project-edit.html",
+	"/templates/project/project-wizard.html",
+	"/templates/project/documentation.html",
+	"/templates/project/resources.html",
+	"/templates/auth_signup.html",
+	"/templates/auth_login.html",
+	"/templates/products/store.html",
+	"/templates/products/product-wizard.html",
+	"/templates/products/product-edit.html",
+	"/templates/products/my-products.html",
+	"/templates/products/details.html",
+	"/templates/products/documentation.html",
+	"/templates/products/resources.html",
+	"/templates/components/side-bar.html",
+	"/templates/components/content-header.html",
+	"/templates/components/header-info.html",
+	"/templates/components/main-header.html",
+	"/templates/components/footer.html",
+	"/templates/components/news-feed.html",
+	"/templates/components/index-header.html",
+	"/templates/components/index-footer.html",
+	"/templates/resources/news.html",
+	"/templates/resources/news-content.html",
+	"/templates/resources/docs.html",
+	"/templates/resources/tutorials.html",
+	"/templates/resources/faq.html",
+	"/templates/resources/instructions.html",
+	"/templates/resources/examples.html",
+	"/templates/resources/files.html",
+	"/templates/stats/project-stats.html",
+	"/templates/stats/product-stats.html",
+	"/templates/stats/user-stats.html",
+	"/templates/stats/system-health.html",
+	"/templates/stats/accounting.html",
+	"/templates/stats/ui-stats.html",
+	"/templates/stats/misuse-metrics.html",
+	"/templates/stats/product-project-stats.html",
 }
 var paths = []string{}
 
@@ -156,6 +156,15 @@ func NewRESTController() *RESTFrontend {
 	return controller
 }
 
+func prettyPrint(v interface{}) {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err == nil {
+		fmt.Println(string(b))
+		return
+	}
+	fmt.Println("Failed to pretty print data")
+}
+
 // MakeHandler creates the page handler and check the route validity.
 func (c *RESTFrontend) MakeHandler(fn func(http.ResponseWriter, *http.Request), router *mux.Router, isPublicPage bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -178,19 +187,12 @@ func (c *RESTFrontend) MakeHandler(fn func(http.ResponseWriter, *http.Request), 
 				return
 			}
 
-			uuidString, ok := sess.Values["user"].(string)
-			if !ok {
-				c.HandleError(w, "Unable to decode session cookie.", http.StatusInternalServerError, IndexPath)
+			if c.ContentController.User == nil {
+				c.HandleError(w, "Cookie expired", http.StatusForbidden, IndexPath)
 				return
 			}
 
-			user, err := c.RESTBackend.GetUserByID(uuidString, uuidString)
-			if err != nil {
-				c.HandleError(w, "Unable to retrieve user info", http.StatusInternalServerError, IndexPath)
-				return
-			}
-
-			match, err := session.IsAuthenticated(user.ID, sess, r)
+			match, err := session.IsAuthenticated(c.ContentController.User.ID, sess, r)
 			if err != nil {
 				errorString := fmt.Sprintf("Unable to check session cookie:\n%s\n", errors.WithStack(err))
 				c.HandleError(w, errorString, http.StatusInternalServerError, IndexPath)

@@ -3,7 +3,9 @@ package restbackend
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
 )
 
 const (
@@ -14,6 +16,8 @@ const (
 
 type User struct {
 	ID       string `json:"id" validate:"required"`
+	UserName string `json:"username" validate:"required"`
+	Email    string `json:"email" validate:"required"`
 	Assets   map[string]interface{}
 	Settings map[string]interface{}
 }
@@ -32,28 +36,39 @@ type Project struct {
 }
 
 func (c *RESTBackend) Login(email string, password []byte) (*User, error) {
-	params := fmt.Sprintf("email=%s&passwd=%s", email, string(password))
-	userData, err := Get(BusinessLogicServerAddress, UserPathLogin, params)
+	params := fmt.Sprintf("?email=%s&password=%s", email, string(password))
+	userData, err := get(BusinessLogicServerAddress, UserPathLogin, params)
 	if err != nil {
 		return nil, err
 	}
 
+	log.Println(userData)
 	user := &User{}
-	if err := json.Unmarshal(userData, user); err != nil {
+	userDataBytes, err := json.Marshal(userData)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(userDataBytes, user); err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
 func (c *RESTBackend) GetUserByID(requestedID string, currentUserID string) (*User, error) {
-	params := fmt.Sprintf("requestedID=%s&currentUserID=%s", requestedID, currentUserID)
-	userData, err := Get(BusinessLogicServerAddress, UserPathLogin, params)
+	params := fmt.Sprintf("?requestedID=%s&currentUserID=%s", requestedID, currentUserID)
+	userData, err := get(BusinessLogicServerAddress, UserPathLogin, params)
 	if err != nil {
 		return nil, err
 	}
 
 	user := &User{}
-	if err := json.Unmarshal(userData, user); err != nil {
+	userDataBytes, err := json.Marshal(userData)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(userDataBytes, user); err != nil {
 		return nil, err
 	}
 	return user, nil
@@ -64,8 +79,12 @@ func (c *RESTBackend) UpdateUserAvatar(r *http.Request) error {
 }
 
 func (c *RESTBackend) AddUser(username string, email string, password []byte, group string) error {
-	params := fmt.Sprintf("username=%s&email=%s&passwd=%s&group=%s", username, email, password, group)
-	_, err := Get(BusinessLogicServerAddress, UserPathAdd, params)
+	params := make(map[string]interface{})
+	params["name"] = username
+	params["email"] = email
+	params["password"] = password
+	params["group"] = group
+	_, err := post(BusinessLogicServerAddress, UserPathAdd, params)
 	if err != nil {
 		return err
 	}
@@ -73,16 +92,15 @@ func (c *RESTBackend) AddUser(username string, email string, password []byte, gr
 }
 
 func (c *RESTBackend) DetectRootUser() (bool, error) {
-	data, err := Get(BusinessLogicServerAddress, UserPathDetectRootUser, "")
+	data, err := get(BusinessLogicServerAddress, UserPathDetectRootUser, "?nil")
 	if err != nil {
 		return false, err
 	}
 
-	found := bool(false)
-	if err := json.Unmarshal(data, &found); err != nil {
+	found, err := strconv.ParseBool(data.(string))
+	if err != nil {
 		return false, err
 	}
-
 	return found, nil
 }
 

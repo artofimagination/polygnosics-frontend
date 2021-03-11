@@ -17,6 +17,7 @@ func (c *RESTFrontend) UserMainHandler(w http.ResponseWriter, r *http.Request) {
 		c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent(errString))
 		return
 	}
+	prettyPrint(content)
 	c.RenderTemplate(w, UserMain, content)
 }
 

@@ -32,10 +32,14 @@ class IndexPageHeader:
             "window.scrollTo(0, document.body.scrollHeight*0.8);")
         signup = self.browser.find_element(*self.SIGNUP_BUTTON)
         signup.click()
+        return self.browser.current_url
 
-    def goTpSignin(self):
+    def goToSignin(self):
+        self.browser.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight*0.8);")
         signin = self.browser.find_element(*self.SIGNIN_BUTTON)
         signin.click()
+        return self.browser.current_url
 
     def waitUntilPreloaderDisappears(self):
         # wait for loading element to appear

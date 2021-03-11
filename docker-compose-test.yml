@@ -1,0 +1,33 @@
+version: '3'
+networks:
+  test-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.18.0.0/24    
+
+services:
+  dummy-backend:
+    build: ./tests/dummy-backend
+    image: artofimagination/dummy-backend
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${USER_STORE}:${USER_STORE_DOCKER}
+    ports:
+      - 8082:8082
+    networks: 
+      test-network:
+        ipv4_address: 172.18.0.2
+  frontend:
+    build: ./
+    image: artofimagination/polygnosics
+    ports:
+      - 8081:8081
+    volumes:
+      - ${USER_STORE}:${USER_STORE_DOCKER}
+    networks: 
+      test-network:
+        ipv4_address: 172.18.0.3
+    depends_on:
+      - dummy-backend
