@@ -20,7 +20,7 @@ const (
 	ProductPathGet       = "/get-product"
 	ProductPathUpdate    = "/update-product"
 	ProductPathDelete    = "/delete-product"
-	ProductPathGetByUser = "/get-product-by-user"
+	ProductPathGetByUser = "/get-products-by-user"
 )
 
 const (
@@ -30,7 +30,7 @@ const (
 	ProjectPathDelete       = "/delete-project"
 	ProjectPathState        = "/get-project-state"
 	ProjectPathRequestState = "/request-state-change"
-	ProjectPathGetByUser    = "/get-project-by-user"
+	ProjectPathGetByUser    = "/get-projects-by-user"
 )
 
 const (

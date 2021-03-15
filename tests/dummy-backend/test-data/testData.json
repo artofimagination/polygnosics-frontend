@@ -16,7 +16,9 @@
           "project_stats":1,
           "delete_user":1
         },
-				"group": "root"
+				"group": "root",
+        "country": "New Zealand",
+        "city": "Auckland"
 			}
 		},
 		"e057d6bb-1cd6-4072-bca8-c04f05ca5036": {
@@ -35,7 +37,9 @@
           "project_stats":1,
           "delete_user":0
         },
-				"group": "developer"
+				"group": "developer",
+        "country": "New Zealand",
+        "city": "Auckland"
 			}
 		},
 		"e26d9dc6-f13a-4d54-8af0-a0be26a35ee5": {
@@ -54,7 +58,9 @@
           "project_stats":1,
           "delete_user":0
         },
-				"group": "client"
+				"group": "client",
+        "country": "New Zealand",
+        "city": "Auckland"
 			}
 		},
 		"eca3aaa4-94a9-4282-9ff3-303fc3c46b70": {
@@ -73,7 +79,9 @@
           "project_stats":1,
           "delete_user":1
         },
-				"group": "admin"
+				"group": "admin",
+        "country": "New Zealand",
+        "city": "Auckland"
 			}
 		},
 		"d479e0dd-c4b8-40ff-9e25-96edb1b1fd54": {
@@ -92,10 +100,37 @@
           "project_stats":0,
           "delete_user":0
         },
-				"group": "visitor"
+				"group": "visitor",
+        "country": "New Zealand",
+        "city": "Auckland"
 			}
 		}
 
 	},
-	"product": {}
+  "user_products":{
+
+  },
+  "user_projects":{
+
+  },
+	"products": {
+    "d479e0dd-c4b8-40ff-9e25-96edb1b1fd54": {
+      "details": {
+        "is_public": "unchecked",
+        "requires_3d": "checked",
+        "pricing": "Single Price",
+        "amount": "5"
+      }
+    }
+  },
+  "projects": {
+    "d479e0dd-c4b8-40ff-9e25-96edb1b1fd54": {
+
+    }
+  },
+  "categories":{
+    "civile_eng": "Civil Engineering",
+    "machine_learing": "Machine Learning",
+    "Pyhisics": "Physics"
+  }
 }

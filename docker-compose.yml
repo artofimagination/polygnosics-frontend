@@ -52,7 +52,7 @@ services:
       # - "traefik.http.middlewares.admin.basicauth.users=admin:polyadmin"
   frontend:
     build: ./
-    image: artofimagination/polygnosics
+    image: artofimagination/polygnosics-frontend
     labels:
       # Define the host the request shall target
       - traefik.http.routers.platform.rule=Host(`${PUBLIC_HOST}`)

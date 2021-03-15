@@ -2,7 +2,9 @@ package restfrontend
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"polygnosics-frontend/contents"
 
 	"github.com/pkg/errors"
 )
@@ -56,20 +58,17 @@ func (c *RESTFrontend) CreateProduct(w http.ResponseWriter, r *http.Request) {
 			c.HandleError(w, err.Error(), http.StatusInternalServerError, UserMainPath)
 			return
 		}
-
+		contents.PrettyPrint(content)
 		c.RenderTemplate(w, "product-wizard", content)
 	} else {
+		log.Println("Wizard")
 		content, err := c.ContentController.BuildUserMainContent()
 		if err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to load user main content. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
+			c.HandleError(w, fmt.Sprintf("Failed to load user main content. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexPath)
 			return
 		}
 
-		if err := r.ParseMultipartForm(10 << 20); err != nil {
-			c.HandleError(w, err.Error(), http.StatusInternalServerError, UserMainPath)
-			return
-		}
-
+		contents.PrettyPrint(content)
 		if err := c.RESTBackend.AddProduct(w, r); err != nil {
 			c.HandleError(w, err.Error(), http.StatusInternalServerError, UserMainPath)
 			return

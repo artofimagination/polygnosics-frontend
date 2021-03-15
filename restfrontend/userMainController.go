@@ -13,10 +13,10 @@ import (
 func (c *RESTFrontend) UserMainHandler(w http.ResponseWriter, r *http.Request) {
 	content, err := c.ContentController.BuildUserMainContent()
 	if err != nil {
-		errString := fmt.Sprintf("Failed to get home page content. %s", errors.WithStack(err))
-		c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent(errString))
+		c.HandleError(w, fmt.Sprintf("Failed to get home page content. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexPath)
 		return
 	}
+
 	c.RenderTemplate(w, UserMain, content)
 }
 

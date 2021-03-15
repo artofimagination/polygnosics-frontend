@@ -55,11 +55,6 @@ const (
 	StatsSystemHealth = "System Health"
 )
 
-const (
-	CheckBoxUnChecked = "unchecked"
-	CheckBoxChecked   = "checked"
-)
-
 var FutureFeature = "future_feature"
 
 // TODO Issue#40: Replace  user/product/project data with redis storage.

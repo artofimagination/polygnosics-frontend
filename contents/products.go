@@ -21,6 +21,17 @@ const (
 	ProductDeleteSuccessTextKey  = "delete_success_text"
 	ProductDeleteURLKey          = "delete_url"
 	ProductCategoriesKey         = "categories"
+
+	ProductPublicKey     = "is_public"
+	ProductRequires3DKey = "requires_3d"
+	ProductPricingKey    = "pricing"
+	ProductPriceKey      = "amount"
+)
+
+const (
+	PaymentTypeSingle = "Single Price"
+	PaymentTypeSub    = "Subscription"
+	PaymentTypeFree   = "Free"
 )
 
 /// GenerateProductContent fills a string nested map with all product details and assets info
@@ -29,6 +40,12 @@ func (c *ContentController) generateProductContent(productData *restbackend.Prod
 	for k, v := range productData.Assets {
 		content[k] = v
 	}
+	content[ProductPublicKey] = convertToCheckboxValue(content[ProductPublicKey].(string))
+	content[ProductRequires3DKey] = convertToCheckboxValue(content[ProductRequires3DKey].(string))
+	content[ProductPublicTextKey] = convertCheckedToYesNo(content[ProductPublicTextKey].(string))
+	content[ProductRequires3DTextKey] = convertCheckedToYesNo(content[ProductRequires3DTextKey].(string))
+	content[ProductSupportsClientTextKey] = convertCheckedToYesNo(content[ProductSupportsClientTextKey].(string))
+	content[ProductPriceStringKey] = generatePriceString(content[ProductPricingKey].(string), content[ProductPriceKey].(string))
 
 	content[ProductDetailPageKey] = fmt.Sprintf("/user-main/my-products/details?item-id=%s", productData.ID)
 	content[ProductEditPageKey] = fmt.Sprintf("/user-main/my-products/edit?item-id=%s", productData.ID)

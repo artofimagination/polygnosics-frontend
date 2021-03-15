@@ -25,6 +25,8 @@ const (
 	UserTwitterKey             = "twitter_link"
 	UserGithubKey              = "github_link"
 	UserProductWizardPathKey   = "wizard"
+
+	UserLocationKey = "location"
 )
 
 // GetUserContent fills a string nested map with all user details and assets info
@@ -41,6 +43,8 @@ func (c *ContentController) GetUserContent(user *restbackend.User) map[string]in
 	for k, v := range user.Assets {
 		userData[k] = v
 	}
+	userData[UserLocationKey] = setLocationString(userData[UserCountryKey].(string), userData[UserCityKey].(string))
+
 	userData[UserProfileAvatarUploadKey] = "Upload your avatar"
 	userData[UserProfilePathKey] = fmt.Sprintf("/user-main/profile?user=%s", user.ID)
 	userData[UserProfileEditPathKey] = "/user-main/profile-edit"

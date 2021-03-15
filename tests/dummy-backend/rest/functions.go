@@ -20,6 +20,14 @@ func prettyPrint(v interface{}) {
 	fmt.Println("Failed to pretty print data")
 }
 
+func writeError(message string, w http.ResponseWriter, statusCode int) {
+	writeResponse(fmt.Sprintf("{\"error\":\"%s\"}", message), w, statusCode)
+}
+
+func writeData(data string, w http.ResponseWriter, statusCode int) {
+	writeResponse(fmt.Sprintf("{\"data\":\"%s\"}", data), w, statusCode)
+}
+
 func writeResponse(data string, w http.ResponseWriter, statusCode int) {
 	w.WriteHeader(statusCode)
 	fmt.Fprint(w, data)
@@ -41,8 +49,7 @@ func decodeRequest(r *http.Request) (map[string]interface{}, error) {
 func encodeResponse(data map[string]interface{}, w http.ResponseWriter) {
 	b, err := json.Marshal(data)
 	if err != nil {
-		err = errors.Wrap(errors.WithStack(err), "Failed to encode response")
-		writeResponse(fmt.Sprintf("{'error':'%s'}", err.Error()), w, http.StatusInternalServerError)
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 		return
 	}
 	writeResponse(string(b), w, http.StatusOK)
@@ -51,8 +58,7 @@ func encodeResponse(data map[string]interface{}, w http.ResponseWriter) {
 func (c *Controller) updateTestData(w http.ResponseWriter, r *http.Request) {
 	requestData, err := decodeRequest(r)
 	if err != nil {
-		err = errors.Wrap(errors.WithStack(err), "Failed to decode request")
-		writeResponse(fmt.Sprintf("{'error':'%s'}", err.Error()), w, http.StatusInternalServerError)
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 		return
 	}
 

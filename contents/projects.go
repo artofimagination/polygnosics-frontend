@@ -19,6 +19,9 @@ const (
 	ProjectDeleteURLKey         = "delete_url"
 	ProjectEditPageKey          = "edit_path"
 	ProjectVisibilityKey        = "visibility"
+
+	ProjectServerLogging = "server_logging"
+	ProjectClientLogging = "client_logging"
 )
 
 // Visibility values of a project
@@ -26,6 +29,14 @@ const (
 	Public    = "Public"
 	Protected = "Protected"
 	Private   = "Private"
+)
+
+const (
+	NotRunning  = "Not running"
+	Running     = "Running"
+	Stopped     = "Stopped"
+	Paused      = "Paused"
+	Unreachable = "Unreachable"
 )
 
 // ValidateVisibility validates the visibility string
@@ -42,6 +53,9 @@ func (c *ContentController) generateProjectContent(projectData *restbackend.Proj
 	for k, v := range projectData.Assets {
 		content[k] = v
 	}
+	content[ProjectServerLogging] = convertToCheckboxValue(content[ProjectServerLogging].(string))
+	content[ProjectClientLogging] = convertToCheckboxValue(content[ProjectClientLogging].(string))
+	content[ProjectStateBadge] = getProjectStateContent(content[ProjectStateBadge].(string)).badge
 
 	content[ProjectDetailsPageKey] = fmt.Sprintf("/user-main/my-projects/details?item-id=%s", projectData.ID)
 	content[ProjectEditPageKey] = fmt.Sprintf("/user-main/my-projects/edit?item-id=%s", projectData.ID)

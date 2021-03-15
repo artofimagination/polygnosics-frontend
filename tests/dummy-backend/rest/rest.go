@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
 )
 
 const (
 	UsersKey         = "users"
+	UserProductsKey  = "user_products"
+	UsersProjectKey  = "user_projects"
 	UsersUsernameKey = "username"
 	UsersEmailKey    = "email"
 	UsersIDKey       = "id"
@@ -26,6 +26,7 @@ const (
 )
 
 const (
+	ProductKey                 = "products"
 	ProductAvatarKey           = "avatar"
 	ProductMainAppKey          = "main_app"
 	ProductClientAppKey        = "client_app"
@@ -42,26 +43,22 @@ const (
 )
 
 const (
-	CategoryMLKey           = "machine_learning"
-	CategoryMLText          = "Machine Learning"
-	CategoryCivilEngNameKey = "civil_eng"
-	CategoryCivilEngText    = "Civil Engineering"
-	CategoryMedicineKey     = "medicine"
-	CategoryMedicineText    = "Medicine"
-	CategoryChemistryKey    = "chemistry"
-	CategoryChemistryText   = "Chemistry"
+	ProjectKey = "projects"
+)
+
+const (
+	CategoriesKey = "categories"
 )
 
 type Controller struct {
 	TestData map[string]interface{}
 }
 
-func createCategoriesMap() map[string]string {
-	categoriesMap := make(map[string]string)
-	categoriesMap[CategoryMLKey] = CategoryMLText
-	categoriesMap[CategoryCivilEngNameKey] = CategoryCivilEngText
-	categoriesMap[CategoryMedicineKey] = CategoryMedicineText
-	return categoriesMap
+func convertCheckboxValueToText(input string) string {
+	if input == "" {
+		return "unchecked"
+	}
+	return input
 }
 
 func NewController() (*Controller, error) {
@@ -92,15 +89,19 @@ func (c *Controller) CreateRouter() *mux.Router {
 	r.HandleFunc("/add-user", c.addUser)
 	r.HandleFunc("/get-user-by-id", c.getUserByID)
 	r.HandleFunc("/login", c.login)
-	r.HandleFunc("/add-product", c.addProduct)
+	userMain := r.PathPrefix("/user-main").Subrouter()
+	userMain.HandleFunc("/product-wizard", c.addProduct)
+	r.HandleFunc("/get-products-by-user", c.getProductsByUserID)
+	r.HandleFunc("/get-projects-by-user", c.getProjectsByUserID)
+	r.HandleFunc("/get-categories", c.getCategoriesMap)
+
 	return r
 }
 
 func (c *Controller) addUser(w http.ResponseWriter, r *http.Request) {
 	requestData, err := decodeRequest(r)
 	if err != nil {
-		err = errors.Wrap(errors.WithStack(err), "Backend: Failed to decode request")
-		writeResponse(fmt.Sprintf("{\"error\":\"%s\"}", err.Error()), w, http.StatusInternalServerError)
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
@@ -114,14 +115,13 @@ func (c *Controller) addUser(w http.ResponseWriter, r *http.Request) {
 	userData[UsersPasswordKey] = requestData[UsersPasswordKey]
 
 	c.TestData[UsersKey].(map[string]interface{})[id.String()] = userData
-
+	writeData("OK", w, http.StatusCreated)
 }
 
 func (c *Controller) login(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	if err := r.ParseForm(); err != nil {
-		err = errors.Wrap(errors.WithStack(err), "Backend: Failed to parse form")
-		writeResponse(fmt.Sprintf("{\"error\":\"%s\"}", err.Error()), w, http.StatusInternalServerError)
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
@@ -152,8 +152,7 @@ func (c *Controller) detectRootUser(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) getUserByID(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	if err := r.ParseForm(); err != nil {
-		err = errors.Wrap(errors.WithStack(err), "Backend: Failed to parse form")
-		writeResponse(fmt.Sprintf("{\"error\":\"%s\"}", err.Error()), w, http.StatusInternalServerError)
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
@@ -161,6 +160,7 @@ func (c *Controller) getUserByID(w http.ResponseWriter, r *http.Request) {
 	for k, v := range c.TestData[UsersKey].(map[string]interface{}) {
 		if k == id {
 			data["data"] = v
+			break
 		}
 	}
 
@@ -169,64 +169,106 @@ func (c *Controller) getUserByID(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) addProduct(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
-		err = errors.Wrap(errors.WithStack(err), "Backend: Failed to parse form")
-		writeResponse(fmt.Sprintf("{\"error\":\"%s\"}", err.Error()), w, http.StatusInternalServerError)
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
-	log.Println("Add")
 	if err := uploadFile(ProductAvatarKey, "avatar.jpg", r); err != nil {
-		err = errors.Wrap(errors.WithStack(err), "Backend: Failed to upload avatar")
-		writeResponse(fmt.Sprintf("{'error':'%s'}", err.Error()), w, http.StatusInternalServerError)
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 		return
 	}
-	log.Println("Add2")
 
 	if err := uploadFile(ProductMainAppKey, "main-app.tar.gz", r); err != nil {
-		err = errors.Wrap(errors.WithStack(err), "Backend: Failed to upload avatar")
-		writeResponse(fmt.Sprintf("{\"error\":\"%s\"}", err.Error()), w, http.StatusInternalServerError)
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 		return
 	}
-	log.Println("Add3")
 
 	if err := uploadFile(ProductClientAppKey, "client-app.tar.gz", r); err != nil {
-		err = errors.Wrap(errors.WithStack(err), "Backend: Failed to upload avatar")
-		writeResponse(fmt.Sprintf("{\"error\":\"%s\"}", err.Error()), w, http.StatusInternalServerError)
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 		return
 	}
-	log.Println("Add4")
 
 	id := uuid.New()
 	product := make(map[string]interface{})
 	product[id.String()] = make(map[string]interface{})
 	productData := product[id.String()].(map[string]interface{})
 	productData[AssetsKey] = make(map[string]interface{})
+	assets := productData[AssetsKey].(map[string]interface{})
 	productData[DetailsKey] = make(map[string]interface{})
+	details := productData[DetailsKey].(map[string]interface{})
 
-	productData[AssetsKey].(map[string]interface{})[ProductAvatarKey] = fmt.Sprintf("/user-assets/uploads/avatar.jpg")
-	productData[AssetsKey].(map[string]interface{})[ProductMainAppKey] = fmt.Sprintf("/user-assets/uploads/main-app.tar.gz")
-	productData[AssetsKey].(map[string]interface{})[ProductClientAppKey] = fmt.Sprintf("/user-assets/uploads/client-app.tar.gz")
+	assets[ProductAvatarKey] = fmt.Sprintf("/user-assets/uploads/avatar.jpg")
+	assets[ProductMainAppKey] = fmt.Sprintf("/user-assets/uploads/main-app.tar.gz")
+	assets[ProductClientAppKey] = fmt.Sprintf("/user-assets/uploads/client-app.tar.gz")
 
-	productData[DetailsKey].(map[string]interface{})[ProductNameKey] = r.FormValue(ProductNameKey)
-	productData[DetailsKey].(map[string]interface{})[ProductPriceKey] = r.FormValue(ProductPriceKey)
-	productData[DetailsKey].(map[string]interface{})[ProductPriceKey] = r.FormValue(ProductPriceKey)
-	productData[DetailsKey].(map[string]interface{})[ProductDescriptionKey] = r.FormValue(ProductDescriptionKey)
-	productData[DetailsKey].(map[string]interface{})[ProductShortDescriptionKey] = r.FormValue(ProductShortDescriptionKey)
-	productData[DetailsKey].(map[string]interface{})[ProductURLKey] = r.FormValue(ProductURLKey)
-	categories := createCategoriesMap()
+	details[ProductNameKey] = r.FormValue(ProductNameKey)
+	details[ProductPriceKey] = r.FormValue(ProductPriceKey)
+	details[ProductPriceKey] = r.FormValue(ProductPriceKey)
+	details[ProductDescriptionKey] = r.FormValue(ProductDescriptionKey)
+	details[ProductShortDescriptionKey] = r.FormValue(ProductShortDescriptionKey)
+	details[ProductURLKey] = r.FormValue(ProductURLKey)
 	categoryList := make([]string, 0)
-	for k := range categories {
+	for k := range c.TestData[CategoriesKey].(map[string]interface{}) {
 		if r.FormValue(k) == "checked" {
 			categoryList = append(categoryList, k)
 		}
 	}
-	productData[DetailsKey].(map[string]interface{})[ProductCategoriesKey] = categoryList
-	productData[DetailsKey].(map[string]interface{})[ProductRequires3DKey] = r.FormValue(ProductRequires3DKey)
-	productData[DetailsKey].(map[string]interface{})[ProductPublicKey] = r.FormValue(ProductPublicKey)
-	productData[DetailsKey].(map[string]interface{})[ProductTagsKey] = r.FormValue(ProductTagsKey)
+	details[ProductCategoriesKey] = categoryList
+	details[ProductRequires3DKey] = convertCheckboxValueToText(r.FormValue(ProductRequires3DKey))
+	details[ProductPublicKey] = convertCheckboxValueToText(r.FormValue(ProductPublicKey))
+	details[ProductTagsKey] = r.FormValue(ProductTagsKey)
 
-	c.TestData["products"] = product
-	log.Println("Add5")
-	prettyPrint(c.TestData)
-	writeResponse("{'data':'ok'}", w, http.StatusOK)
+	c.TestData[ProductKey] = product
+	c.TestData[UserProductsKey].(map[string]interface{})[r.FormValue("user")] = id
+	writeData("OK", w, http.StatusCreated)
+}
+
+func (c *Controller) getProductsByUserID(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{})
+	if err := r.ParseForm(); err != nil {
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
+		return
+	}
+	data["data"] = make([]interface{}, 0)
+	id := r.FormValue(UsersIDKey)
+	for userKey, productKey := range c.TestData[UserProductsKey].(map[string]interface{}) {
+		if userKey == id {
+			for k, v := range c.TestData[ProductKey].(map[string]interface{}) {
+				if productKey == k {
+					data["data"] = append(data["data"].([]interface{}), v)
+					break
+				}
+			}
+		}
+	}
+
+	encodeResponse(data, w)
+}
+
+func (c *Controller) getProjectsByUserID(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{})
+	if err := r.ParseForm(); err != nil {
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
+		return
+	}
+	data["data"] = make([]interface{}, 0)
+	id := r.FormValue(UsersIDKey)
+	for userKey, projectKey := range c.TestData[UsersProjectKey].(map[string]interface{}) {
+		if userKey == id {
+			for k, v := range c.TestData[ProjectKey].(map[string]interface{}) {
+				if projectKey == k {
+					data["data"] = append(data["data"].([]interface{}), v)
+					break
+				}
+			}
+		}
+	}
+
+	encodeResponse(data, w)
+}
+
+func (c *Controller) getCategoriesMap(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{})
+	data["data"] = c.TestData[CategoriesKey]
+	encodeResponse(data, w)
 }

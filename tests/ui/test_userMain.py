@@ -23,4 +23,3 @@ def test_LoadPage(browser, data, expected):
         page.elementsPresent()
     except Exception as e:
         assert f"{e}" == ""
-

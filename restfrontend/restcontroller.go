@@ -1,7 +1,6 @@
 package restfrontend
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -154,15 +153,6 @@ func NewRESTController() *RESTFrontend {
 		RESTBackend: backend,
 	}
 	return controller
-}
-
-func prettyPrint(v interface{}) {
-	b, err := json.MarshalIndent(v, "", "  ")
-	if err == nil {
-		fmt.Println(string(b))
-		return
-	}
-	fmt.Println("Failed to pretty print data")
 }
 
 // MakeHandler creates the page handler and check the route validity.
