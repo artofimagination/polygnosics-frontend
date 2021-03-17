@@ -96,7 +96,7 @@ func (c *RESTBackend) UpdateProduct(r *http.Request) error {
 func (c *RESTBackend) DeleteProduct(productID string) error {
 	params := make(map[string]interface{})
 	params["id"] = productID
-	_, err := post(BusinessLogicServerAddress, ProductPathDelete, params)
+	err := post(BusinessLogicServerAddress, ProductPathDelete, params)
 	if err != nil {
 		return err
 	}
@@ -177,7 +177,7 @@ func (c *RESTBackend) GetProjectsByUserID(userID string) ([]*Project, error) {
 func (c *RESTBackend) DeleteProject(projectID string) error {
 	params := make(map[string]interface{})
 	params["id"] = projectID
-	_, err := post(BusinessLogicServerAddress, ProjectPathDelete, params)
+	err := post(BusinessLogicServerAddress, ProjectPathDelete, params)
 	if err != nil {
 		return err
 	}

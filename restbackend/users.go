@@ -75,7 +75,7 @@ func (c *RESTBackend) AddUser(username string, email string, password []byte, gr
 	params["email"] = email
 	params["password"] = string(password)
 	params["group"] = group
-	_, err := post(BusinessLogicServerAddress, UserPathAdd, params)
+	err := post(BusinessLogicServerAddress, UserPathAdd, params)
 	if err != nil {
 		return err
 	}
