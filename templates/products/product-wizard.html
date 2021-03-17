@@ -24,7 +24,7 @@
 				</div>
 				<!-- /.box-header -->
 				<div class="box-body wizard-content">
-					<form action="/user-main/product-wizard" enctype="multipart/form-data" class="validation-wizard wizard-circle" method="post">
+					<form action="{{index .user "wizard"}}" enctype="multipart/form-data" class="validation-wizard wizard-circle" method="post">
 						<!-- Step 1 -->
 						<h6>Basic configuration</h6>
 						<section>

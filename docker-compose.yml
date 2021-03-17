@@ -50,9 +50,9 @@ services:
       # - "traefik.http.routers.traefik.entrypoints=websecure"
       # Allow BasicAuth check. Only in conjuncion with https
       # - "traefik.http.middlewares.admin.basicauth.users=admin:polyadmin"
-  polygnosics-frontend:
+  frontend:
     build: ./
-    image: artofimagination/polygnosics
+    image: artofimagination/polygnosics-frontend
     labels:
       # Define the host the request shall target
       - traefik.http.routers.platform.rule=Host(`${PUBLIC_HOST}`)
@@ -72,6 +72,7 @@ services:
       - traefik.http.services.platform.loadbalancer.server.port=8081
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ${USER_STORE}:${USER_STORE_DOCKER}
     networks: 
       - poly_frontend
     depends_on:

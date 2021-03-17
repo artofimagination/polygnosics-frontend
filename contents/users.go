@@ -3,76 +3,64 @@ package contents
 import (
 	"fmt"
 	"net/http"
-	"polygnosics/app/businesslogic"
-
-	"github.com/artofimagination/mysql-user-db-go-interface/models"
+	"polygnosics-frontend/restbackend"
 )
 
 // Details and assets field keys
 const (
 	UserMapKey                 = "user"
+	UserAvatarKey              = "avatar"
 	UserProfilePathKey         = "profile"
 	UserProfileEditPathKey     = "profile_edit"
 	UserProfileAvatarUploadKey = "avatar_upload"
+	UserNameKey                = "username"
+	UserEmailKey               = "email"
+	UserFullNameKey            = "full_name"
+	UserCountryKey             = "country"
+	UserCityKey                = "city"
+	UserWebsiteKey             = "website"
+	UserPhoneKey               = "phone"
+	UserAboutKey               = "about"
+	UserFacebookKey            = "facebook_link"
+	UserTwitterKey             = "twitter_link"
+	UserGithubKey              = "github_link"
+	UserProductWizardPathKey   = "wizard"
+
+	UserLocationKey = "location"
 )
 
-func setLocationString(country string, city string) string {
-	if country == "" && city == "" {
-		return "Not specified"
-	} else if country != "" && city == "" {
-		return country
-	} else if country == "" && city != "" {
-		return city
-	}
-	return fmt.Sprintf("%s, %s", city, country)
-}
-
 // GetUserContent fills a string nested map with all user details and assets info
-func (c *ContentController) GetUserContent(user *models.UserData) map[string]interface{} {
+func (c *ContentController) GetUserContent(user *restbackend.User) map[string]interface{} {
 	content := make(map[string]interface{})
 	content[FutureFeature] = 1
 	content[UserMapKey] = make(map[string]interface{})
-	userContent := content[UserMapKey].(map[string]interface{})
-	path := c.UserDBController.ModelFunctions.GetFilePath(user.Assets, businesslogic.UserAvatarKey, businesslogic.DefaultUserAvatarPath)
-	userContent[businesslogic.UserAvatarKey] = path
-	userContent[businesslogic.UserNameKey] = user.Name
-	userContent[businesslogic.UserFullNameKey] = c.UserDBController.ModelFunctions.GetField(user.Settings, businesslogic.UserFullNameKey, "")
-	country := c.UserDBController.ModelFunctions.GetField(user.Settings, businesslogic.UserCountryKey, "").(string)
-	city := c.UserDBController.ModelFunctions.GetField(user.Settings, businesslogic.UserCityKey, "").(string)
-	userContent[businesslogic.UserCountryKey] = country
-	userContent[businesslogic.UserCityKey] = city
-	userContent[businesslogic.UserLocationKey] = setLocationString(country, city)
-	userContent[businesslogic.UserEmailKey] = user.Email
-	userContent[businesslogic.UserPhoneKey] = c.UserDBController.ModelFunctions.GetField(user.Settings, businesslogic.UserPhoneKey, "")
-	userContent[businesslogic.UserConnectionCountKey] = 20
-	userContent[businesslogic.UserHiddenConnectionsKey] = 15
-	userContent[businesslogic.UserAboutKey] = c.UserDBController.ModelFunctions.GetField(user.Settings, businesslogic.UserAboutKey, "")
-	userContent[businesslogic.UserWebsiteKey] = c.UserDBController.ModelFunctions.GetField(user.Settings, businesslogic.UserWebsiteKey, "#")
-	userContent[businesslogic.UserFacebookKey] = c.UserDBController.ModelFunctions.GetField(user.Settings, businesslogic.UserFacebookKey, "#")
-	userContent[businesslogic.UserTwitterKey] = c.UserDBController.ModelFunctions.GetField(user.Settings, businesslogic.UserTwitterKey, "#")
-	userContent[businesslogic.UserGithubKey] = c.UserDBController.ModelFunctions.GetField(user.Settings, businesslogic.UserGithubKey, "#")
-	userContent[businesslogic.UserPrivilegesKey] = c.UserDBController.ModelFunctions.GetField(user.Settings, businesslogic.UserPrivilegesKey, "#")
+	userData := content[UserMapKey].(map[string]interface{})
+	userData[UserNameKey] = user.UserName
+	userData[UserEmailKey] = user.Email
+	for k, v := range user.Settings {
+		userData[k] = v
+	}
+	for k, v := range user.Assets {
+		userData[k] = v
+	}
+	userData[UserLocationKey] = setLocationString(userData[UserCountryKey].(string), userData[UserCityKey].(string))
 
-	userContent[UserProfileAvatarUploadKey] = "Upload your avatar"
-	userContent[UserProfilePathKey] = fmt.Sprintf("/user-main/profile?user=%s", user.ID.String())
-	userContent[UserProfileEditPathKey] = "/user-main/profile-edit"
+	userData[UserProfileAvatarUploadKey] = "Upload your avatar"
+	userData[UserProfilePathKey] = fmt.Sprintf("/user-main/profile?user=%s", user.ID)
+	userData[UserProfileEditPathKey] = "/user-main/profile-edit"
+	userData[UserProductWizardPathKey] = fmt.Sprintf("/user-main/product-wizard?user=%s", user.ID)
 	return content
 }
 
-func (c *ContentController) StoreUserInfo(r *http.Request) error {
-	c.UserData.Name = r.FormValue(businesslogic.UserNameKey)
-	c.UserDBController.ModelFunctions.SetField(c.UserData.Settings, businesslogic.UserNameKey, r.FormValue(businesslogic.UserNameKey))
-	c.UserDBController.ModelFunctions.SetField(c.UserData.Settings, businesslogic.UserFullNameKey, r.FormValue(businesslogic.UserFullNameKey))
-	c.UserDBController.ModelFunctions.SetField(c.UserData.Settings, businesslogic.UserCountryKey, r.FormValue(businesslogic.UserCountryKey))
-	c.UserDBController.ModelFunctions.SetField(c.UserData.Settings, businesslogic.UserCityKey, r.FormValue(businesslogic.UserCityKey))
-	c.UserDBController.ModelFunctions.SetField(c.UserData.Settings, businesslogic.UserPhoneKey, r.FormValue(businesslogic.UserPhoneKey))
-	c.UserDBController.ModelFunctions.SetField(c.UserData.Settings, businesslogic.UserWebsiteKey, r.FormValue(businesslogic.UserWebsiteKey))
-	c.UserDBController.ModelFunctions.SetField(c.UserData.Settings, businesslogic.UserAboutKey, r.FormValue(businesslogic.UserAboutKey))
-	c.UserDBController.ModelFunctions.SetField(c.UserData.Settings, businesslogic.UserFacebookKey, r.FormValue(businesslogic.UserFacebookKey))
-	c.UserDBController.ModelFunctions.SetField(c.UserData.Settings, businesslogic.UserTwitterKey, r.FormValue(businesslogic.UserTwitterKey))
-	c.UserDBController.ModelFunctions.SetField(c.UserData.Settings, businesslogic.UserGithubKey, r.FormValue(businesslogic.UserGithubKey))
-	if err := c.UserDBController.UpdateUserSettings(c.UserData); err != nil {
-		return err
-	}
-	return nil
+func (c *ContentController) StoreUserInfo(r *http.Request) {
+	c.User.Settings[UserNameKey] = r.FormValue(UserNameKey)
+	c.User.Settings[UserFullNameKey] = r.FormValue(UserFullNameKey)
+	c.User.Settings[UserCountryKey] = r.FormValue(UserCountryKey)
+	c.User.Settings[UserCityKey] = r.FormValue(UserCityKey)
+	c.User.Settings[UserPhoneKey] = r.FormValue(UserPhoneKey)
+	c.User.Settings[UserWebsiteKey] = r.FormValue(UserWebsiteKey)
+	c.User.Settings[UserAboutKey] = r.FormValue(UserAboutKey)
+	c.User.Settings[UserFacebookKey] = r.FormValue(UserFacebookKey)
+	c.User.Settings[UserTwitterKey] = r.FormValue(UserTwitterKey)
+	c.User.Settings[UserGithubKey] = r.FormValue(UserGithubKey)
 }

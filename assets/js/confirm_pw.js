@@ -1,5 +1,5 @@
-var password = document.getElementById("psw")
-  , confirm_password = document.getElementById("psw-repeat");
+var password = document.getElementById("password")
+  , confirm_password = document.getElementById("password-repeat");
 
 function validatePassword(){
   if(password.value != confirm_password.value) {

@@ -1,5 +1,4 @@
-setuptools
-flake8
 seleniumbase
+flake8
 pytest-soft-assertions
 
