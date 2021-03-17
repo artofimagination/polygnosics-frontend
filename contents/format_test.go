@@ -159,3 +159,152 @@ func TestGeneratePriceString(t *testing.T) {
 		})
 	}
 }
+
+func getProjectStateContentData() *tests.OrderedTests {
+	dataSet := &tests.OrderedTests{
+		OrderedList: make(tests.OrderedTestList, 0),
+		TestDataSet: make(tests.DataSet),
+	}
+
+	testCase := "test_notRunning"
+	dataSet.TestDataSet[testCase] = &tests.Data{
+		Input: NotRunning,
+		Expected: &StateContent{
+			text:  NotRunning,
+			badge: "badge-warning",
+		},
+	}
+	dataSet.OrderedList = append(dataSet.OrderedList, testCase)
+
+	testCase = "test_paused"
+	dataSet.TestDataSet[testCase] = &tests.Data{
+		Input: Paused,
+		Expected: &StateContent{
+			text:  Paused,
+			badge: "badge-primary",
+		},
+	}
+	dataSet.OrderedList = append(dataSet.OrderedList, testCase)
+
+	testCase = "test_running"
+	dataSet.TestDataSet[testCase] = &tests.Data{
+		Input: Running,
+		Expected: &StateContent{
+			text:  Running,
+			badge: "badge-success",
+		},
+	}
+	dataSet.OrderedList = append(dataSet.OrderedList, testCase)
+
+	testCase = "test_stopped"
+	dataSet.TestDataSet[testCase] = &tests.Data{
+		Input: Stopped,
+		Expected: &StateContent{
+			text:  Stopped,
+			badge: "badge-danger",
+		},
+	}
+	dataSet.OrderedList = append(dataSet.OrderedList, testCase)
+
+	testCase = "test_unreachable"
+	dataSet.TestDataSet[testCase] = &tests.Data{
+		Input: Unreachable,
+		Expected: &StateContent{
+			text:  Unreachable,
+			badge: "badge-danger",
+		},
+	}
+	dataSet.OrderedList = append(dataSet.OrderedList, testCase)
+
+	testCase = "test_invalid_type"
+	dataSet.TestDataSet[testCase] = &tests.Data{
+		Input: "Invalid",
+		Expected: &StateContent{
+			text:  "Invalid",
+			badge: "badge-secondary",
+		},
+	}
+	dataSet.OrderedList = append(dataSet.OrderedList, testCase)
+
+	return dataSet
+}
+
+func TestGetProjectStateContent(t *testing.T) {
+	// Create test data
+	dataSet := getProjectStateContentData()
+
+	// Run tests
+	for _, testCaseString := range dataSet.OrderedList {
+		testCaseString := testCaseString
+		t.Run(testCaseString, func(t *testing.T) {
+			testCase := dataSet.TestDataSet[testCaseString]
+			output := getProjectStateContent(dataSet.TestDataSet[testCaseString].Input.(string))
+			tests.CheckResult(testCase.Expected, output, nil, nil, testCaseString, t)
+		})
+	}
+}
+
+func setLocationStringData() *tests.OrderedTests {
+	dataSet := &tests.OrderedTests{
+		OrderedList: make(tests.OrderedTestList, 0),
+		TestDataSet: make(tests.DataSet),
+	}
+
+	testCase := "test_bothDefined"
+	input := make(map[string]interface{})
+	input["city"] = "New York"
+	input["country"] = "US"
+	dataSet.TestDataSet[testCase] = &tests.Data{
+		Input:    input,
+		Expected: "New York, US",
+	}
+	dataSet.OrderedList = append(dataSet.OrderedList, testCase)
+
+	testCase = "test_cityOnly"
+	input = make(map[string]interface{})
+	input["city"] = "New York"
+	input["country"] = ""
+	dataSet.TestDataSet[testCase] = &tests.Data{
+		Input:    input,
+		Expected: "New York",
+	}
+	dataSet.OrderedList = append(dataSet.OrderedList, testCase)
+
+	testCase = "test_countryOnly"
+	input = make(map[string]interface{})
+	input["city"] = ""
+	input["country"] = "US"
+	dataSet.TestDataSet[testCase] = &tests.Data{
+		Input:    input,
+		Expected: "US",
+	}
+	dataSet.OrderedList = append(dataSet.OrderedList, testCase)
+
+	testCase = "test_notDefined"
+	input = make(map[string]interface{})
+	input["city"] = ""
+	input["country"] = ""
+	dataSet.TestDataSet[testCase] = &tests.Data{
+		Input:    input,
+		Expected: "Not specified",
+	}
+	dataSet.OrderedList = append(dataSet.OrderedList, testCase)
+
+	return dataSet
+}
+
+func TestSetLocationString(t *testing.T) {
+	// Create test data
+	dataSet := setLocationStringData()
+
+	// Run tests
+	for _, testCaseString := range dataSet.OrderedList {
+		testCaseString := testCaseString
+		t.Run(testCaseString, func(t *testing.T) {
+			testCase := dataSet.TestDataSet[testCaseString]
+			input := testCase.Input.(map[string]interface{})
+			output := setLocationString(input["country"].(string), input["city"].(string))
+			tests.CheckResult(testCase.Expected, output, nil, nil, testCaseString, t)
+		})
+	}
+}
