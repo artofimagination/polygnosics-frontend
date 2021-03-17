@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"polygnosics-frontend/contents"
-	"polygnosics-frontend/restbackend"
-	"polygnosics-frontend/restfrontend/session"
 	"text/template"
+
+	"github.com/artofimagination/polygnosics-frontend/contents"
+	"github.com/artofimagination/polygnosics-frontend/restbackend"
+	"github.com/artofimagination/polygnosics-frontend/restfrontend/session"
 
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"

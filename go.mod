@@ -1,4 +1,4 @@
-module polygnosics-frontend
+module github.com/artofimagination/polygnosics-frontend
 
 go 1.15
 

@@ -3,7 +3,8 @@ package restfrontend
 import (
 	"fmt"
 	"net/http"
-	"polygnosics-frontend/contents"
+
+	"github.com/artofimagination/polygnosics-frontend/contents"
 
 	"github.com/pkg/errors"
 )

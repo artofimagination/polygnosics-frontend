@@ -1,8 +1,9 @@
 package contents
 
 import (
-	"polygnosics-frontend/tests"
 	"testing"
+
+	"github.com/artofimagination/polygnosics-frontend/tests"
 )
 
 func convertToCheckboxValueData() *tests.OrderedTests {

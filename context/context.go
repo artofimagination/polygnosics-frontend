@@ -1,7 +1,7 @@
 package context
 
 import (
-	"polygnosics-frontend/restfrontend"
+	"github.com/artofimagination/polygnosics-frontend/restfrontend"
 )
 
 type Context struct {

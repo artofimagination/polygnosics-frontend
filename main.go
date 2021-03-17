@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	serverContext "polygnosics-frontend/context"
-	"polygnosics-frontend/restfrontend"
+	serverContext "github.com/artofimagination/polygnosics-frontend/context"
+	"github.com/artofimagination/polygnosics-frontend/restfrontend"
 
 	"github.com/pkg/errors"
 )

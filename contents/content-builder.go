@@ -1,7 +1,7 @@
 package contents
 
 import (
-	"polygnosics-frontend/restbackend"
+	"github.com/artofimagination/polygnosics-frontend/restbackend"
 )
 
 const (
