@@ -58,7 +58,7 @@ func forwardRequest(address string, _ string, r *http.Request) error {
 		return errors.New(val.(string))
 	}
 
-	return errors.New("Invalid response")
+	return nil
 }
 
 func get(address string, path string, parameters string) (interface{}, error) {
@@ -114,5 +114,5 @@ func post(address string, path string, parameters map[string]interface{}) error 
 		return errors.New(val.(string))
 	}
 
-	return errors.New("Invalid response")
+	return nil
 }
