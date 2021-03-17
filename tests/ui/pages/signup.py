@@ -6,15 +6,16 @@ the page object for the signup page.
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+from pages.page_object import PageObject
 
 
-class SignupPage:
+class SignupPage(PageObject):
     URL = "http://0.0.0.0:8081/auth_signup"
 
     USERNAME_FIELD = (By.ID, 'username')
     EMAIL_FIELD = (By.ID, 'email')
-    PSW_FIELD = (By.ID, 'psw')
-    PSW_REPEAT_FIELD = (By.ID, 'psw-repeat')
+    PSW_FIELD = (By.ID, 'password')
+    PSW_REPEAT_FIELD = (By.ID, 'password-repeat')
     GROUP_CHECKBOX = (By.ID, 'group')
     TC_CHECKBOX = (By.ID, 'terms')
     HEADER_1_TEXT = (
@@ -36,8 +37,8 @@ class SignupPage:
     GITHUB_BUTTON = (By.CLASS_NAME, 'fa-github')
     SIGNUP_BUTTON = (By.ID, 'register')
 
-    def __init__(self, browser):
-        self.browser = browser
+    def __init__(self, browser, pageObjects=None):
+        super().__init__(browser, pageObjects)
 
     def load(self):
         self.browser.get(self.URL)
@@ -69,3 +70,5 @@ class SignupPage:
 
         signup = self.browser.find_element(*self.SIGNUP_BUTTON)
         signup.click()
+
+        return self.getPage()

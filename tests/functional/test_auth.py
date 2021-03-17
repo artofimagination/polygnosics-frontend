@@ -1,49 +1,152 @@
 import pytest
+import json
+
 
 dataColumns = ("data", "expected")
 createTestData = [
     (
         # Input data
         {
-            "product": {
-                "name": "testProductAddProject",
-            },
-            "user": {
-                "name": "testUserOwnerAddProject",
-                "email": "testEmailOwnerAddProject",
-                "password": "testPassword"
-            },
-            "project": {
-                "name": "testProjectAddProject",
-                "visibility": "Public"
-            }
+            "username": "signupUser",
+            "email": "signup@test.com",
+            "password": "asd123ASD"
         },
         # Expected
         {
-            "name": "testProjectAddProject",
-            "visibility": "Public"
+            "data": "Registration successful",
+            "request": {
+                "username": "signupUser",
+                "email": "signup@test.com",
+                "password": "asd123ASD",
+                "group": "client"
+            }
         }),
-    # Input data
-    ({
-      "project": {
-        "name": "testProjectMissingUser",
-        "visibility": "Public"
-      },
-      "user_id": "c34a7368-344a-11eb-adc1-0242ac120002",
-      "product_id": "c34a7368-344a-11eb-adc1-0242ac120002"
-    },
-      # Expected
-      "Failed to create product: Error 1452: " \
-      "Cannot add or update a child row: a foreign key constraint fails" \
-      " (`user_database`.`projects`, CONSTRAINT " \
-      "`projects_ibfk_1` FOREIGN KEY (`products_id`) " \
-      "REFERENCES `products` (`id`))")
-
+    (
+        # Input data
+        {
+            "username": "root",
+            "email": "signup@test.com",
+            "password": "asd123ASD",
+        },
+        # Expected
+        {
+            "data": "User already exists",
+            "request": {
+                "username": "root",
+                "email": "signup@test.com",
+                "password": "asd123ASD",
+                "group": "client"
+            }
+        })
 ]
 
-ids = ['No existing project', 'Missing product']
+ids = ['Success', 'Failure']
 
 
 @pytest.mark.parametrize(dataColumns, createTestData, ids=ids)
-def test_Signup(httpConnection, data, expected):
-    pass
+def test_Signup(httpFrontend, httpDummyBackend, data, expected):
+    try:
+        r = httpFrontend.POST(
+            "/auth_signup",
+            data)
+    except Exception:
+        pytest.fail("Failed to send POST request")
+        return None
+
+    expectedData = expected["data"]
+    if r.text != expectedData:
+        pytest.fail(
+            f"Request failed\n\
+    Status code: {r.status_code}\n\
+    Returned: {r.text}\n\
+    Expected: {expectedData}")
+
+    try:
+        r = httpDummyBackend.GET("/get-request-data", None)
+    except Exception:
+        pytest.fail("Failed to send GET request")
+        return None
+
+    try:
+        response = json.loads(r.text)
+    except Exception:
+        pytest.fail(f"Failed to decode response text {r.text}")
+        return None
+
+    expectedRequest = expected["request"]
+    if response != expectedRequest:
+        pytest.fail(
+            f"Request failed\n\
+    Status code: {r.status_code}\n\
+    Returned: {response}\n\
+    Expected: {expectedRequest}")
+
+
+dataColumns = ("data", "expected")
+createTestData = [
+    (
+        # Input data
+        {
+            "email": "signup@test.com",
+            "password": "asd123ASD",
+        },
+        # Expected
+        {
+            "data": "Login successful",
+            "request": {
+                'uri': '/login?email=signup@test.com&password=asd123ASD'
+            }
+        }),
+    (
+        # Input data
+        {
+            "email": "incorrect@test.com",
+            "password": "asd123ASD",
+        },
+        # Expected
+        {
+            "data": "Failed to login. Incorrect email or password",
+            "request": {
+                'uri': '/login?email=incorrect@test.com&password=asd123ASD'
+            }
+        }),
+]
+
+ids = ['Success', 'Failure']
+
+
+@pytest.mark.parametrize(dataColumns, createTestData, ids=ids)
+def test_Signin(httpFrontend, httpDummyBackend, data, expected):
+    try:
+        r = httpFrontend.POST("/auth_login", data)
+    except Exception:
+        pytest.fail("Failed to send POST request")
+        return None
+
+    expectedData = expected["data"]
+    if r.text != expectedData:
+        pytest.fail(
+            f"Request failed\n\
+            Status code: {r.status_code}\n\
+            Returned: {r.text}\n\
+            Expected: {expectedData}")
+
+    try:
+        r = httpDummyBackend.GET("/get-request-data", None)
+    except Exception:
+        pytest.fail("Failed to send GET request")
+        return None
+
+    try:
+        response = json.loads(r.text)
+    except Exception:
+        pytest.fail(f"Failed to decode response text {r.text}")
+        return None
+
+    expectedRequest = expected["request"]
+    if response != expectedRequest:
+        pytest.fail(
+            f"Request failed\n\
+            Status code: {r.status_code}\n\
+            Returned: {response}\n\
+            Expected: {expectedRequest}")

@@ -7,4 +7,6 @@ run*.sh
 __pycache__
 .pytest_cache
 geckodriver.log
-tests
+tests/dummy-backend
+tests/functional
+tests/ui

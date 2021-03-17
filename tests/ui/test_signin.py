@@ -1,13 +1,21 @@
 import pytest
+import common
+import traceback
 from pages.signin import SigninPage
 from pages.user_main import UserMainPage
+from pages.error import ErrorPage
+
 
 dataColumns = ("data", "expected")
 createTestData = [
-    ({
-        'title': 'Polygnosics - Sign in'
-    },
-        "test-image:latest"),
+    (
+        # Input data
+        "",
+        # Expected
+        {
+            "title": "Polygnosics - Sign in",
+            "error": ""
+        })
 ]
 
 ids = ['Page Loaded']
@@ -15,24 +23,28 @@ ids = ['Page Loaded']
 
 @pytest.mark.parametrize(dataColumns, createTestData, ids=ids)
 def test_LoadingSigninPage(browser, data, expected):
-    signinPage = SigninPage(browser)
-    signinPage.load()
-
-    assert data["title"] == signinPage.title()
-
     try:
+        signinPage = common.createPage(SigninPage, browser)
+        signinPage.load()
+        assert signinPage.title() == expected["title"]
         signinPage.elementsPresent()
     except Exception as e:
-        assert f"{e}" == ""
+        traceback.print_exc()
+        assert f"{e}" == expected["error"]
 
 
 dataColumns = ("data", "expected")
 createTestData = [
-    ({
-        "email": "signup@test.com",
-        "password": "asd123ASD"
-    },
-        "test-image:latest"),
+    (
+      # Input data
+      {
+          "email": "root@test.com",
+          "password": "123"
+      },
+      # Expected
+      {
+          "error": "",
+      }),
 ]
 
 ids = ['Success']
@@ -40,14 +52,15 @@ ids = ['Success']
 
 @pytest.mark.parametrize(dataColumns, createTestData, ids=ids)
 def test_Signin(browser, data, expected):
-    signinPage = SigninPage(browser)
-    signinPage.load()
-
     try:
-        url = signinPage.signin(
+        signinPage = common.createPage(SigninPage, browser)
+        signinPage.load()
+        page = signinPage.signin(
           data["email"],
           data["password"])
-        userMain = UserMainPage(browser)
-        assert url == userMain.URL
+        if isinstance(page, ErrorPage):
+            assert page.errorMessage() == expected["error"]
+        assert type(page) == UserMainPage
     except Exception as e:
-        assert f"{e}" == ""
+        traceback.print_exc()
+        assert f"{e}" == expected["error"]

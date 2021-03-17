@@ -33,7 +33,28 @@ func writeResponse(data string, w http.ResponseWriter, statusCode int) {
 	fmt.Fprint(w, data)
 }
 
-func decodeRequest(r *http.Request) (map[string]interface{}, error) {
+func (c *Controller) getRequestData(w http.ResponseWriter, r *http.Request) {
+	encodeResponse(c.RequestData, w)
+}
+
+func (c Controller) ParseForm(r *http.Request) error {
+	if err := r.ParseForm(); err != nil {
+		return err
+	}
+
+	c.setRequestData(r)
+	return nil
+}
+
+func (c *Controller) setRequestData(r *http.Request) {
+	for k := range c.RequestData {
+		delete(c.RequestData, k)
+	}
+
+	c.RequestData["uri"] = r.RequestURI
+}
+
+func (c *Controller) decodeRequest(r *http.Request) (map[string]interface{}, error) {
 	data := make(map[string]interface{})
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -43,6 +64,7 @@ func decodeRequest(r *http.Request) (map[string]interface{}, error) {
 	if err := json.Unmarshal(body, &data); err != nil {
 		return nil, err
 	}
+	c.RequestData = data
 	return data, nil
 }
 
@@ -56,7 +78,7 @@ func encodeResponse(data map[string]interface{}, w http.ResponseWriter) {
 }
 
 func (c *Controller) updateTestData(w http.ResponseWriter, r *http.Request) {
-	requestData, err := decodeRequest(r)
+	requestData, err := c.decodeRequest(r)
 	if err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 		return

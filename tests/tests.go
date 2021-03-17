@@ -1,4 +1,4 @@
-package test
+package tests
 
 import (
 	"testing"
@@ -11,12 +11,12 @@ type OrderedTests struct {
 	OrderedList OrderedTestList
 }
 
-type DataSet map[string]Data
+type DataSet map[string]*Data
 type OrderedTestList []string
 
 type Data struct {
 	Expected interface{}
-	Data     interface{}
+	Input    interface{}
 	Mock     interface{}
 }
 

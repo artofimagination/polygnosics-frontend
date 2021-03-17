@@ -4,13 +4,14 @@ the page object for the signup page.
 """
 
 from selenium.webdriver.common.by import By
+from pages.page_object import PageObject
 
 
-class SigninPage:
+class SigninPage(PageObject):
     URL = "http://0.0.0.0:8081/auth_login"
 
     EMAIL_FIELD = (By.ID, 'email')
-    PSW_FIELD = (By.ID, 'psw')
+    PSW_FIELD = (By.ID, 'password')
     HEADER_1_TEXT = (
         By.XPATH,
         "//h2[text() ='Get started with Us']")
@@ -33,8 +34,8 @@ class SigninPage:
         By.XPATH,
         "//button[text() ='SIGN IN']")
 
-    def __init__(self, browser):
-        self.browser = browser
+    def __init__(self, browser, pageObjects=None):
+        super().__init__(browser, pageObjects)
 
     def title(self):
         return self.browser.title
@@ -59,4 +60,5 @@ class SigninPage:
 
         signin = self.browser.find_element(*self.SIGNIN_BUTTON)
         signin.click()
-        return self.browser.current_url
+
+        return self.getPage()

@@ -25,26 +25,31 @@ type StateContent struct {
 }
 
 func convertToCheckboxValue(input string) string {
-	if input == CheckBoxUnChecked {
+	if input == CheckBoxUnChecked || input != CheckBoxChecked {
 		return ""
 	}
 	return input
 }
 
 func convertCheckedToYesNo(input string) string {
-	if input == CheckBoxUnChecked {
+	if input == CheckBoxUnChecked || input != CheckBoxChecked {
 		return "No"
 	}
 	return "Yes"
 }
 
+var InvalidPaymentType = "Invalid payment type"
+
 func generatePriceString(paymentType string, amount string) string {
-	if paymentType == PaymentTypeFree {
+	switch paymentType {
+	case PaymentTypeFree:
 		return paymentType
-	} else if paymentType == PaymentTypeSub {
+	case PaymentTypeSub:
 		return fmt.Sprintf("%s NZD/month", amount)
-	} else {
+	case PaymentTypeSingle:
 		return fmt.Sprintf("%s NZD", amount)
+	default:
+		return InvalidPaymentType
 	}
 }
 

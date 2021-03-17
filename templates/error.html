@@ -10,7 +10,7 @@
 					  <h1 class="text-danger font-size-40"> {{index . "status_code"}}</h1>
 					  <h1 class="text-grey">Oops</h1>
 					  <h3 class="text-grey">{{index . "status_text"}}</h3>
-            <h3 class="text-grey">{{index . "message"}}</h3>
+            <h3 id="error-message" class="text-grey">{{index . "message"}}</h3>
 					  <div class="my-30"><a href="{{index . "back_page"}}" class="btn btn-primary">Back</a></div>
 					  <h5 class="text-grey mb-15">-- OR --</h5>
 					  <h4 class="text-grey">Please try after some time</h4>			  			  

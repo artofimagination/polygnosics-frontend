@@ -12,8 +12,8 @@ import (
 // LoginHandler checks the user email and password.
 // On success generates and stores a cookie in the session sotre and adds it to the response
 func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
-	content := c.ContentController.BuildLoginContent()
 	if r.Method == GET {
+		content := c.ContentController.BuildLoginContent()
 		c.RenderTemplate(w, "auth_login", content)
 	} else {
 		if err := r.ParseForm(); err != nil {
@@ -21,11 +21,12 @@ func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		email := r.FormValue("email")
-		pwd := []byte(r.FormValue("psw"))
+		pwd := []byte(r.FormValue("password"))
 
 		user, err := c.RESTBackend.Login(email, pwd)
 		if err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to login. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexLoginPath)
+			w.WriteHeader(http.StatusAccepted)
+			fmt.Fprintf(w, "Failed to login. %s", errors.WithStack(err))
 			return
 		}
 		c.ContentController.User = user
@@ -52,7 +53,8 @@ func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		http.Redirect(w, r, UserMainPath, http.StatusSeeOther)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "Login successful")
 	}
 }
 
@@ -85,14 +87,20 @@ func (c *RESTFrontend) SignupHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		uName := r.FormValue("username")
 		email := r.FormValue("email")
-		pwd := []byte(r.FormValue("psw"))
+		pwd := []byte(r.FormValue("password"))
 		group := r.FormValue("group")
 		if group == "" {
 			group = "client"
 		}
 
+		if uName == "" || email == "" || r.FormValue("password") == "" {
+			c.HandleError(w, "Form values are empty", http.StatusBadRequest, IndexPath)
+			return
+		}
+
 		if err := c.RESTBackend.AddUser(uName, email, pwd, group); err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to add user. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexPath)
+			w.WriteHeader(http.StatusAccepted)
+			fmt.Fprint(w, err.Error())
 			return
 		}
 

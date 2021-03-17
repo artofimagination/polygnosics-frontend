@@ -18,7 +18,7 @@ status=$?;
 if [[ $status != 0 ]]; then 
   exit $status; 
 fi
-./runUITest.sh
+./runUITests.sh
 status=$?; 
 if [[ $status != 0 ]]; then 
   exit $status; 

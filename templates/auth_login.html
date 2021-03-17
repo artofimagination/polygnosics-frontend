@@ -16,7 +16,7 @@
 								<p class="text-primary-50 mb-0">Sign in to start your session</p>							
 							</div>
 							<div class="p-30">
-								<form action="/auth_login" method="post">
+								<form id="signin" action="/auth_login" method="post">
 									<div class="form-group">
 										<div class="input-group mb-3">
 											<div class="input-group-prepend">
@@ -30,7 +30,7 @@
 											<div class="input-group-prepend">
 												<span class="input-group-text  bg-transparent text-grey"><i class="ti-lock"></i></span>
 											</div>
-											<input type="password" class="form-control pl-15 bg-transparent text-grey" placeholder="Password" id="psw" name="psw" required>
+											<input type="password" class="form-control pl-15 bg-transparent text-grey" placeholder="Password" id="password" name="password" required>
 										</div>
 									</div>
 									  <div class="row">
@@ -48,7 +48,7 @@
 										</div>
 										<!-- /.col -->
 										<div class="col-12 text-center">
-										  <button type="submit" class="btn btn-primary mt-10">SIGN IN</button>
+										  <button id="login" name="login" class="btn btn-primary mt-10">SIGN IN</button>
 										</div>
 										<!-- /.col -->
 									  </div>
@@ -72,5 +72,10 @@
 			</div>
 		</div>
 	</div>
+
+  <script src="/assets/js/vendors.min.js"></script>
+	<script src="/assets/vendor_components/jquery-validation-1.17.0/dist/jquery.validate.min.js"></script>
+	<script src="/assets/vendor_components/sweetalert/sweetalert.min.js"></script>
+  <script src="/assets/js/auth.js"></script>
 </body>
 </html>

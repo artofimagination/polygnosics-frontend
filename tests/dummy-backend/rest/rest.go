@@ -51,7 +51,8 @@ const (
 )
 
 type Controller struct {
-	TestData map[string]interface{}
+	TestData    map[string]interface{}
+	RequestData map[string]interface{}
 }
 
 func convertCheckboxValueToText(input string) string {
@@ -72,8 +73,10 @@ func NewController() (*Controller, error) {
 		return nil, err
 	}
 
+	requestData := make(map[string]interface{})
 	return &Controller{
-		TestData: jsonData,
+		TestData:    jsonData,
+		RequestData: requestData,
 	}, nil
 }
 
@@ -94,17 +97,24 @@ func (c *Controller) CreateRouter() *mux.Router {
 	r.HandleFunc("/get-products-by-user", c.getProductsByUserID)
 	r.HandleFunc("/get-projects-by-user", c.getProjectsByUserID)
 	r.HandleFunc("/get-categories", c.getCategoriesMap)
+	r.HandleFunc("/get-request-data", c.getRequestData)
 
 	return r
 }
 
 func (c *Controller) addUser(w http.ResponseWriter, r *http.Request) {
-	requestData, err := decodeRequest(r)
+	requestData, err := c.decodeRequest(r)
 	if err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
+	for _, v := range c.TestData[UsersKey].(map[string]interface{}) {
+		if v.(map[string]interface{})[UsersUsernameKey] == requestData[UsersUsernameKey] {
+			writeError("User already exists", w, http.StatusAccepted)
+			return
+		}
+	}
 	id := uuid.New()
 	userData := make(map[string]interface{})
 	userData[AssetsKey] = make(map[string]interface{})
@@ -113,29 +123,32 @@ func (c *Controller) addUser(w http.ResponseWriter, r *http.Request) {
 	userData[UsersUsernameKey] = requestData[UsersUsernameKey]
 	userData[UsersEmailKey] = requestData[UsersEmailKey]
 	userData[UsersPasswordKey] = requestData[UsersPasswordKey]
-
 	c.TestData[UsersKey].(map[string]interface{})[id.String()] = userData
 	writeData("OK", w, http.StatusCreated)
 }
 
 func (c *Controller) login(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
-	if err := r.ParseForm(); err != nil {
+	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
 	email := r.FormValue(UsersEmailKey)
 	pwd := r.FormValue(UsersPasswordKey)
+	data["data"] = make(map[string]interface{})
 	for _, v := range c.TestData[UsersKey].(map[string]interface{}) {
-		userdata := v.(map[string]interface{})
-		if userdata[UsersEmailKey].(string) == email && userdata[UsersPasswordKey].(string) == string(pwd) {
-			data["data"] = v
-			delete(data["data"].(map[string]interface{}), UsersPasswordKey)
+		if v.(map[string]interface{})[UsersEmailKey].(string) == email && v.(map[string]interface{})[UsersPasswordKey].(string) == pwd {
+			for k, value := range v.(map[string]interface{}) {
+				if k != UsersPasswordKey {
+					data["data"].(map[string]interface{})[k] = value
+				}
+			}
+			encodeResponse(data, w)
+			return
 		}
 	}
-
-	encodeResponse(data, w)
+	writeError("Incorrect email or password", w, http.StatusAccepted)
 }
 
 func (c *Controller) detectRootUser(w http.ResponseWriter, r *http.Request) {
@@ -151,7 +164,7 @@ func (c *Controller) detectRootUser(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) getUserByID(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
-	if err := r.ParseForm(); err != nil {
+	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
@@ -225,7 +238,7 @@ func (c *Controller) addProduct(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) getProductsByUserID(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
-	if err := r.ParseForm(); err != nil {
+	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
@@ -247,7 +260,7 @@ func (c *Controller) getProductsByUserID(w http.ResponseWriter, r *http.Request)
 
 func (c *Controller) getProjectsByUserID(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
-	if err := r.ParseForm(); err != nil {
+	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
