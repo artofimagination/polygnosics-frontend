@@ -9,7 +9,7 @@ import time
 
 
 def _pingServer():
-    URL = "http://0.0.0.0:8081/index"
+    URL = "http://0.0.0.0:8085"
     connected = False
     timeout = 20
     while timeout > 0:

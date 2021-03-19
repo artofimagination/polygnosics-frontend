@@ -1,3 +1,6 @@
+#!/bin/bash
+
+cp ./tests/.env_functional_test .env
 go clean -testcache && go test -v -count=1 -cover ./...
 status=$?; 
 if [[ $status != 0 ]]; then 

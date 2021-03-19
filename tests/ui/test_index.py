@@ -22,7 +22,7 @@ ids = ['Elements exist']
 
 
 @pytest.mark.parametrize(dataColumns, createTestData, ids=ids)
-def test_LoadingPage(browser, data, expected):
+def test_LoadPage(browser, data, expected):
     try:
         indexPage = common.createPage(IndexPage, browser)
         indexPage.load()

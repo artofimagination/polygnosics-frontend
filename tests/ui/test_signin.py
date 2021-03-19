@@ -43,11 +43,25 @@ createTestData = [
       },
       # Expected
       {
+          "alertText": "",
+          "error": "Message: Unable to locate element: .sweet-alert",
+          "destinationPage": UserMainPage
+      }),
+    (
+      # Input data
+      {
+          "email": "failure@test.com",
+          "password": "123"
+      },
+      # Expected
+      {
+          "alertText": "Failed to login. Incorrect email or password",
           "error": "",
+          "destinationPage": SigninPage
       }),
 ]
 
-ids = ['Success']
+ids = ['Success', 'Failure']
 
 
 @pytest.mark.parametrize(dataColumns, createTestData, ids=ids)
@@ -58,9 +72,16 @@ def test_Signin(browser, data, expected):
         page = signinPage.signin(
           data["email"],
           data["password"])
+
+        try:
+            (page, message) = signinPage.checkFailedSweetAlert()
+            assert message == expected["alertText"]
+        except Exception as e:
+            assert str(e).strip() == expected["error"]
+
         if isinstance(page, ErrorPage):
             assert page.errorMessage() == expected["error"]
-        assert type(page) == UserMainPage
+        assert type(page) == expected["destinationPage"]
     except Exception as e:
         traceback.print_exc()
         assert f"{e}" == expected["error"]

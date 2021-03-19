@@ -5,7 +5,7 @@ import time
 
 class HTTPConnectorFrontend():
     def __init__(self):
-        self.URL = "http://0.0.0.0:8081"
+        self.URL = "http://0.0.0.0:8085"
         connected = False
         timeout = 15
         while timeout > 0:
@@ -32,7 +32,7 @@ class HTTPConnectorFrontend():
 
 class HTTPConnectorDummyBackend():
     def __init__(self):
-        self.URL = "http://0.0.0.0:8082"
+        self.URL = "http://0.0.0.0:8084"
         connected = False
         timeout = 15
         while timeout > 0:

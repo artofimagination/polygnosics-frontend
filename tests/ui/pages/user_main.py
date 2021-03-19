@@ -8,7 +8,7 @@ from pages.page_object import PageObject
 
 
 class UserMainPage(PageObject):
-    URL = "http://0.0.0.0:8081/user-main"
+    URL = "http://0.0.0.0:8085/user-main"
 
     def __init__(self, browser, pageObjects=None):
         super().__init__(browser, pageObjects)
