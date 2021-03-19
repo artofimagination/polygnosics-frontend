@@ -3,6 +3,7 @@ import common
 import traceback
 from pages.signup import SignupPage
 from pages.error import ErrorPage
+from pages.index import IndexPage
 
 dataColumns = ("data", "expected")
 createTestData = [
@@ -46,11 +47,27 @@ createTestData = [
         },
         # Expected
         {
-            "error": ""
+            "alertText": "Registration successful",
+            "error": "",
+            "destinationPage": IndexPage
+        }),
+    (
+        # Input data
+        {
+            "username": "signupUser",
+            "email": "signup@test.com",
+            "password": "asd123ASD",
+            "password-repeat": "asd123ASD"
+        },
+        # Expected
+        {
+            "alertText": "User already exists",
+            "error": "",
+            "destinationPage": IndexPage
         }),
 ]
 
-ids = ['Success']
+ids = ['Success', 'Failure']
 
 
 @pytest.mark.run(order=2)
@@ -65,9 +82,17 @@ def test_Signup(browser, data, expected):
           data["email"],
           data["password"],
           data["password-repeat"])
+
+        try:
+            (page, message) = signupPage.checkSweetAlert()
+            print(page)
+            assert message == expected["alertText"]
+        except Exception as e:
+            assert str(e).strip() == expected["error"]
+
         if isinstance(page, ErrorPage):
             assert page.errorMessage() == expected["error"]
-        assert type(page) == SignupPage
+        assert type(page) == expected["destinationPage"]
     except Exception as e:
         traceback.print_exc()
         assert f"{e}" == expected["error"]

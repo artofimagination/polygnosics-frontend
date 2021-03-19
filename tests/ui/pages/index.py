@@ -11,7 +11,7 @@ from pages.index_header import IndexPageHeader
 
 
 class IndexPage(PageObject):
-    URL = "http://0.0.0.0:8081/index"
+    URL = "http://0.0.0.0:8085/index"
 
     PRELOADER = (By.CLASS_NAME, 'loader-wrap')
 

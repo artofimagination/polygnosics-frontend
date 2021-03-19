@@ -14,8 +14,8 @@ const (
 	POST = "POST"
 )
 
-var BusinessLogicServerAddress string = "http://172.18.0.2:8082"
-var StatsServerAddress string = "http://172.18.0.2:8083"
+var BusinessLogicServerAddress string = "http://172.18.0.4:8084"
+var StatsServerAddress string = "http://172.18.0.6:8086"
 
 type RESTBackend struct {
 }

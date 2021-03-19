@@ -8,7 +8,7 @@ from pages.page_object import PageObject
 
 
 class IndexPageHeader(PageObject):
-    URL = "http://0.0.0.0:8081/index"
+    URL = "http://0.0.0.0:8085/index"
 
     SIGNUP_BUTTON = (By.XPATH, "//a[@href='/auth_signup']")
     SIGNIN_BUTTON = (By.LINK_TEXT, 'Sign In')

@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 
 
 class ErrorPage:
-    URL = "http://0.0.0.0:8081/error"
+    URL = "http://0.0.0.0:8085/error"
 
     ERROR_MESSAGE = (By.ID, 'error-message')
 

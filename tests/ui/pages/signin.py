@@ -3,12 +3,13 @@ This module contains SigninPage,
 the page object for the signup page.
 """
 
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from pages.page_object import PageObject
 
 
 class SigninPage(PageObject):
-    URL = "http://0.0.0.0:8081/auth_login"
+    URL = "http://0.0.0.0:8085/auth_login"
 
     EMAIL_FIELD = (By.ID, 'email')
     PSW_FIELD = (By.ID, 'password')
@@ -33,6 +34,15 @@ class SigninPage(PageObject):
     SIGNIN_BUTTON = (
         By.XPATH,
         "//button[text() ='SIGN IN']")
+    FAILURE_SWEET_ALERT = (
+        By.CLASS_NAME,
+        "sweet-alert")
+    FAILURE_SWEET_ALERT_MESSAGE = (
+        By.XPATH,
+        "//p[text() = 'Failed to login. Incorrect email or password']")
+    FAILURE_SWEET_ALERT_OK = (
+        By.XPATH,
+        "//button[@class='confirm']")
 
     def __init__(self, browser, pageObjects=None):
         super().__init__(browser, pageObjects)
@@ -50,6 +60,14 @@ class SigninPage(PageObject):
         self.browser.find_element(*self.REGISTER_WITH_TEXT)
         self.browser.find_element(*self.REMEMBER_ME_TEXT)
         self.browser.find_element(*self.NO_ACCOUNT_TEXT)
+
+    def checkFailedSweetAlert(self):
+        self.browser.find_element(*self.FAILURE_SWEET_ALERT)
+        message = \
+            self.browser.find_element(*self.FAILURE_SWEET_ALERT_MESSAGE).text
+        ok = self.browser.find_element(*self.FAILURE_SWEET_ALERT_OK)
+        ActionChains(self.browser).move_to_element(ok).click(ok).perform()
+        return (self.getPage(), message)
 
     def signin(self, email, password):
         emailInput = self.browser.find_element(*self.EMAIL_FIELD)
