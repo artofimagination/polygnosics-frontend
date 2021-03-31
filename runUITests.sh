@@ -14,4 +14,4 @@ if [[ $status != 0 ]]; then
   exit $status; 
 fi
 
-python3 -m pytest -v tests/ui --soft-asserts
+python3 -m pytest -v tests/ui

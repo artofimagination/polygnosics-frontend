@@ -1,13 +1,10 @@
 package rest
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 )
 
 const (
@@ -50,56 +47,11 @@ const (
 	CategoriesKey = "categories"
 )
 
-type Controller struct {
-	TestData    map[string]interface{}
-	RequestData map[string]interface{}
-}
-
 func convertCheckboxValueToText(input string) string {
 	if input == "" {
 		return "unchecked"
 	}
 	return input
-}
-
-func NewController() (*Controller, error) {
-	data, err := ioutil.ReadFile("/user-assets/testData.json")
-	if err != nil {
-		return nil, err
-	}
-	jsonData := make(map[string]interface{})
-	err = json.Unmarshal(data, &jsonData)
-	if err != nil {
-		return nil, err
-	}
-
-	requestData := make(map[string]interface{})
-	return &Controller{
-		TestData:    jsonData,
-		RequestData: requestData,
-	}, nil
-}
-
-func sayHello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hi! I am a dummy server!")
-}
-
-func (c *Controller) CreateRouter() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/", sayHello)
-	r.HandleFunc("/update-test-data", c.updateTestData)
-	r.HandleFunc("/detect-root-user", c.detectRootUser)
-	r.HandleFunc("/add-user", c.addUser)
-	r.HandleFunc("/get-user-by-id", c.getUserByID)
-	r.HandleFunc("/login", c.login)
-	userMain := r.PathPrefix("/user-main").Subrouter()
-	userMain.HandleFunc("/product-wizard", c.addProduct)
-	r.HandleFunc("/get-products-by-user", c.getProductsByUserID)
-	r.HandleFunc("/get-projects-by-user", c.getProjectsByUserID)
-	r.HandleFunc("/get-categories", c.getCategoriesMap)
-	r.HandleFunc("/get-request-data", c.getRequestData)
-
-	return r
 }
 
 func (c *Controller) addUser(w http.ResponseWriter, r *http.Request) {

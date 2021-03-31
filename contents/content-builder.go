@@ -41,6 +41,7 @@ const (
 	ResourcesPageDocumentationName = "Documentation"
 	ResourcesPageTutorialsName     = "Tutorials"
 	ResourcesPageFAQsName          = "FAQs"
+	ResourcesPageExamplesName      = "Examples"
 	ResourcesPageFilesName         = "Files"
 )
 
@@ -190,7 +191,10 @@ func (c *ContentController) BuildProfileContent(id string) (map[string]interface
 func (c *ContentController) BuildUserMainContent() (map[string]interface{}, error) {
 	content := c.GetUserContent(c.User)
 	content = c.prepareContentHeader(content, UserPageName, UserPageMainPageName)
-	content = c.prepareNewsFeed(content)
+	err := c.prepareNewsFeed(content)
+	if err != nil {
+		return nil, err
+	}
 	productsContent, err := c.GetRecentProductsContent(c.User.ID)
 	if err != nil {
 		return nil, err
@@ -210,10 +214,14 @@ func (c *ContentController) BuildErrorContent(errString string) map[string]inter
 	return content
 }
 
-func (c *ContentController) BuildNewsContent() map[string]interface{} {
+func (c *ContentController) BuildNewsContent() (map[string]interface{}, error) {
 	content := c.GetUserContent(c.User)
 	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageNewsName)
-	return content
+	err := c.prepareNewsFeed(content)
+	if err != nil {
+		return nil, err
+	}
+	return content, nil
 }
 
 func (c *ContentController) BuildUserStatsContent() map[string]interface{} {
@@ -286,16 +294,13 @@ func (c *ContentController) BuildDocsContent() map[string]interface{} {
 	return content
 }
 
-func (c *ContentController) BuildFilesContent() map[string]interface{} {
+func (c *ContentController) BuildFilesContent() (map[string]interface{}, error) {
 	content := c.GetUserContent(c.User)
 	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageFilesName)
-	return content
-}
-
-func (c *ContentController) BuildTutorialsContent() map[string]interface{} {
-	content := c.GetUserContent(c.User)
-	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageDocumentationName)
-	return content
+	if err := c.prepareFiles(content); err != nil {
+		return nil, err
+	}
+	return content, nil
 }
 
 func (c *ContentController) BuildSettingsContent() map[string]interface{} {
@@ -304,10 +309,22 @@ func (c *ContentController) BuildSettingsContent() map[string]interface{} {
 	return content
 }
 
-func (c *ContentController) BuildFAQContent() map[string]interface{} {
+func (c *ContentController) BuildTutorialsContent() (map[string]interface{}, error) {
+	content := c.GetUserContent(c.User)
+	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageTutorialsName)
+	if err := c.prepareTutorials(content); err != nil {
+		return nil, err
+	}
+	return content, nil
+}
+
+func (c *ContentController) BuildFAQContent() (map[string]interface{}, error) {
 	content := c.GetUserContent(c.User)
 	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageFAQsName)
-	return content
+	if err := c.prepareFAQ(content); err != nil {
+		return nil, err
+	}
+	return content, nil
 }
 
 func (c *ContentController) BuildMailReadContent() map[string]interface{} {

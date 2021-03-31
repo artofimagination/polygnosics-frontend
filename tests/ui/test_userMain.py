@@ -10,7 +10,8 @@ createTestData = [
         # Input data
         {
           "email": "root@test.com",
-          "password": "123"
+          "password": "123",
+          "group": common.UserGroup.Root
         },
         # Expected
         {
@@ -36,6 +37,6 @@ def test_LoadPage(browser, data, expected):
     mainPage.load()
 
     try:
-        mainPage.elementsPresent()
+        mainPage.elementsPresent(data["group"])
     except Exception as e:
         assert f"{e}" == ""

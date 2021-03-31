@@ -17,8 +17,8 @@ class UserMainPage(PageObject):
     def load(self):
         self.browser.get(self.URL)
 
-    def elementsPresent(self):
-        self.sidebar.elementsPresent()
+    def elementsPresent(self, userGroup):
+        self.sidebar.elementsPresent(userGroup)
 
     def title(self):
         return self.browser.title

@@ -3,6 +3,15 @@ from pages.user_main import UserMainPage
 from pages.signup import SignupPage
 from pages.signin import SigninPage
 from pages.index import IndexPage
+from enum import Enum
+
+
+class UserGroup(Enum):
+    Root = "root"
+    Developer = "developer"
+    Admin = "admin"
+    Client = "client"
+    Visitor = "visitor"
 
 
 def createPageObjects(browser):
