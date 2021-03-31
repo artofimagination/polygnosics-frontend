@@ -3,7 +3,8 @@ package contents
 import (
 	"fmt"
 	"net/http"
-	"polygnosics-frontend/restbackend"
+
+	"github.com/artofimagination/polygnosics-frontend/restbackend"
 )
 
 // Details and assets field keys

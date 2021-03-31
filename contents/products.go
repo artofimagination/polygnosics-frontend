@@ -2,7 +2,8 @@ package contents
 
 import (
 	"fmt"
-	"polygnosics-frontend/restbackend"
+
+	"github.com/artofimagination/polygnosics-frontend/restbackend"
 )
 
 // Details and assets field keys
