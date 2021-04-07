@@ -14,7 +14,7 @@
       <section class="content">
         <div class="row">
           <div class="box-body">
-            <form action="{{index . "create_item"}}" method="post">
+            <form id="tutorials-form" action="{{index . "create_item"}}" method="post">
               <div class="form-group">
                 <label for="title">Title :<span class="danger">*</span></label>
                 <input type="text" class="form-control required" id="title" name="title">
@@ -24,19 +24,24 @@
                 <input type="text" class="form-control required" id="short" name="short">
               </div>
               <div class="form-group">
-                <label >Content</label>
-                <div class="c-inputs-stacked">
-                  <input type="checkbox" id="video_checkbox" name="video_checkbox" value="checked">
-                  <label for="video_checkbox" class="d-block">Video link</label>
+                <label >Avatar :</label>
+                <div id="radio-list" class="radio-list">
+                  <label class="radio-inline p-0 mr-10">
+                    <div class="radio radio-info">
+                      <input type="radio" name="avatar_type" id="video" value="video" checked>
+                      <label for="video">Video link</label>
+                    </div>
+                  </label>
+                  <label class="radio-inline">
+                    <div class="radio radio-info">
+                      <input type="radio" name="avatar_type" id="image" value="image">
+                      <label for="image">Image</label>
+                    </div>
+                  </label>
                 </div>
-                <div class="c-inputs-stacked">
-                  <input type="checkbox" id="article_checkbox" name="article_checkbox" value="checked">
-                  <label for="article_checkbox" class="d-block">Article</label>
-                </div>
-                <input type="url" class="form-control" id="title" name="title">
-                <input type="file" class="btn btn-primary form-control" id="avatar_image" name="avatar_image" accept=".tar.gz,.zip">
-                <label id="article-text" for="article">Article text :</label>
-                <textarea name="article" id="new-text" class="textarea" value='{{index . "resource_content"}}'
+                <input type="url" class="form-control" id="avatar_video" name="avatar_video">
+                <input type="file" class="btn btn-primary form-control" id="avatar_image" name="avatar_image" accept="image/*">
+                <textarea name="article" id="new-text" class="textarea mt-30" value='{{index . "resource_content"}}'
                       style="width: 100%; height: 400px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                 <button id="create-new-item" name="create-new-item" class="btn btn-primary mt-10">Create</button>
               </div>
@@ -59,11 +64,13 @@
 	<script src="/assets/js/vendors.min.js"></script>
     <script src="/assets/css/icons/feather-icons/feather.min.js"></script>
     <script src="/assets/js/bootstrap3-wysihtml5.all.js"></script>
+    <script src="/assets/vendor_components/sweetalert/sweetalert.min.js"></script>
 		
 	<!-- Venusx Admin App -->
 	<script src="/assets/js/template.js"></script>
 	<script src="/assets/js/demo.js"></script>
   <script src="/assets/js/editor.js"></script>
+  <script src="/assets/js/pages/resources-tutorials.js"></script>
   {{if eq (index . "future_feature") 0}}
     <script src="/assets/js/pages/component-rating-init.js"></script>
   {{end}}

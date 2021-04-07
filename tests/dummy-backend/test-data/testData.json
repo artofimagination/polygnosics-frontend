@@ -143,17 +143,17 @@
       "title": "Test tutorial 1",
       "short": "This is a test tutorial No 1",
       "avatar": "https://www.youtube.com/embed/fn3KWM1kuAw",
-      "avatar_type": "link",
+      "avatar_type": "video",
       "content": "",
-      "last_updated": "3 months"
+      "last_updated": "3 months ago"
     },
     {
       "title": "Test tutorial 2",
       "short": "This is a test tutorial No 2",
       "avatar": "/assets/images/coding.gif",
-      "avatar_type": "resource",
+      "avatar_type": "image",
       "content": "/user-assets/tutorial-content.txt",
-      "last_updated": "3 months"
+      "last_updated": "3 months ago"
     }
   ],
   "faq_groups" : [

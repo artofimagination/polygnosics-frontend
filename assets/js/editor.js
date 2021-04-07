@@ -1,5 +1,7 @@
 !function($) {
   "use strict";
+
+  
     //bootstrap WYSIHTML5 - text editor
     var editor = $('.textarea').wysihtml5({
       toolbar: {
@@ -81,7 +83,6 @@
                    "    <div class='modal-dialog '>\n" +
                    "      <div class='modal-content'>\n" +
                    "        <div class='modal-header'>\n" +
-                   "          <script>console.log('insertVideoModal')</script>\n" +
                    "          <h3>Insert Video</h3>\n" +
                    "          <a class='close' data-dismiss='modal'>×</a>\n" +
                    "        </div>\n" +

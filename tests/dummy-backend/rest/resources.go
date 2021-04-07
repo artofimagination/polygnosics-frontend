@@ -44,26 +44,60 @@ func (c *Controller) getFAQs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) addFAQ(w http.ResponseWriter, r *http.Request) {
-	requestData, err := c.decodeRequest(r)
-	if err != nil {
+	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
-	c.TestData["faqs"] = append(c.TestData["faqs"].([]interface{}), requestData)
-	prettyPrint(c.TestData)
+	if err := WriteToFile("/user-assets/new-faq-answer-entry.txt", r.FormValue("answer")); err != nil {
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
+		return
+	}
+
+	if err := WriteToFile("/user-assets/new-faq-question-entry.txt", r.FormValue("question")); err != nil {
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["group"] = r.FormValue("group")
+	data["question"] = "/user-assets/new-faq-question-entry.txt"
+	data["answer"] = "/user-assets/new-faq-answer-entry.txt"
+
+	c.TestData["faqs"] = append(c.TestData["faqs"].([]interface{}), data)
 	writeData("OK", w, http.StatusCreated)
 }
 
 func (c *Controller) addTutorial(w http.ResponseWriter, r *http.Request) {
-	requestData, err := c.decodeRequest(r)
-	if err != nil {
+	if err := c.ParseMultipartForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
-	c.TestData["tutorials"] = append(c.TestData["tutorials"].([]interface{}), requestData)
-	prettyPrint(c.TestData)
+	data := make(map[string]interface{})
+	data["avatar_type"] = r.FormValue("avatar_type")
+	if data["avatar_type"] == "image" {
+		data["avatar"] = "/user-assets/uploads/new-tutorial-image.jpg"
+		if err := uploadFile("avatar_image", "new-tutorial-image.jpg", r); err != nil {
+			writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
+			return
+		}
+	} else {
+		data["avatar"] = r.FormValue("avatar_video")
+	}
+	data["title"] = r.FormValue("title")
+	data["short"] = r.FormValue("short")
+	data["last_updated"] = "today"
+	data["content"] = ""
+	if r.FormValue("article") != "" {
+		data["content"] = "/user-assets/new-tutorial-entry.txt"
+		if err := WriteToFile("/user-assets/new-tutorial-entry.txt", r.FormValue("article")); err != nil {
+			writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	c.TestData["tutorials"] = append(c.TestData["tutorials"].([]interface{}), data)
 	writeData("OK", w, http.StatusCreated)
 }
 
@@ -89,7 +123,7 @@ func (c *Controller) addFile(w http.ResponseWriter, r *http.Request) {
 		if file["type"] == "file" {
 			formName := fmt.Sprintf("upload_file_%d", i)
 			file["ref"] = r.FormValue(formName)
-			fileName := fmt.Sprintf("/user-assets/uploads/new-file_%d.txt", i)
+			fileName := fmt.Sprintf("new-file_%d.txt", i)
 			if err := uploadFile(formName, fileName, r); err != nil {
 				writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 				return
@@ -103,7 +137,6 @@ func (c *Controller) addFile(w http.ResponseWriter, r *http.Request) {
 
 	c.TestData["files"] = append(c.TestData["files"].([]interface{}), data)
 
-	prettyPrint(c.TestData)
 	writeData("OK", w, http.StatusCreated)
 }
 
@@ -156,7 +189,6 @@ func (c *Controller) addNewsFeed(w http.ResponseWriter, r *http.Request) {
 	newsList = append(newsList, newsItem)
 
 	c.TestData[NewsFeedKey].(map[string]interface{})[year] = newsList
-	prettyPrint(c.TestData)
 	writeData("OK", w, http.StatusCreated)
 }
 

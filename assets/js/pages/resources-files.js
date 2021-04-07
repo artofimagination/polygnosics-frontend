@@ -75,15 +75,17 @@
       for(var pair of formData.entries()) {
         if (pair[0].includes("repo_link_")) {
           var res = pair[0].split("_");
-          var link = "type_"+res[2]
-          if (pair[1].includes("github")) {
-            formData.set(link, "github")
-          } else if (pair[1].includes("gitlab")) {
-            formData.set(link, "gitlab")
-          } else if (pair[1].includes("bitbucket")) {
-            formData.set(link, "bitbucket")
-          } else{
-            formData.set(link, "link")
+          var link = "type_"+res[2];
+          if (formData.get(link) !== "file") {
+            if (pair[1].includes("github")) {
+              formData.set(link, "github")
+            } else if (pair[1].includes("gitlab")) {
+              formData.set(link, "gitlab")
+            } else if (pair[1].includes("bitbucket")) {
+              formData.set(link, "bitbucket")
+            } else{
+              formData.set(link, "link")
+            }
           }
         }
       }
@@ -96,18 +98,14 @@
         contentType: false,
         processData: false,
         error: function(data) {
-          if (data.status !== 201)
-          {
-            swal({
-              title: "Add new item", 
-              text: data.responseText, 
-              type: "error"
-              },
-              function(){
-                window.location.href = form.attr('action');
-              })
-            return 
-          }
+          swal({
+            title: "Add new item", 
+            text: data.responseText, 
+            type: "error"
+            },
+            function(){
+              window.location.href = form.attr('action');
+            })
         },
         success: function(data) {
           window.location.href = "/resources/files";

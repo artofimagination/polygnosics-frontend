@@ -35,24 +35,17 @@
               <div class="tab-content">
                 {{$faqs := index . "faqs"}}
                 {{range $i, $a := .faq_groups}}
-                <div id="navpills-{{$i}}" class="tab-pane {{if eq $i 0}}active{{end}}">						
+                <div id="navpills-{{$i}}" class="tab-pane {{if eq $i 0}}active{{end}}">
                   <div class=" tab-pane animation-fade {{if eq $i 0}}active{{end}}" id="category-{{$i}}" role="tabpanel">
-                    <div class="panel-group panel-group-simple panel-group-continuous" id="accordion2"
-                    aria-multiselectable="true" role="tablist">
+                    <div class="panel-group panel-group-simple panel-group-continuous" id="accordion2" aria-multiselectable="true" role="tablist">
                     {{range $j, $b := $faqs}}
-                      {{if eq (index $b "group") $a}}>
+                      {{if eq (index $b "group") $a}}
                         <div class="panel">
                           <div class="panel-heading" id="question-{{$j}}" role="tab">
-                          <a class="panel-title" aria-controls="answer-{{$j}}" aria-expanded="true" data-toggle="collapse"
-                          href="#answer-{{$j}}" data-parent="#accordion2">
-                          {{index $b "question"}}
-                          </a>
+                            <a class="panel-title" aria-controls="answer-{{$j}}" aria-expanded="true" data-toggle="collapse" href="#answer-{{$j}}" data-parent="#accordion2">{{index $b "question"}}</a>
                           </div>
-                          <div class="panel-collapse collapse show" id="answer-{{$j}}" aria-labelledby="question-{{$j}}"
-                          role="tabpanel">
-                          <div class="panel-body">
-                            {{index $b "answer"}}
-                          </div>
+                          <div class="panel-collapse collapse show" id="answer-{{$j}}" aria-labelledby="question-{{$j}}"role="tabpanel">
+                            <div class="panel-body">{{index $b "answer"}}</div>
                           </div>
                         </div>
                       {{end}}

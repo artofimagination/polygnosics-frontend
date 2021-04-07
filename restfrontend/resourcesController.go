@@ -29,7 +29,8 @@ func (c *RESTFrontend) NewFAQResource(w http.ResponseWriter, r *http.Request) {
 		c.RenderTemplate(w, ResourcesCreateFAQ, content)
 	} else {
 		if err := c.RESTBackend.AddFAQItem(r); err != nil {
-			c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(UserMain))
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, err.Error())
 			return
 		}
 		c.News(w, r)
@@ -56,7 +57,8 @@ func (c *RESTFrontend) NewTutorialResource(w http.ResponseWriter, r *http.Reques
 		c.RenderTemplate(w, ResourcesCreateTutorial, content)
 	} else {
 		if err := c.RESTBackend.AddTutorialItem(r); err != nil {
-			c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(UserMain))
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, err.Error())
 			return
 		}
 		c.News(w, r)

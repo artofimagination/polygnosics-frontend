@@ -78,7 +78,7 @@ func (c *RESTBackend) GetProductsByUserID(userID string) ([]*Product, error) {
 }
 
 func (c *RESTBackend) AddProduct(w http.ResponseWriter, r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ProductPathAdd, r)
+	err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (c *RESTBackend) AddProduct(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *RESTBackend) UpdateProduct(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ProductPathUpdate, r)
+	err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ func (c *RESTBackend) GetCategoriesMap() (map[string]interface{}, error) {
 }
 
 func (c *RESTBackend) CreateProject(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ProjectPathAdd, r)
+	err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -185,7 +185,7 @@ func (c *RESTBackend) DeleteProject(projectID string) error {
 }
 
 func (c *RESTBackend) UpdateProject(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ProductPathAdd, r)
+	err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -205,7 +205,7 @@ func (c *RESTBackend) UpdateProject(r *http.Request) error {
 // 	return
 // }
 func (c *RESTBackend) InitStatsWebRTC(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ProductPathAdd, r)
+	err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}

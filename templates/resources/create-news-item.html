@@ -14,7 +14,7 @@
       <section class="content">
         <div class="row">
           <div class="box-body">
-            <form action="{{index . "create_item"}}" method="post">
+            <form id="news-form" action="{{index . "create_item"}}" method="post">
               <textarea name="news" id="new-text" class="textarea" value='{{index . "resource_content"}}'
                     style="width: 100%; height: 400px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
               <button id="create-new-item" name="create-new-item" class="btn btn-primary mt-10">Create</button>
@@ -37,11 +37,13 @@
 	<script src="/assets/js/vendors.min.js"></script>
     <script src="/assets/css/icons/feather-icons/feather.min.js"></script>
     <script src="/assets/js/bootstrap3-wysihtml5.all.js"></script>
+    <script src="/assets/vendor_components/sweetalert/sweetalert.min.js"></script>
 		
 	<!-- Venusx Admin App -->
 	<script src="/assets/js/template.js"></script>
 	<script src="/assets/js/demo.js"></script>
   <script src="/assets/js/editor.js"></script>
+  <script src="/assets/js/pages/resources-news.js"></script>
   {{if eq (index . "future_feature") 0}}
     <script src="/assets/js/pages/component-rating-init.js"></script>
   {{end}}

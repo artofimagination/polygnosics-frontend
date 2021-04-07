@@ -18,7 +18,7 @@
               {{$future_feature := index . "future_feature"}}
               {{range $i, $a := .tutorials}}
                 <div class="card text-left">
-                  {{if eq (index $a "avatar_type") "link"}}
+                  {{if eq (index $a "avatar_type") "video"}}
                     <div class="embed-responsive embed-responsive-16by9">
                       <iframe width="854" height="480" src="{{index $a "avatar"}}" frameborder="0" allowfullscreen></iframe>
                     </div>
@@ -29,12 +29,12 @@
                   <div class="card-body">
                     <h4 class="card-title b-0 px-0">{{index $a "title"}}</h4>
                     <p>{{index $a "short"}}</p>
-                    {{if ne (index $a "avatar_type") "link"}}
+                    {{if ne (index $a "content") ""}}
                       <a href="{{index $a "content_ref"}}" class="btn btn-primary">More</a>
                     {{end}}
                   </div>
                   <div class="card-footer justify-content-between d-flex">
-                    <span class="text-muted">Last updated {{index $a "last_updated"}} ago</span>
+                    <span class="text-muted">Last updated {{index $a "last_updated"}}</span>
                     {{if eq $future_feature 0}}
                       <span>
                         <div id="default-star-rating"></div>

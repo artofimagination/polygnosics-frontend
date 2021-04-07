@@ -15,7 +15,7 @@ var StatsServerAddress string = "http://172.18.0.6:8086"
 type RESTBackend struct {
 }
 
-func forwardRequest(address string, _ string, r *http.Request) error {
+func forwardRequest(address string, r *http.Request) error {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return err

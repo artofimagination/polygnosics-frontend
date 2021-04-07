@@ -62,7 +62,7 @@ func (c *RESTBackend) GetNewsFeed() (map[string]interface{}, error) {
 }
 
 func (c *RESTBackend) AddNewsItem(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ResourcesURIAddNewsFeed, r)
+	err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (c *RESTBackend) AddNewsItem(r *http.Request) error {
 }
 
 func (c *RESTBackend) AddFileItem(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ResourcesURIAddFile, r)
+	err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func (c *RESTBackend) AddFileItem(r *http.Request) error {
 }
 
 func (c *RESTBackend) AddTutorialItem(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ResourcesURIAddTutorial, r)
+	err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (c *RESTBackend) AddTutorialItem(r *http.Request) error {
 }
 
 func (c *RESTBackend) AddFAQItem(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ResourcesURIAddFAQ, r)
+	err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
