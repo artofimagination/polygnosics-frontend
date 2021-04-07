@@ -37,7 +37,7 @@ func (c *RESTFrontend) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO Issue#107: Replace this with proper way of detecting if root has already been created.
 	found, err := c.RESTBackend.DetectRootUser()
 	if err != nil {
-		c.HandleError(w, fmt.Sprintf("Failed to get root user. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexPath)
+		c.HandleError(w, fmt.Sprintf("Failed to get root user. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(IndexPage))
 		return
 	}
 
@@ -49,7 +49,7 @@ func (c *RESTFrontend) IndexHandler(w http.ResponseWriter, r *http.Request) {
 			r.Host == "127.0.0.1:8085" {
 			name = "auth_signup"
 		} else {
-			c.HandleError(w, "Server is not configured yet", http.StatusInternalServerError, IndexPath)
+			c.HandleError(w, "Server is not configured yet", http.StatusInternalServerError, c.URI(IndexPage))
 			return
 		}
 	}

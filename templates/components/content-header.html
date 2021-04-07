@@ -6,7 +6,9 @@
       <h3 class="page-title d-inline-block">{{index . "content_name"}}</h3>
       {{$privilege := index .user "privileges"}}
       {{if (index $privilege "edit_page")}}
-        <span><button type="button" class="btn btn-primary mb-5">New</button></span>
+        {{if ne (index . "create_item") ""}}
+          <span><a class="btn btn-primary mb-5" href="{{index . "create_item"}}">New</a></span>
+        {{end}}
       {{end}}
       <div class="align-items-center">
         <nav>

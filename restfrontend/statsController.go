@@ -9,12 +9,12 @@ import (
 
 func (c *RESTFrontend) StatsWebRTC(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		c.HandleError(w, fmt.Sprintf("Failed to parse frontend webrtc offer. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
+		c.HandleError(w, fmt.Sprintf("Failed to parse frontend webrtc offer. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
 		return
 	}
 
 	if err := c.RESTBackend.InitStatsWebRTC(r); err != nil {
-		c.HandleError(w, fmt.Sprintf("Failed to init webrtc data provider. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
+		c.HandleError(w, fmt.Sprintf("Failed to init webrtc data provider. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
 		return
 	}
 }

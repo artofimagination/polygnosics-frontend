@@ -1,11 +1,19 @@
 package restbackend
 
+import (
+	"net/http"
+)
+
 const (
 	ResourcesURIGetTutorials = "/get-tutorials"
+	ResourcesURIAddTutorial  = "/add-tutorial"
 	ResourcesURIGetFAQ       = "/get-faq"
+	ResourcesURIAddFAQ       = "/add-faq"
 	ResourcesURIGetNewsFeed  = "/get-news-feed"
+	ResourcesURIAddNewsFeed  = "/add-news-feed"
 	ResourcesURIGetFAQGroups = "/get-faq-groups"
 	ResourcesURIGetFiles     = "/get-files"
+	ResourcesURIAddFile      = "/add-file"
 )
 
 func (c *RESTBackend) GetTutorials() ([]interface{}, error) {
@@ -51,4 +59,40 @@ func (c *RESTBackend) GetNewsFeed() (map[string]interface{}, error) {
 	}
 
 	return data.(map[string]interface{}), nil
+}
+
+func (c *RESTBackend) AddNewsItem(r *http.Request) error {
+	err := forwardRequest(BusinessLogicServerAddress, ResourcesURIAddNewsFeed, r)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *RESTBackend) AddFileItem(r *http.Request) error {
+	err := forwardRequest(BusinessLogicServerAddress, ResourcesURIAddFile, r)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *RESTBackend) AddTutorialItem(r *http.Request) error {
+	err := forwardRequest(BusinessLogicServerAddress, ResourcesURIAddTutorial, r)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *RESTBackend) AddFAQItem(r *http.Request) error {
+	err := forwardRequest(BusinessLogicServerAddress, ResourcesURIAddFAQ, r)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

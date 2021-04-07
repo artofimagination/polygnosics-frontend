@@ -52,6 +52,15 @@ func (c Controller) ParseForm(r *http.Request) error {
 	return nil
 }
 
+func (c Controller) ParseMultipartForm(r *http.Request) error {
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		return err
+	}
+
+	c.setRequestData(r)
+	return nil
+}
+
 func (c *Controller) setRequestData(r *http.Request) {
 	for k := range c.RequestData {
 		delete(c.RequestData, k)
@@ -127,6 +136,20 @@ func uploadFile(key string, fileName string, r *http.Request) error {
 	return nil
 }
 
+func WriteToFile(filename string, data string) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = io.WriteString(file, data)
+	if err != nil {
+		return err
+	}
+	return file.Sync()
+}
+
 func NewController() (*Controller, error) {
 	data, err := ioutil.ReadFile("/user-assets/testData.json")
 	if err != nil {
@@ -168,6 +191,11 @@ func (c *Controller) CreateRouter() *mux.Router {
 	r.HandleFunc("/get-news-feed", c.getNewsFeed)
 	r.HandleFunc("/get-faq", c.getFAQs)
 	r.HandleFunc("/get-faq-groups", c.getFAQGroups)
+	resources := r.PathPrefix("/resources").Subrouter()
+	resources.HandleFunc("/create-news-item", c.addNewsFeed)
+	resources.HandleFunc("/create-files-item", c.addFile)
+	resources.HandleFunc("/create-tutorial-item", c.addTutorial)
+	resources.HandleFunc("/create-faq-item", c.addFAQ)
 
 	r.HandleFunc("/get-request-data", c.getRequestData)
 

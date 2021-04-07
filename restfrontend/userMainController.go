@@ -13,7 +13,7 @@ import (
 func (c *RESTFrontend) UserMainHandler(w http.ResponseWriter, r *http.Request) {
 	content, err := c.ContentController.BuildUserMainContent()
 	if err != nil {
-		c.HandleError(w, fmt.Sprintf("Failed to get home page content. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexPath)
+		c.HandleError(w, fmt.Sprintf("Failed to get home page content. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(IndexPage))
 		return
 	}
 
@@ -27,7 +27,7 @@ func (c *RESTFrontend) UploadAvatarHandler(w http.ResponseWriter, r *http.Reques
 	content := c.ContentController.GetUserContent(c.ContentController.User)
 
 	if err := c.RESTBackend.UpdateUserAvatar(r); err != nil {
-		c.HandleError(w, fmt.Sprintf("Failed to update avatar. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
+		c.HandleError(w, fmt.Sprintf("Failed to update avatar. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
 	}
 
 	content[contents.UserMapKey].(map[string]interface{})[contents.UserAvatarKey] = c.ContentController.User.Assets[contents.UserAvatarKey]

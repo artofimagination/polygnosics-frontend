@@ -145,7 +145,6 @@
       "avatar": "https://www.youtube.com/embed/fn3KWM1kuAw",
       "avatar_type": "link",
       "content": "",
-      "content_ref": "#",
       "last_updated": "3 months"
     },
     {
@@ -154,7 +153,6 @@
       "avatar": "/assets/images/coding.gif",
       "avatar_type": "resource",
       "content": "/user-assets/tutorial-content.txt",
-      "content_ref": "/resources/examples/2",
       "last_updated": "3 months"
     }
   ],
@@ -184,7 +182,7 @@
       "title": "Test files",
       "short": "Test files to download",
       "files": [{
-        "type": "download",
+        "type": "file",
         "ref": "/user-assets/faq1-answer.txt",
         "ref_name": "FAQ Item"
       },
@@ -199,7 +197,7 @@
       "title": "Test files 2",
       "short": "Test files to download again",
       "files": [{
-        "type": "download",
+        "type": "file",
         "ref": "/user-assets/faq2-answer.txt",
         "ref_name": "FAQ Item"
       },

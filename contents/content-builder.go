@@ -43,6 +43,10 @@ const (
 	ResourcesPageFAQsName          = "FAQs"
 	ResourcesPageExamplesName      = "Examples"
 	ResourcesPageFilesName         = "Files"
+	ResourcesPageNewFAQName        = "Create FAQ"
+	ResourcesPageNewNewsName       = "Create News"
+	ResourcesPageNewTutorialName   = "Create Tutorial"
+	ResourcesPageNewFilesName      = "Create Files"
 )
 
 const (
@@ -291,6 +295,37 @@ func (c *ContentController) BuildMailComposeContent() map[string]interface{} {
 func (c *ContentController) BuildDocsContent() map[string]interface{} {
 	content := c.GetUserContent(c.User)
 	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageDocumentationName)
+	return content
+}
+
+func (c *ContentController) BuildCreateNews() map[string]interface{} {
+	content := c.GetUserContent(c.User)
+	c.prepareNewNewsFeed(content)
+	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageNewNewsName)
+	return content
+}
+
+func (c *ContentController) BuildCreateTutorial() map[string]interface{} {
+	content := c.GetUserContent(c.User)
+	c.prepareNewTutorial(content)
+	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageNewTutorialName)
+
+	return content
+}
+
+func (c *ContentController) BuildCreateFAQ() (map[string]interface{}, error) {
+	content := c.GetUserContent(c.User)
+	if err := c.prepareNewFAQ(content); err != nil {
+		return nil, err
+	}
+	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageNewFAQName)
+	return content, nil
+}
+
+func (c *ContentController) BuildCreateFiles() map[string]interface{} {
+	content := c.GetUserContent(c.User)
+	c.prepareNewFiles(content)
+	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageNewFilesName)
 	return content
 }
 

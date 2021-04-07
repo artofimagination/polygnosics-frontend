@@ -25,7 +25,7 @@ func (c *RESTFrontend) ProfileHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *RESTFrontend) ProfileEdit(w http.ResponseWriter, r *http.Request) {
-	if r.Method == GET {
+	if r.Method == http.MethodGet {
 		content, err := c.ContentController.BuildProfileContent(c.ContentController.User.ID)
 		if err != nil {
 			errString := fmt.Sprintf("Failed to get profile page content. %s", errors.WithStack(err))

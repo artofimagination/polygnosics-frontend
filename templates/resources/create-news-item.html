@@ -13,19 +13,12 @@
       <!-- Main content -->
       <section class="content">
         <div class="row">
-          <div class="col-md-6 col-12">
-            {{range $i, $a := .files}}
-            <div class="box">
-              <div class="box-body">
-                <h4 class="mb-a0">{{index $a "title"}}</h4>
-                <p class="mb-20">{{index $a "short"}}</p>
-                {{$fileLinks := index $a "files"}}
-                {{range $j, $b := $fileLinks}}
-                  <div class="row"><a href="{{index $b "ref"}}" {{if eq (index $b "type") "file"}}download{{end}}><i class="fa fa-{{index $b "type"}}"></i> {{index $b "ref_name"}}</a></div>
-                {{end}}
-              </div>
-            </div>
-            {{end}}
+          <div class="box-body">
+            <form action="{{index . "create_item"}}" method="post">
+              <textarea name="news" id="new-text" class="textarea" value='{{index . "resource_content"}}'
+                    style="width: 100%; height: 400px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+              <button id="create-new-item" name="create-new-item" class="btn btn-primary mt-10">Create</button>
+            </form>
           </div>
         </div>
       </section>
@@ -34,15 +27,23 @@
     </div>
     <!-- /.content-wrapper -->
     {{template "footer" .}}
+  
+    <!-- Add the sidebar's background. This div must be placed immediately after the control sidebar -->
+    <div class="control-sidebar-bg"></div>
   </div>
   <!-- ./wrapper -->	 
 	
 	<!-- Vendor JS -->
 	<script src="/assets/js/vendors.min.js"></script>
     <script src="/assets/css/icons/feather-icons/feather.min.js"></script>
+    <script src="/assets/js/bootstrap3-wysihtml5.all.js"></script>
 		
 	<!-- Venusx Admin App -->
 	<script src="/assets/js/template.js"></script>
 	<script src="/assets/js/demo.js"></script>
+  <script src="/assets/js/editor.js"></script>
+  {{if eq (index . "future_feature") 0}}
+    <script src="/assets/js/pages/component-rating-init.js"></script>
+  {{end}}
 </body>
 </html>

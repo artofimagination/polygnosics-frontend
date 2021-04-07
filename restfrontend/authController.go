@@ -12,12 +12,12 @@ import (
 // LoginHandler checks the user email and password.
 // On success generates and stores a cookie in the session sotre and adds it to the response
 func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == GET {
+	if r.Method == http.MethodGet {
 		content := c.ContentController.BuildLoginContent()
-		c.RenderTemplate(w, "auth_login", content)
+		c.RenderTemplate(w, IndexLoginPage, content)
 	} else {
 		if err := r.ParseForm(); err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to parse form. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexLoginPath)
+			c.HandleError(w, fmt.Sprintf("Failed to parse form. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(IndexLoginPage))
 			return
 		}
 		email := r.FormValue("email")
@@ -34,7 +34,7 @@ func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		// Create session cookie.
 		sess, err := session.Store.Get(r, "cookie-name")
 		if err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to create cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexLoginPath)
+			c.HandleError(w, fmt.Sprintf("Failed to create cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(IndexLoginPage))
 			return
 		}
 		sess.Options.MaxAge = 60000
@@ -43,13 +43,13 @@ func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		cookieKey, err := session.EncryptUserAndOrigin(c.ContentController.User.ID, r.RemoteAddr)
 		if err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to generate cookie data. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexLoginPath)
+			c.HandleError(w, fmt.Sprintf("Failed to generate cookie data. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(IndexLoginPage))
 			return
 		}
 		sess.Values["cookie_key"] = cookieKey
 
 		if err := sess.Save(r, w); err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to save cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexLoginPath)
+			c.HandleError(w, fmt.Sprintf("Failed to save cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(IndexLoginPage))
 			return
 		}
 
@@ -61,28 +61,28 @@ func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
 func (c *RESTFrontend) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := session.Store.Get(r, "cookie-name")
 	if err != nil {
-		c.HandleError(w, fmt.Sprintf("Failed to get cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexPath)
+		c.HandleError(w, fmt.Sprintf("Failed to get cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(IndexPage))
 		return
 	}
 
 	// Revoke users authentication
 	session.Values["authenticated"] = false
 	if err := session.Save(r, w); err != nil {
-		c.HandleError(w, fmt.Sprintf("Failed to save cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexPath)
+		c.HandleError(w, fmt.Sprintf("Failed to save cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(IndexPage))
 		return
 	}
 	c.ContentController.User = nil
 
-	http.Redirect(w, r, IndexPath, http.StatusSeeOther)
+	http.Redirect(w, r, c.URI(IndexPage), http.StatusSeeOther)
 }
 
 func (c *RESTFrontend) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	content := c.ContentController.BuildSignupContent()
-	if r.Method == GET {
+	if r.Method == http.MethodGet {
 		c.RenderTemplate(w, "auth_signup", content)
 	} else {
 		if err := r.ParseForm(); err != nil {
-			c.HandleError(w, fmt.Sprintf("Failed to parse form. %s", errors.WithStack(err)), http.StatusInternalServerError, IndexPath)
+			c.HandleError(w, fmt.Sprintf("Failed to parse form. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(IndexPage))
 			return
 		}
 		uName := r.FormValue("username")
@@ -94,7 +94,7 @@ func (c *RESTFrontend) SignupHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if uName == "" || email == "" || r.FormValue("password") == "" {
-			c.HandleError(w, "Form values are empty", http.StatusBadRequest, IndexPath)
+			c.HandleError(w, "Form values are empty", http.StatusBadRequest, c.URI(IndexPage))
 			return
 		}
 

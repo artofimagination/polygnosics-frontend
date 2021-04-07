@@ -34,6 +34,7 @@ const (
 func (c *ContentController) GetUserContent(user *restbackend.User) map[string]interface{} {
 	content := make(map[string]interface{})
 	content[FutureFeature] = 1
+	content[CreateItemKey] = ""
 	content[UserMapKey] = make(map[string]interface{})
 	userData := content[UserMapKey].(map[string]interface{})
 	userData[UserNameKey] = user.UserName
