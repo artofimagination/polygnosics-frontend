@@ -1,6 +1,8 @@
 package contents
 
 import (
+	"net/http"
+
 	"github.com/artofimagination/polygnosics-frontend/restbackend"
 )
 
@@ -296,6 +298,15 @@ func (c *ContentController) BuildDocsContent() map[string]interface{} {
 	content := c.GetUserContent(c.User)
 	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageDocumentationName)
 	return content
+}
+
+func (c *ContentController) BuildArticleContent(r *http.Request) (map[string]interface{}, error) {
+	content := c.GetUserContent(c.User)
+	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageDocumentationName)
+	if err := c.prepareArticle(content, r); err != nil {
+		return nil, err
+	}
+	return content, nil
 }
 
 func (c *ContentController) BuildCreateNews() map[string]interface{} {

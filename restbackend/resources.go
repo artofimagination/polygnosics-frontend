@@ -25,6 +25,15 @@ func (c *RESTBackend) GetTutorials() ([]interface{}, error) {
 	return data.([]interface{}), nil
 }
 
+func (c *RESTBackend) GetArticle(r *http.Request) (map[string]interface{}, error) {
+	data, err := forwardRequest(BusinessLogicServerAddress, r)
+	if err != nil {
+		return nil, err
+	}
+
+	return data.(map[string]interface{}), nil
+}
+
 func (c *RESTBackend) GetFAQ() ([]interface{}, error) {
 	data, err := get(BusinessLogicServerAddress, ResourcesURIGetFAQ, "")
 	if err != nil {
@@ -62,7 +71,7 @@ func (c *RESTBackend) GetNewsFeed() (map[string]interface{}, error) {
 }
 
 func (c *RESTBackend) AddNewsItem(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, r)
+	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -71,7 +80,7 @@ func (c *RESTBackend) AddNewsItem(r *http.Request) error {
 }
 
 func (c *RESTBackend) AddFileItem(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, r)
+	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -80,7 +89,7 @@ func (c *RESTBackend) AddFileItem(r *http.Request) error {
 }
 
 func (c *RESTBackend) AddTutorialItem(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, r)
+	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -89,7 +98,7 @@ func (c *RESTBackend) AddTutorialItem(r *http.Request) error {
 }
 
 func (c *RESTBackend) AddFAQItem(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, r)
+	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}

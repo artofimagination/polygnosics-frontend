@@ -2,9 +2,12 @@ package rest
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -23,12 +26,25 @@ const (
 
 func (c *Controller) getTutorials(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
+
+	data["data"] = c.TestData[TutorialsKey]
+	encodeResponse(data, w)
+}
+
+func (c *Controller) getArticle(w http.ResponseWriter, r *http.Request) {
+	log.Println("Add article")
+	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
-	data["data"] = c.TestData[TutorialsKey]
+	id := r.FormValue("id")
+	for _, v := range c.TestData[TutorialsKey].([]interface{}) {
+		if v.(map[string]interface{})["id"] == id {
+			data["data"] = v
+		}
+	}
 	encodeResponse(data, w)
 }
 
@@ -75,6 +91,7 @@ func (c *Controller) addTutorial(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := make(map[string]interface{})
+	data["id"] = uuid.New().String()
 	data["avatar_type"] = r.FormValue("avatar_type")
 	if data["avatar_type"] == "image" {
 		data["avatar"] = "/user-assets/uploads/new-tutorial-image.jpg"

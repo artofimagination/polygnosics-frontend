@@ -79,6 +79,15 @@ func (c *RESTFrontend) Docs(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, ResourcesDocs, content)
 }
 
+func (c *RESTFrontend) Article(w http.ResponseWriter, r *http.Request) {
+	content, err := c.ContentController.BuildArticleContent(r)
+	if err != nil {
+		c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(UserMain))
+		return
+	}
+	c.RenderTemplate(w, ResourcesArticle, content)
+}
+
 func (c *RESTFrontend) Tutorials(w http.ResponseWriter, r *http.Request) {
 	content, err := c.ContentController.BuildTutorialsContent()
 	if err != nil {

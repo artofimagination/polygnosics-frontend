@@ -3,12 +3,14 @@ package contents
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 )
 
 const (
 	TutorialsKey        = "tutorials"
 	TutorialsContentKey = "content"
 	TutorialsRefKey     = "content_ref"
+	TutorialsIDKey      = "id"
 
 	FAQsKey         = "faqs"
 	FAQGroupsKey    = "faq_groups"
@@ -45,14 +47,15 @@ func (c *ContentController) prepareTutorials(content map[string]interface{}) err
 	if err != nil {
 		return err
 	}
-	for i, tutorial := range tutorials {
+	for _, tutorial := range tutorials {
 		if val, ok := tutorial.(map[string]interface{})[TutorialsContentKey]; ok {
 			text, err := parseContent(val.(string))
 			if err != nil {
 				return err
 			}
 			tutorial.(map[string]interface{})[TutorialsContentKey] = text
-			tutorial.(map[string]interface{})[TutorialsRefKey] = fmt.Sprintf("/resources/tutorials/%d", i)
+			id := tutorial.(map[string]interface{})[TutorialsIDKey].(string)
+			tutorial.(map[string]interface{})[TutorialsRefKey] = fmt.Sprintf("/resources/article?id=%s", id)
 			content[TutorialsKey] = append(content[TutorialsKey].([]interface{}), tutorial)
 		}
 	}
@@ -157,4 +160,19 @@ func (c *ContentController) prepareNewFAQ(content map[string]interface{}) error 
 func (c *ContentController) prepareNewNewsFeed(content map[string]interface{}) {
 	content[ResourceContent] = ""
 	content[CreateItemKey] = "/resources/create-news-item"
+}
+
+func (c *ContentController) prepareArticle(content map[string]interface{}, r *http.Request) error {
+	content[ResourceContent] = ""
+	article, err := c.RESTBackend.GetArticle(r)
+	if err != nil {
+		return err
+	}
+	text, err := parseContent(article["content"].(string))
+	if err != nil {
+		return err
+	}
+	article["content"] = text
+	content["article"] = article
+	return nil
 }

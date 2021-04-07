@@ -63,6 +63,7 @@ func CreateRouter(c *RESTFrontend) *mux.Router {
 	resources.HandleFunc(c.URI(ResourcesCreateFAQ), c.MakeHandler(c.NewFAQResource, r, false))
 	resources.HandleFunc(c.URI(ResourcesCreateFiles), c.MakeHandler(c.NewFileResource, r, false))
 	resources.HandleFunc(c.URI(ResourcesCreateTutorial), c.MakeHandler(c.NewTutorialResource, r, false))
+	resources.HandleFunc(c.URI(ResourcesArticle), c.MakeHandler(c.Article, r, false))
 	userMain := r.PathPrefix("/user-main").Subrouter()
 	userMain.HandleFunc("/upload-avatar", c.MakeHandler(c.UploadAvatarHandler, r, false))
 	userMain.HandleFunc("/store", c.MakeHandler(c.StoreHandler, r, false))

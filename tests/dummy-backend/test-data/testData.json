@@ -140,6 +140,7 @@
   },
   "tutorials":[
     {
+      "id": "0b5f9f4f-2a29-4a7d-9b69-0022937a3a22",
       "title": "Test tutorial 1",
       "short": "This is a test tutorial No 1",
       "avatar": "https://www.youtube.com/embed/fn3KWM1kuAw",
@@ -148,6 +149,7 @@
       "last_updated": "3 months ago"
     },
     {
+      "id": "bb496544-053c-4b83-a96f-7814fa7b7fa3",
       "title": "Test tutorial 2",
       "short": "This is a test tutorial No 2",
       "avatar": "/assets/images/coding.gif",

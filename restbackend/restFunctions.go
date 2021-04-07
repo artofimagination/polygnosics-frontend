@@ -15,16 +15,16 @@ var StatsServerAddress string = "http://172.18.0.6:8086"
 type RESTBackend struct {
 }
 
-func forwardRequest(address string, r *http.Request) error {
+func forwardRequest(address string, r *http.Request) (interface{}, error) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	r.Body = ioutil.NopCloser(bytes.NewReader(body))
 	proxyReq, err := http.NewRequest(r.Method, fmt.Sprintf("%s%s", address, r.RequestURI), bytes.NewReader(body))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	for header, values := range r.Header {
@@ -36,24 +36,28 @@ func forwardRequest(address string, r *http.Request) error {
 	client := &http.Client{}
 	resp, err := client.Do(proxyReq)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	dataMap := make(map[string]interface{})
 	if err := json.Unmarshal(respBody, &dataMap); err != nil {
-		return err
+		return nil, err
 	}
 
 	if val, ok := dataMap["error"]; ok {
-		return errors.New(val.(string))
+		return nil, errors.New(val.(string))
 	}
 
-	return nil
+	if val, ok := dataMap["data"]; ok {
+		return val, nil
+	}
+
+	return nil, errors.New("Invalid response")
 }
 
 func get(address string, path string, parameters string) (interface{}, error) {

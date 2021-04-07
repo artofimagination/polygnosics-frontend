@@ -196,6 +196,7 @@ func (c *Controller) CreateRouter() *mux.Router {
 	resources.HandleFunc("/create-files-item", c.addFile)
 	resources.HandleFunc("/create-tutorial-item", c.addTutorial)
 	resources.HandleFunc("/create-faq-item", c.addFAQ)
+	resources.HandleFunc("/article", c.getArticle)
 
 	r.HandleFunc("/get-request-data", c.getRequestData)
 
