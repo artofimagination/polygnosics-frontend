@@ -1,11 +1,11 @@
 
 !function($) {
   "use strict";
-  var count = 1
-  function switchElements(count) {
-    var linkName = "#repo_link_"+count
-    var fileName = "#upload_file_"+count
-    if ($("#link_"+count).is(':checked')) {
+  var count = $('#files-group .radio-list').length
+  function switchElements(index) {
+    var linkName = "#repo_link_"+index
+    var fileName = "#upload_file_"+index
+    if ($("#link_"+index).is(':checked')) {
       $(linkName).show();
       $(fileName).hide();
     } else {
@@ -14,47 +14,50 @@
     }
   }
 
-  if ($("#files-form").length) {
-    switchElements(0)
+  for (var i = 0; i<count; i++){
+    switchElements(i)
   }
   
   $(document).ready(function() {
-    if ($("#files-form").length) {
-      $("#radio-list_0 input").change("click", function() {
-        switchElements(0);
-      });
-      $("#add-more").click(function(){
-        var innerHTML =
-        "<label class='mt-40'>Reference text :<span class='danger'>*</span></label>\n" +
-        "<input type='text' class='form-control required' id='ref_name_" + count + "' name='ref_name_" + count + "'>\n" +
-        "<div id='radio-list_" + count + "' class='radio-list'>\n" +
-          "<label class='radio-inline p-0 mr-10'>\n" +
-            "<div class='radio radio-info'>\n" +
-              "<input type='radio' name='type_" + count + "' id='link_" + count + "' value='link' checked>\n" +
-              "<label for='link_" + count + "'>Repo Link</label>\n" +
-            "</div>\n" +
-          "</label>\n" +
-          "<label class='radio-inline'>\n" +
-            "<div class='radio radio-info'>\n" +
-              "<input type='radio' name='type_" + count + "' id='file_" + count + "' value='file'>\n" +
-              "<label for='file_" + count + "'>File</label>\n" +
-            "</div>\n" +
-          "</label>\n" +
-        "</div>\n" +
-        "<input type='url' class='form-control' id='repo_link_" + count + "' name='repo_link_" + count + "'>\n" +
-        "<input type='file' class='btn btn-primary form-control' id='upload_file_" + count + "' name='upload_file_" + count + "'>\n";
-        $('#upload_file_' + (count - 1)).after(innerHTML);
-        switchElements(count);
-        $("#radio-list_" + count + " input").on("click", function() {
-          var res = $(this).attr('id').split("_");
-          switchElements(res[1]);
-        });
-        if (count < 50) {
-          count++;
-        }
-        return false;        
+    for (var i = 0; i<count; i++){
+      $("#radio-list_" + i + " input").change("click", function() {
+        var res = $(this).attr('id').split("_");
+        switchElements(res[1]);
       });
     }
+    
+    $("#add-more").click(function(){
+      var innerHTML =
+      "<label class='mt-40'>Reference text :<span class='danger'>*</span></label>\n" +
+      "<input type='text' class='form-control required' id='ref_name_" + count + "' name='ref_name_" + count + "'>\n" +
+      "<div id='radio-list_" + count + "' class='radio-list'>\n" +
+        "<label class='radio-inline p-0 mr-10'>\n" +
+          "<div class='radio radio-info'>\n" +
+            "<input type='radio' name='type_" + count + "' id='link_" + count + "' value='link' checked>\n" +
+            "<label for='link_" + count + "'>Repo Link</label>\n" +
+          "</div>\n" +
+        "</label>\n" +
+        "<label class='radio-inline'>\n" +
+          "<div class='radio radio-info'>\n" +
+            "<input type='radio' name='type_" + count + "' id='file_" + count + "' value='file'>\n" +
+            "<label for='file_" + count + "'>File</label>\n" +
+          "</div>\n" +
+        "</label>\n" +
+      "</div>\n" +
+      "<input type='url' class='form-control' id='repo_link_" + count + "' name='repo_link_" + count + "'>\n" +
+      "<input type='file' class='btn btn-primary form-control' id='upload_file_" + count + "' name='upload_file_" + count + "'>\n";
+      $('#upload_file_' + (count - 1)).after(innerHTML);
+      switchElements(count);
+      $("#radio-list_" + count + " input").on("click", function() {
+        var res = $(this).attr('id').split("_");
+        switchElements(res[1]);
+      });
+      if (count < 50) {
+        count++;
+      }
+      return false;        
+    });
+
     $("#create-new-item").click(function(){
       var form
       if ($("#files-form").length) {

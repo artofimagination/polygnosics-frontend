@@ -19,6 +19,28 @@ func (c *RESTFrontend) NewNewsResource(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (c *RESTFrontend) UpdateNewsResource(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		if err := r.ParseForm(); err != nil {
+			c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(UserMain))
+			return
+		}
+		content, err := c.ContentController.BuildEditNews(r.FormValue("id"))
+		if err != nil {
+			c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(UserMain))
+			return
+		}
+		c.RenderTemplate(w, ResourcesEditNews, content)
+	} else {
+		if err := c.RESTBackend.UpdateNewsItem(r); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, err.Error())
+			return
+		}
+		c.News(w, r)
+	}
+}
+
 func (c *RESTFrontend) NewFAQResource(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		content, err := c.ContentController.BuildCreateFAQ()
@@ -29,6 +51,28 @@ func (c *RESTFrontend) NewFAQResource(w http.ResponseWriter, r *http.Request) {
 		c.RenderTemplate(w, ResourcesCreateFAQ, content)
 	} else {
 		if err := c.RESTBackend.AddFAQItem(r); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, err.Error())
+			return
+		}
+		c.News(w, r)
+	}
+}
+
+func (c *RESTFrontend) UpdateFAQResource(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		if err := r.ParseForm(); err != nil {
+			c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(UserMain))
+			return
+		}
+		content, err := c.ContentController.BuildEditFAQ(r.FormValue("id"))
+		if err != nil {
+			c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(UserMain))
+			return
+		}
+		c.RenderTemplate(w, ResourcesEditFAQ, content)
+	} else {
+		if err := c.RESTBackend.UpdateFAQItem(r); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, err.Error())
 			return
@@ -51,12 +95,56 @@ func (c *RESTFrontend) NewFileResource(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (c *RESTFrontend) UpdateFilesResource(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		if err := r.ParseForm(); err != nil {
+			c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(UserMain))
+			return
+		}
+		content, err := c.ContentController.BuildEditFilesSection(r.FormValue("id"))
+		if err != nil {
+			c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(UserMain))
+			return
+		}
+		c.RenderTemplate(w, ResourcesEditFiles, content)
+	} else {
+		if err := c.RESTBackend.UpdateFilesSection(r); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, err.Error())
+			return
+		}
+		c.News(w, r)
+	}
+}
+
 func (c *RESTFrontend) NewTutorialResource(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		content := c.ContentController.BuildCreateTutorial()
 		c.RenderTemplate(w, ResourcesCreateTutorial, content)
 	} else {
 		if err := c.RESTBackend.AddTutorialItem(r); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, err.Error())
+			return
+		}
+		c.News(w, r)
+	}
+}
+
+func (c *RESTFrontend) UpdateTutorialResource(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		if err := r.ParseForm(); err != nil {
+			c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(UserMain))
+			return
+		}
+		content, err := c.ContentController.BuildEditTutorial(r.FormValue("id"))
+		if err != nil {
+			c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(UserMain))
+			return
+		}
+		c.RenderTemplate(w, ResourcesEditTutorial, content)
+	} else {
+		if err := c.RESTBackend.UpdateTutorialItem(r); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, err.Error())
 			return

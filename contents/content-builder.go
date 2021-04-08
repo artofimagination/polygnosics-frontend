@@ -49,6 +49,10 @@ const (
 	ResourcesPageNewNewsName       = "Create News"
 	ResourcesPageNewTutorialName   = "Create Tutorial"
 	ResourcesPageNewFilesName      = "Create Files"
+	ResourcesPageEditFAQName       = "Edit FAQ"
+	ResourcesPageEditNewsName      = "Edit News"
+	ResourcesPageEditTutorialName  = "Edit Tutorial"
+	ResourcesPageEditFilesName     = "Edit Files"
 )
 
 const (
@@ -311,9 +315,18 @@ func (c *ContentController) BuildArticleContent(r *http.Request) (map[string]int
 
 func (c *ContentController) BuildCreateNews() map[string]interface{} {
 	content := c.GetUserContent(c.User)
-	c.prepareNewNewsFeed(content)
+	c.prepareCreateNewsFeed(content)
 	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageNewNewsName)
 	return content
+}
+
+func (c *ContentController) BuildEditNews(id string) (map[string]interface{}, error) {
+	content := c.GetUserContent(c.User)
+	if err := c.prepareEditNews(id, content); err != nil {
+		return nil, err
+	}
+	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageEditNewsName)
+	return content, nil
 }
 
 func (c *ContentController) BuildCreateTutorial() map[string]interface{} {
@@ -322,6 +335,15 @@ func (c *ContentController) BuildCreateTutorial() map[string]interface{} {
 	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageNewTutorialName)
 
 	return content
+}
+
+func (c *ContentController) BuildEditTutorial(id string) (map[string]interface{}, error) {
+	content := c.GetUserContent(c.User)
+	if err := c.prepareEditTutorial(id, content); err != nil {
+		return nil, err
+	}
+	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageEditTutorialName)
+	return content, nil
 }
 
 func (c *ContentController) BuildCreateFAQ() (map[string]interface{}, error) {
@@ -333,11 +355,29 @@ func (c *ContentController) BuildCreateFAQ() (map[string]interface{}, error) {
 	return content, nil
 }
 
+func (c *ContentController) BuildEditFAQ(id string) (map[string]interface{}, error) {
+	content := c.GetUserContent(c.User)
+	if err := c.prepareEditFAQ(id, content); err != nil {
+		return nil, err
+	}
+	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageEditFAQName)
+	return content, nil
+}
+
 func (c *ContentController) BuildCreateFiles() map[string]interface{} {
 	content := c.GetUserContent(c.User)
 	c.prepareNewFiles(content)
 	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageNewFilesName)
 	return content
+}
+
+func (c *ContentController) BuildEditFilesSection(id string) (map[string]interface{}, error) {
+	content := c.GetUserContent(c.User)
+	if err := c.prepareEditFiles(id, content); err != nil {
+		return nil, err
+	}
+	content = c.prepareContentHeader(content, ResourcesPageName, ResourcesPageEditFilesName)
+	return content, nil
 }
 
 func (c *ContentController) BuildFilesContent() (map[string]interface{}, error) {

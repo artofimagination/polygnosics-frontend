@@ -10,13 +10,15 @@ const (
 	TutorialsKey        = "tutorials"
 	TutorialsContentKey = "content"
 	TutorialsRefKey     = "content_ref"
-	TutorialsIDKey      = "id"
 
 	FAQsKey         = "faqs"
 	FAQGroupsKey    = "faq_groups"
 	FAQsGroupKey    = "group"
 	FAQsQuestionKey = "question"
 	FAQsAnswerKey   = "answer"
+
+	EditKey = "edit"
+	IDKey   = "id"
 
 	FilesKey = "files"
 
@@ -41,7 +43,7 @@ func parseContent(path string) (string, error) {
 }
 
 func (c *ContentController) prepareTutorials(content map[string]interface{}) error {
-	content[CreateItemKey] = "/resources/create-tutorial-item"
+	c.prepareNewTutorial(content)
 	content[TutorialsKey] = make([]interface{}, 0)
 	tutorials, err := c.RESTBackend.GetTutorials()
 	if err != nil {
@@ -54,8 +56,9 @@ func (c *ContentController) prepareTutorials(content map[string]interface{}) err
 				return err
 			}
 			tutorial.(map[string]interface{})[TutorialsContentKey] = text
-			id := tutorial.(map[string]interface{})[TutorialsIDKey].(string)
+			id := tutorial.(map[string]interface{})[IDKey].(string)
 			tutorial.(map[string]interface{})[TutorialsRefKey] = fmt.Sprintf("/resources/article?id=%s", id)
+			tutorial.(map[string]interface{})[EditKey] = fmt.Sprintf("/resources/edit-tutorial-item?id=%s", tutorial.(map[string]interface{})[IDKey])
 			content[TutorialsKey] = append(content[TutorialsKey].([]interface{}), tutorial)
 		}
 	}
@@ -63,34 +66,39 @@ func (c *ContentController) prepareTutorials(content map[string]interface{}) err
 	return nil
 }
 
+func extractFAQData(faq map[string]interface{}) error {
+	if val, ok := faq[FAQsQuestionKey]; ok {
+		text, err := parseContent(val.(string))
+		if err != nil {
+			return err
+		}
+		faq[FAQsQuestionKey] = text
+	}
+	if val, ok := faq[FAQsAnswerKey]; ok {
+		text, err := parseContent(val.(string))
+		if err != nil {
+			return err
+		}
+		faq[FAQsAnswerKey] = text
+	}
+	return nil
+}
+
 func (c *ContentController) prepareFAQ(content map[string]interface{}) error {
-	content[CreateItemKey] = "/resources/create-faq-item"
-	content[FAQsKey] = make([]interface{}, 0)
-	faqGroups, err := c.RESTBackend.GetFAQGroups()
-	if err != nil {
+	if err := c.prepareNewFAQ(content); err != nil {
 		return err
 	}
-	content[FAQGroupsKey] = faqGroups
+	content[FAQsKey] = make([]interface{}, 0)
 
-	faqs, err := c.RESTBackend.GetFAQ()
+	faqs, err := c.RESTBackend.GetFAQs()
 	if err != nil {
 		return err
 	}
 	for _, faq := range faqs {
-		if val, ok := faq.(map[string]interface{})[FAQsQuestionKey]; ok {
-			text, err := parseContent(val.(string))
-			if err != nil {
-				return err
-			}
-			faq.(map[string]interface{})[FAQsQuestionKey] = text
+		if err := extractFAQData(faq.(map[string]interface{})); err != nil {
+			return err
 		}
-		if val, ok := faq.(map[string]interface{})[FAQsAnswerKey]; ok {
-			text, err := parseContent(val.(string))
-			if err != nil {
-				return err
-			}
-			faq.(map[string]interface{})[FAQsAnswerKey] = text
-		}
+		faq.(map[string]interface{})[EditKey] = fmt.Sprintf("/resources/edit-faq-item?id=%s", faq.(map[string]interface{})[IDKey])
 		content[FAQsKey] = append(content[FAQsKey].([]interface{}), faq)
 	}
 
@@ -106,11 +114,12 @@ func (c *ContentController) prepareFAQ(content map[string]interface{}) error {
 //													-> Day
 //													-> Text
 func (c *ContentController) prepareNewsFeed(content map[string]interface{}) error {
-	content[CreateItemKey] = "/resources/create-news-item"
+	c.prepareCreateNewsFeed(content)
 	news, err := c.RESTBackend.GetNewsFeed()
 	if err != nil {
 		return err
 	}
+
 	for year, newsYearItem := range news {
 		for index, newsItem := range newsYearItem.([]interface{}) {
 			if val, ok := newsItem.(map[string]interface{})[NewsFeedTextKey]; ok {
@@ -119,6 +128,7 @@ func (c *ContentController) prepareNewsFeed(content map[string]interface{}) erro
 					return err
 				}
 				news[year].([]interface{})[index].(map[string]interface{})[NewsFeedTextKey] = text
+				news[year].([]interface{})[index].(map[string]interface{})[EditKey] = fmt.Sprintf("/resources/edit-news-item?id=%s", newsItem.(map[string]interface{})[IDKey])
 			}
 		}
 	}
@@ -127,23 +137,75 @@ func (c *ContentController) prepareNewsFeed(content map[string]interface{}) erro
 }
 
 func (c *ContentController) prepareFiles(content map[string]interface{}) error {
-	content[CreateItemKey] = "/resources/create-files-item"
+	c.prepareNewFiles(content)
 	files, err := c.RESTBackend.GetFiles()
 	if err != nil {
 		return err
+	}
+	for _, v := range files {
+		v.(map[string]interface{})[EditKey] = fmt.Sprintf("/resources/edit-files-item?id=%s", v.(map[string]interface{})[IDKey])
 	}
 	content[FilesKey] = files
 	return nil
 }
 
+func (c *ContentController) prepareEditFiles(id string, content map[string]interface{}) error {
+	c.prepareNewFiles(content)
+	fileSection, err := c.RESTBackend.GetFilesSection(id)
+	if err != nil {
+		return err
+	}
+
+	fileSection[EditKey] = fmt.Sprintf("/resources/edit-files-item?id=%s", fileSection[IDKey])
+	for _, v := range fileSection["files"].([]interface{}) {
+		if v.(map[string]interface{})["type"] == "github" ||
+			v.(map[string]interface{})["type"] == "gitlab" ||
+			v.(map[string]interface{})["type"] == "bitbucket" {
+			v.(map[string]interface{})["type"] = "link"
+		}
+	}
+	content["files"] = fileSection
+	return nil
+}
+
 func (c *ContentController) prepareNewFiles(content map[string]interface{}) {
-	content[ResourceContent] = ""
 	content[CreateItemKey] = "/resources/create-files-item"
 }
 
+func (c *ContentController) prepareEditNews(id string, content map[string]interface{}) error {
+	c.prepareCreateNewsFeed(content)
+	news, err := c.RESTBackend.GetNewsItem(id)
+	if err != nil {
+		return err
+	}
+	text, err := parseContent(news[NewsFeedTextKey].(string))
+	if err != nil {
+		return err
+	}
+	news[NewsFeedTextKey] = text
+	news[EditKey] = fmt.Sprintf("/resources/edit-news-item?id=%s", news[IDKey])
+	content["news"] = news
+	return nil
+}
+
 func (c *ContentController) prepareNewTutorial(content map[string]interface{}) {
-	content[ResourceContent] = ""
 	content[CreateItemKey] = "/resources/create-tutorial-item"
+}
+
+func (c *ContentController) prepareEditTutorial(id string, content map[string]interface{}) error {
+	c.prepareNewTutorial(content)
+	tutorial, err := c.RESTBackend.GetTutorial(id)
+	if err != nil {
+		return err
+	}
+	text, err := parseContent(tutorial[TutorialsContentKey].(string))
+	if err != nil {
+		return err
+	}
+	tutorial[TutorialsContentKey] = text
+	tutorial[EditKey] = fmt.Sprintf("/resources/edit-tutorial-item?id=%s", tutorial[IDKey])
+	content["tutorial"] = tutorial
+	return nil
 }
 
 func (c *ContentController) prepareNewFAQ(content map[string]interface{}) error {
@@ -157,13 +219,27 @@ func (c *ContentController) prepareNewFAQ(content map[string]interface{}) error 
 	return nil
 }
 
-func (c *ContentController) prepareNewNewsFeed(content map[string]interface{}) {
-	content[ResourceContent] = ""
+func (c *ContentController) prepareEditFAQ(id string, content map[string]interface{}) error {
+	if err := c.prepareNewFAQ(content); err != nil {
+		return err
+	}
+	faq, err := c.RESTBackend.GetFAQ(id)
+	if err != nil {
+		return err
+	}
+	if err := extractFAQData(faq); err != nil {
+		return err
+	}
+	faq[EditKey] = fmt.Sprintf("/resources/edit-faq-item?id=%s", faq[IDKey])
+	content["faq"] = faq
+	return nil
+}
+
+func (c *ContentController) prepareCreateNewsFeed(content map[string]interface{}) {
 	content[CreateItemKey] = "/resources/create-news-item"
 }
 
 func (c *ContentController) prepareArticle(content map[string]interface{}, r *http.Request) error {
-	content[ResourceContent] = ""
 	article, err := c.RESTBackend.GetArticle(r)
 	if err != nil {
 		return err

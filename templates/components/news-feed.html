@@ -5,6 +5,7 @@
   </div>
   <div class="box-body">
     <div class="timeline5">
+      {{$privilege := index .user "privileges"}}
       {{$future_feature := index . "future_feature"}}
       {{range $k, $v := (index . "news_feed")}}
         <div class="timeline__group">
@@ -17,6 +18,11 @@
               </div>
               <div class="timeline__post">
                 <div class="timeline__content">
+                  {{if (index $privilege "edit_page")}}
+                    <div class="text-right fadeInLeft">
+                      <a href="{{index . "edit"}}"><span><i class="fa fa-pencil" aria-hidden="true"></i></span></a>
+                    </div>
+                  {{end}}
                   <p>{{index . "news_text"}}</p>
                 </div>
                 <div class="timeline-footer">

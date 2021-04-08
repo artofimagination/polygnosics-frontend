@@ -137,6 +137,10 @@ func uploadFile(key string, fileName string, r *http.Request) error {
 }
 
 func WriteToFile(filename string, data string) error {
+	if filename == "" {
+		return nil
+	}
+
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -187,15 +191,23 @@ func (c *Controller) CreateRouter() *mux.Router {
 
 	r.HandleFunc("/get-categories", c.getCategoriesMap)
 	r.HandleFunc("/get-tutorials", c.getTutorials)
+	r.HandleFunc("/get-tutorial", c.getTutorial)
 	r.HandleFunc("/get-files", c.getFiles)
+	r.HandleFunc("/get-files-section", c.getFilesSection)
 	r.HandleFunc("/get-news-feed", c.getNewsFeed)
-	r.HandleFunc("/get-faq", c.getFAQs)
+	r.HandleFunc("/get-news-item", c.getNewsItem)
+	r.HandleFunc("/get-faqs", c.getFAQs)
+	r.HandleFunc("/get-faq", c.getFAQ)
 	r.HandleFunc("/get-faq-groups", c.getFAQGroups)
 	resources := r.PathPrefix("/resources").Subrouter()
 	resources.HandleFunc("/create-news-item", c.addNewsFeed)
+	resources.HandleFunc("/edit-news-item", c.updateNewsItem)
 	resources.HandleFunc("/create-files-item", c.addFile)
+	resources.HandleFunc("/edit-files-item", c.updateFilesItem)
 	resources.HandleFunc("/create-tutorial-item", c.addTutorial)
+	resources.HandleFunc("/edit-tutorial-item", c.updateTutorial)
 	resources.HandleFunc("/create-faq-item", c.addFAQ)
+	resources.HandleFunc("/edit-faq-item", c.updateFAQ)
 	resources.HandleFunc("/article", c.getArticle)
 
 	r.HandleFunc("/get-request-data", c.getRequestData)

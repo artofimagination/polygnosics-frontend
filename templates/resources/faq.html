@@ -33,6 +33,7 @@
             <div class="box-body">
               <!-- Tab panes -->
               <div class="tab-content">
+                {{$privilege := index .user "privileges"}}
                 {{$faqs := index . "faqs"}}
                 {{range $i, $a := .faq_groups}}
                 <div id="navpills-{{$i}}" class="tab-pane {{if eq $i 0}}active{{end}}">
@@ -42,6 +43,11 @@
                       {{if eq (index $b "group") $a}}
                         <div class="panel">
                           <div class="panel-heading" id="question-{{$j}}" role="tab">
+                            {{if (index $privilege "edit_page")}}
+                              <div class="text-right fadeInLeft">
+                                <a href="{{index $b "edit"}}"><span><i class="fa fa-pencil" aria-hidden="true"></i></span></a>
+                              </div>
+                            {{end}}
                             <a class="panel-title" aria-controls="answer-{{$j}}" aria-expanded="true" data-toggle="collapse" href="#answer-{{$j}}" data-parent="#accordion2">{{index $b "question"}}</a>
                           </div>
                           <div class="panel-collapse collapse show" id="answer-{{$j}}" aria-labelledby="question-{{$j}}"role="tabpanel">

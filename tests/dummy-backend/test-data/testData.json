@@ -164,16 +164,19 @@
   ],
   "faqs":[
     {
+      "id": "3353f499-e4ce-4a29-925e-9b5231941b81",
       "group": "General",
       "question": "/user-assets/faq1-question.txt",
       "answer": "/user-assets/faq1-answer.txt"
     },
     {
+      "id": "1c497a85-8dee-40db-8a1e-db4e8bde0eeb",
       "group": "Products",
       "question": "/user-assets/faq2-question.txt",
       "answer": "/user-assets/faq2-answer.txt"
     },
     {
+      "id": "8c173bda-ab95-442b-b2ee-96111336bd45",
       "group": "Products",
       "question": "/user-assets/faq3-question.txt",
       "answer": "/user-assets/faq3-answer.txt"
@@ -181,12 +184,13 @@
   ],
   "files":[
     {
+      "id": "ec9e8018-3072-4158-ac22-e418aedf8612",
       "title": "Test files",
       "short": "Test files to download",
       "files": [{
         "type": "file",
         "ref": "/user-assets/faq1-answer.txt",
-        "ref_name": "FAQ Item"
+        "ref_name": "FAQ Item 1"
       },
       {
         "type": "link",
@@ -196,33 +200,35 @@
       ]
     },
     {
+      "id": "9b9e25fe-d7da-4612-9cf0-57772456547e",
       "title": "Test files 2",
       "short": "Test files to download again",
       "files": [{
         "type": "file",
         "ref": "/user-assets/faq2-answer.txt",
-        "ref_name": "FAQ Item"
+        "ref_name": "FAQ Item 2"
       },
       {
         "type": "link",
-        "ref": "https://github.com/artofimagination/snippets",
-        "ref_name": "Github test"
+        "ref": "https://github.com/artofimagination",
+        "ref_name": "Github test 2"
       }
       ]
     }
     ,
     {
+      "id": "52755234-fe64-4bb2-8599-bd4105e255ae",
       "title": "Test files 3",
       "short": "Test files to download again",
       "files": [{
         "type": "github",
         "ref": "/user-assets/faq3-answer.txt",
-        "ref_name": "FAQ Item"
+        "ref_name": "FAQ Item 3"
       },
       {
         "type": "link",
-        "ref": "https://github.com/artofimagination/snippets",
-        "ref_name": "Github test"
+        "ref": "https://github.com/",
+        "ref_name": "Github test 3"
       }
       ]
     }
@@ -230,11 +236,13 @@
   "news_feed": {
     "2015": [
       {
+        "id": "d2b75a47-52f9-4401-af1b-a397005c14c3",
         "news_text": "/user-assets/news1.txt",
         "news_month": "Feb",
         "news_day": "5"
       },
       {
+        "id": "3c8b01d7-cd57-4074-8c1b-2a434db66688",
         "news_text": "/user-assets/news2.txt",
         "news_month": "Mar",
         "news_day": "15"
@@ -242,16 +250,19 @@
     ],
     "2019": [
       {
+        "id": "28089d57-c17c-489c-9863-d2b32d2ae932",
         "news_text": "/user-assets/news3.txt",
         "news_month": "Jun",
         "news_day": "6"
       },
       {
+        "id": "d6d0381b-9c59-4cce-b9a0-15182a3ffef3",
         "news_text": "/user-assets/news4.txt",
         "news_month": "Jun",
         "news_day": "6"
       },
       {
+        "id": "dac2bf98-da1c-4009-a546-fd75bd990b6d",
         "news_text": "/user-assets/news4.txt",
         "news_month": "Sep",
         "news_day": "24"

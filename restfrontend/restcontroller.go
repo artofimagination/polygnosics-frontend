@@ -67,9 +67,13 @@ var htmls = []string{
 	"/templates/components/index-footer.html",
 	"/templates/resources/news.html",
 	"/templates/resources/create-news-item.html",
+	"/templates/resources/edit-news-item.html",
 	"/templates/resources/create-faq-item.html",
 	"/templates/resources/create-tutorial-item.html",
+	"/templates/resources/edit-tutorial-item.html",
 	"/templates/resources/create-files-item.html",
+	"/templates/resources/edit-files-item.html",
+	"/templates/resources/edit-faq-item.html",
 	"/templates/resources/docs.html",
 	"/templates/resources/tutorials.html",
 	"/templates/resources/article.html",
@@ -120,6 +124,10 @@ const (
 	ResourcesCreateFAQ      = "create-faq-item"
 	ResourcesCreateTutorial = "create-tutorial-item"
 	ResourcesCreateFiles    = "create-files-item"
+	ResourcesEditFAQ        = "edit-faq-item"
+	ResourcesEditTutorial   = "edit-tutorial-item"
+	ResourcesEditNews       = "edit-news-item"
+	ResourcesEditFiles      = "edit-files-item"
 )
 
 const (
