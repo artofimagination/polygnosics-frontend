@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-var BusinessLogicServerAddress string = "http://172.18.0.4:8084"
+var BusinessLogicServerAddress string = "http://172.18.0.4:8184"
 var StatsServerAddress string = "http://172.18.0.6:8086"
 
 type RESTBackend struct {

@@ -11,7 +11,7 @@ RUN go mod tidy
 RUN cd $GOPATH/src/dummy-backend/ && go build main.go
 
 # This container exposes port 8082 to the outside world
-EXPOSE 8084
+EXPOSE 8184
 
 # Run the executable
 CMD ["./main"]
