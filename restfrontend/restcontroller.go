@@ -66,12 +66,18 @@ var htmls = []string{
 	"/templates/components/index-header.html",
 	"/templates/components/index-footer.html",
 	"/templates/resources/news.html",
-	"/templates/resources/news-content.html",
+	"/templates/resources/create-news-item.html",
+	"/templates/resources/edit-news-item.html",
+	"/templates/resources/create-faq-item.html",
+	"/templates/resources/create-tutorial-item.html",
+	"/templates/resources/edit-tutorial-item.html",
+	"/templates/resources/create-files-item.html",
+	"/templates/resources/edit-files-item.html",
+	"/templates/resources/edit-faq-item.html",
 	"/templates/resources/docs.html",
 	"/templates/resources/tutorials.html",
+	"/templates/resources/article.html",
 	"/templates/resources/faq.html",
-	"/templates/resources/instructions.html",
-	"/templates/resources/examples.html",
 	"/templates/resources/files.html",
 	"/templates/stats/project-stats.html",
 	"/templates/stats/product-stats.html",
@@ -85,12 +91,6 @@ var htmls = []string{
 var paths = []string{}
 
 const (
-	GET  = "GET"
-	POST = "POST"
-)
-
-const (
-	UserMainPath           = "/user-main"
 	UserMain               = "user-main"
 	UserMainMyProducts     = "my-products"
 	ProjectWizard          = "project-wizard"
@@ -114,13 +114,20 @@ const (
 )
 
 const (
-	ResourcesNews         = "news"
-	ResourcesDocs         = "docs"
-	ResourcesTutorials    = "tutorials"
-	ResourcesFAQ          = "faq"
-	ResourcesExamples     = "examples"
-	ResourcesInstructions = "instructions"
-	ResourcesFiles        = "files"
+	ResourcesNews           = "news"
+	ResourcesDocs           = "docs"
+	ResourcesTutorials      = "tutorials"
+	ResourcesFAQ            = "faq"
+	ResourcesFiles          = "files"
+	ResourcesArticle        = "article"
+	ResourcesCreateNews     = "create-news-item"
+	ResourcesCreateFAQ      = "create-faq-item"
+	ResourcesCreateTutorial = "create-tutorial-item"
+	ResourcesCreateFiles    = "create-files-item"
+	ResourcesEditFAQ        = "edit-faq-item"
+	ResourcesEditTutorial   = "edit-tutorial-item"
+	ResourcesEditNews       = "edit-news-item"
+	ResourcesEditFiles      = "edit-files-item"
 )
 
 const (
@@ -130,12 +137,15 @@ const (
 )
 
 const (
-	IndexPath      = "/index"
-	IndexLoginPath = "/auth_login"
 	IndexPage      = "index"
+	IndexLoginPage = "auth_login"
 	IndexContact   = "general-contact"
 	IndexNews      = "general-news"
 )
+
+func (c *RESTFrontend) URI(html string) string {
+	return fmt.Sprintf("/%s", html)
+}
 
 func parseItemID(r *http.Request) (string, error) {
 	if err := r.ParseForm(); err != nil {
@@ -167,31 +177,31 @@ func (c *RESTFrontend) MakeHandler(fn func(http.ResponseWriter, *http.Request), 
 
 		routeMatch := mux.RouteMatch{}
 		if matched := router.Match(r, &routeMatch); !matched {
-			c.HandleError(w, "Url does not exist", http.StatusInternalServerError, IndexPath)
+			c.HandleError(w, "Url does not exist", http.StatusInternalServerError, c.URI(IndexPage))
 			return
 		}
 
 		if !isPublicPage {
 			sess, err := session.Store.Get(r, "cookie-name")
 			if err != nil {
-				c.HandleError(w, "Unable to retrieve session cookie.", http.StatusForbidden, IndexPath)
+				c.HandleError(w, "Unable to retrieve session cookie.", http.StatusForbidden, c.URI(IndexPage))
 				return
 			}
 
 			if c.ContentController.User == nil {
-				c.HandleError(w, "Cookie expired", http.StatusForbidden, IndexPath)
+				c.HandleError(w, "Cookie expired", http.StatusForbidden, c.URI(IndexPage))
 				return
 			}
 
 			match, err := session.IsAuthenticated(c.ContentController.User.ID, sess, r)
 			if err != nil {
 				errorString := fmt.Sprintf("Unable to check session cookie:\n%s\n", errors.WithStack(err))
-				c.HandleError(w, errorString, http.StatusInternalServerError, IndexPath)
+				c.HandleError(w, errorString, http.StatusInternalServerError, c.URI(IndexPage))
 				return
 			}
 
 			if !match {
-				c.HandleError(w, "Forbidden access", http.StatusForbidden, IndexPath)
+				c.HandleError(w, "Forbidden access", http.StatusForbidden, c.URI(IndexPage))
 				return
 			}
 		}
@@ -203,7 +213,7 @@ func (c *RESTFrontend) MakeHandler(fn func(http.ResponseWriter, *http.Request), 
 func (c *RESTFrontend) RenderTemplate(w http.ResponseWriter, tmpl string, p map[string]interface{}) {
 	wd, err := os.Getwd()
 	if err != nil {
-		c.HandleError(w, err.Error(), http.StatusInternalServerError, IndexPath)
+		c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(IndexPage))
 	}
 
 	if len(paths) == 0 {
@@ -216,7 +226,7 @@ func (c *RESTFrontend) RenderTemplate(w http.ResponseWriter, tmpl string, p map[
 
 	err = t.ExecuteTemplate(w, tmpl+".html", p)
 	if err != nil {
-		c.HandleError(w, err.Error(), http.StatusInternalServerError, IndexPath)
+		c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(IndexPage))
 	}
 }
 

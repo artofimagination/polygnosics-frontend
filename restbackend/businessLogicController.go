@@ -78,7 +78,7 @@ func (c *RESTBackend) GetProductsByUserID(userID string) ([]*Product, error) {
 }
 
 func (c *RESTBackend) AddProduct(w http.ResponseWriter, r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ProductPathAdd, r)
+	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (c *RESTBackend) AddProduct(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *RESTBackend) UpdateProduct(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ProductPathUpdate, r)
+	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ func (c *RESTBackend) GetCategoriesMap() (map[string]interface{}, error) {
 }
 
 func (c *RESTBackend) CreateProject(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ProjectPathAdd, r)
+	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -185,7 +185,7 @@ func (c *RESTBackend) DeleteProject(projectID string) error {
 }
 
 func (c *RESTBackend) UpdateProject(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ProductPathAdd, r)
+	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -196,16 +196,16 @@ func (c *RESTBackend) UpdateProject(r *http.Request) error {
 // offer := r.FormValue("offer")
 // statsFunc, err := c.BackendContext.GetDataChannelProvider(r.FormValue("type"))
 // if err != nil {
-// 	c.HandleError(w, fmt.Sprintf("Failed to get webrtc data provider. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
+// 	c.HandleError(w, fmt.Sprintf("Failed to get webrtc data provider. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
 // 	return
 // }
 
 // if err := webrtc.SetupFrontend(w, r, offer, statsFunc); err != nil {
-// 	c.HandleError(w, fmt.Sprintf("Failed to start frontend webrtc. %s", errors.WithStack(err)), http.StatusInternalServerError, UserMainPath)
+// 	c.HandleError(w, fmt.Sprintf("Failed to start frontend webrtc. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
 // 	return
 // }
 func (c *RESTBackend) InitStatsWebRTC(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, ProductPathAdd, r)
+	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}

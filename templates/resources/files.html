@@ -14,13 +14,24 @@
       <section class="content">
         <div class="row">
           <div class="col-md-6 col-12">
+            {{$privilege := index .user "privileges"}}
+            {{range $i, $a := .files}}
             <div class="box">
               <div class="box-body">
-                <h4 class="mb-a0">Example products</h4>
-                <p class="mb-20">Example products in various languages</p>
-                <a href="https://github.com/artofimagination/snippets"><i class="fa fa-github"></i> Python</a>
+                {{if (index $privilege "edit_page")}}
+                  <div class="text-right fadeInLeft">
+                    <a href="{{index $a "edit"}}"><span><i class="fa fa-pencil" aria-hidden="true"></i></span></a>
+                  </div>
+                {{end}}
+                <h4 class="mb-a0">{{index $a "title"}}</h4>
+                <p class="mb-20">{{index $a "short"}}</p>
+                {{$fileLinks := index $a "files"}}
+                {{range $j, $b := $fileLinks}}
+                  <div class="row"><a href="{{index $b "ref"}}" {{if eq (index $b "type") "file"}}download{{end}}><i class="fa fa-{{index $b "type"}}"></i> {{index $b "ref_name"}}</a></div>
+                {{end}}
               </div>
             </div>
+            {{end}}
           </div>
         </div>
       </section>

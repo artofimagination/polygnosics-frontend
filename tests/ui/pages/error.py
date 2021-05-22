@@ -4,9 +4,10 @@ the page object for the errorpage.
 """
 
 from selenium.webdriver.common.by import By
+from pages.page_object import PageObject
 
 
-class ErrorPage:
+class ErrorPage(PageObject):
     URL = "http://0.0.0.0:8085/error"
 
     ERROR_MESSAGE = (By.ID, 'error-message')

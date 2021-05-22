@@ -62,7 +62,7 @@ func (c *RESTBackend) GetUserByID(requestedID string) (*User, error) {
 }
 
 func (c *RESTBackend) UpdateUserAvatar(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, UserPathUpdate, r)
+	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func (c *RESTBackend) DetectRootUser() (bool, error) {
 }
 
 func (c *RESTBackend) UpdateUser(r *http.Request) error {
-	err := forwardRequest(BusinessLogicServerAddress, UserPathUpdate, r)
+	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
 	}

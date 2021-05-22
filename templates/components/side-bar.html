@@ -13,8 +13,8 @@
         </div>
       </div>
       <ul class="list-inline profile-setting mt-10 mb-0 d-flex justify-content-between">
-        <li><a href="/user-main" data-toggle="tooltip" data-placement="top" title="Home"><i data-feather="home"></i></a></li>
-        <li><a href="/user-main/mail-inbox" data-toggle="tooltip" data-placement="top" title="Inbox"><i data-feather="mail"></i></a></li>
+        <li><a href="/user-main" title="Home" data-toggle="tooltip" data-placement="top"><i data-feather="home"></i></a></li>
+        <li><a href="/user-main/mail-inbox" title="Inbox" data-toggle="tooltip" data-placement="top"><i data-feather="mail"></i></a></li>
         {{if eq (index . "future_feature") 0}}
         <li><a href="#" data-toggle="tooltip" data-placement="top" title="Connections"><i data-feather="users"></i></a></li>
         {{end}}
@@ -28,42 +28,44 @@
   
     <!-- sidebar menu-->
     <ul class="sidebar-menu" data-widget="tree">
-      <li class="header">Dashboard</li>
-      {{$privilege := index .user "privileges"}}
-      {{if (index $privilege "main_dashboard")}} 
-        <li class="treeview">
-          <a href="#">
-            <i data-feather="bar-chart-2"></i>
-            <span>Main Dashboards</span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-right pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li><a href="/user-main/user-stats"><i class="ti-more"></i>User Stats</a></li>
-            <li><a href="/user-main/products-projects"><i class="ti-more"></i>Overall Item Stats</a></li>
-            <li><a href="/user-main/accounting"><i class="ti-more"></i>Accounting</a></li>
-            <li><a href="/user-main/ui-stats"><i class="ti-more"></i>UI Stats</a></li>
-            <li><a href="/user-main/system-health"><i class="ti-more"></i>System Health</a></li>
-            <li><a href="/user-main/misuse-metrics"><i class="ti-more"></i>Misuse Metrics</a></li>	
-          </ul>
-        </li>	
-      {{end}}
-      {{if (index $privilege "project_stats")}}	  
-        <li>
-          <a href="/user-main/project-stats">
-            <i data-feather="pie-chart"></i>
-            <span>Project statistics</span>
-          </a>
-        </li>
-      {{end}}
-      {{if (index $privilege "product_stats")}}
-        <li>
-          <a href="/user-main/product-stats">
-            <i data-feather="pie-chart"></i>
-            <span>Product statistics</span>
-          </a>
-        </li>
+      {{if eq (index . "future_feature") 0}}
+        <li class="header">Dashboard</li>
+        {{$privilege := index .user "privileges"}}
+        {{if (index $privilege "main_dashboard")}}
+          <li class="treeview">
+            <a href="#">
+              <i data-feather="bar-chart-2"></i>
+              <span>Main Dashboards</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-right pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+              <li><a href="/user-main/user-stats"><i class="ti-more"></i>User Stats</a></li>
+              <li><a href="/user-main/products-projects"><i class="ti-more"></i>Overall Item Stats</a></li>
+              <li><a href="/user-main/accounting"><i class="ti-more"></i>Accounting</a></li>
+              <li><a href="/user-main/ui-stats"><i class="ti-more"></i>UI Stats</a></li>
+              <li><a href="/user-main/system-health"><i class="ti-more"></i>System Health</a></li>
+              <li><a href="/user-main/misuse-metrics"><i class="ti-more"></i>Misuse Metrics</a></li>	
+            </ul>
+          </li>	
+        {{end}}
+        {{if (index $privilege "project_stats")}}	  
+          <li>
+            <a href="/user-main/project-stats">
+              <i data-feather="pie-chart"></i>
+              <span>Project statistics</span>
+            </a>
+          </li>
+        {{end}}
+        {{if (index $privilege "product_stats")}}
+          <li>
+            <a href="/user-main/product-stats">
+              <i data-feather="pie-chart"></i>
+              <span>Product statistics</span>
+            </a>
+          </li>
+        {{end}}
       {{end}}
       <li class="header">Projects</li>
       <li>
@@ -117,12 +119,14 @@
         </a>
       </li>
       <li class="header">About us</li>
+      {{if eq (index . "future_feature") 0}}
       <li>
         <a href="/about/career">
           <i data-feather="users"></i>
           <span>Career</span>
         </a>
       </li>
+      {{end}}
       <li>
         <a href="/about/contact">
           <i data-feather="globe"></i>

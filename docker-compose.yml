@@ -15,7 +15,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${USER_STORE}:${USER_STORE_DOCKER}
     ports:
-      - 8084:8084
+      - 8184:8184
     networks: 
       test-network:
         ipv4_address: 172.18.0.4

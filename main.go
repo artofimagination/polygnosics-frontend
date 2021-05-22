@@ -10,7 +10,6 @@ import (
 	"time"
 
 	serverContext "github.com/artofimagination/polygnosics-frontend/context"
-	"github.com/artofimagination/polygnosics-frontend/restfrontend"
 
 	"github.com/pkg/errors"
 )
@@ -23,7 +22,7 @@ func main() {
 
 	// Create Server and Route Handlers
 	srv := &http.Server{
-		Handler:      restfrontend.CreateRouter(context.RESTFrontend),
+		Handler:      context.RESTFrontend.CreateRouter(),
 		Addr:         ":8085",
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,

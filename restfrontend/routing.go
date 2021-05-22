@@ -35,19 +35,19 @@ func (m FileSystem) Open(name string) (result http.File, err error) {
 }
 
 // CreateRouter creates the page path structure.
-func CreateRouter(c *RESTFrontend) *mux.Router {
+func (c *RESTFrontend) CreateRouter() *mux.Router {
 	r := mux.NewRouter()
 	// Publicly accessable pages
 	r.HandleFunc("/auth_signup", c.MakeHandler(c.SignupHandler, r, true))
-	r.HandleFunc("/auth_login", c.MakeHandler(c.LoginHandler, r, true))
-	r.HandleFunc(IndexPath, c.MakeHandler(c.IndexHandler, r, true))
+	r.HandleFunc(c.URI(IndexLoginPage), c.MakeHandler(c.LoginHandler, r, true))
+	r.HandleFunc(c.URI(IndexPage), c.MakeHandler(c.IndexHandler, r, true))
 	r.HandleFunc("/", c.MakeHandler(c.IndexHandler, r, true))
 	r.HandleFunc("/news", c.MakeHandler(c.GeneralNews, r, true))
 	r.HandleFunc("/general-contact", c.MakeHandler(c.GeneralContact, r, true))
 
 	// Authenticated pages
 	r.HandleFunc("/auth_logout", c.MakeHandler(c.LogoutHandler, r, false))
-	r.HandleFunc(UserMainPath, c.MakeHandler(c.UserMainHandler, r, false))
+	r.HandleFunc(c.URI(UserMain), c.MakeHandler(c.UserMainHandler, r, false))
 	r.HandleFunc("/check-state", c.MakeHandler(c.HandleStatusRequest, r, false))
 	about := r.PathPrefix("/about").Subrouter()
 	about.HandleFunc("/who-we-are", c.MakeHandler(c.About, r, false))
@@ -58,9 +58,16 @@ func CreateRouter(c *RESTFrontend) *mux.Router {
 	resources.HandleFunc("/docs", c.MakeHandler(c.Docs, r, false))
 	resources.HandleFunc("/tutorials", c.MakeHandler(c.Tutorials, r, false))
 	resources.HandleFunc("/faq", c.MakeHandler(c.FAQ, r, false))
-	resources.HandleFunc("/instructions", c.MakeHandler(c.Instructions, r, false))
-	resources.HandleFunc("/examples", c.MakeHandler(c.Examples, r, false))
 	resources.HandleFunc("/files", c.MakeHandler(c.Files, r, false))
+	resources.HandleFunc(c.URI(ResourcesCreateNews), c.MakeHandler(c.NewNewsResource, r, false))
+	resources.HandleFunc(c.URI(ResourcesEditNews), c.MakeHandler(c.UpdateNewsResource, r, false))
+	resources.HandleFunc(c.URI(ResourcesCreateFAQ), c.MakeHandler(c.NewFAQResource, r, false))
+	resources.HandleFunc(c.URI(ResourcesEditFAQ), c.MakeHandler(c.UpdateFAQResource, r, false))
+	resources.HandleFunc(c.URI(ResourcesCreateFiles), c.MakeHandler(c.NewFileResource, r, false))
+	resources.HandleFunc(c.URI(ResourcesEditFiles), c.MakeHandler(c.UpdateFilesResource, r, false))
+	resources.HandleFunc(c.URI(ResourcesCreateTutorial), c.MakeHandler(c.NewTutorialResource, r, false))
+	resources.HandleFunc(c.URI(ResourcesEditTutorial), c.MakeHandler(c.UpdateTutorialResource, r, false))
+	resources.HandleFunc(c.URI(ResourcesArticle), c.MakeHandler(c.Article, r, false))
 	userMain := r.PathPrefix("/user-main").Subrouter()
 	userMain.HandleFunc("/upload-avatar", c.MakeHandler(c.UploadAvatarHandler, r, false))
 	userMain.HandleFunc("/store", c.MakeHandler(c.StoreHandler, r, false))
