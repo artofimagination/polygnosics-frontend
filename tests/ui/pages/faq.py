@@ -9,10 +9,11 @@ from pages.news_feed import NewsFeed
 from pages.content_header import ContentHeader
 from pages.footer import Footer
 from pages.page_object import PageObject
+import serverInfo
 
 
 class FAQPage(PageObject):
-    URL = "http://0.0.0.0:8085/resources/faq"
+    URL = "http://0.0.0.0:" + serverInfo.getPort() + "/resources/faq"
 
     def __init__(self, browser, pageObjects=None):
         super().__init__(browser, pageObjects)

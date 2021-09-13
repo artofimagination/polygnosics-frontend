@@ -6,10 +6,11 @@ import pytest
 import selenium.webdriver
 import requests
 import time
+import serverInfo
 
 
 def _pingServer():
-    URL = "http://0.0.0.0:8085"
+    URL = "http://127.0.0.1:" + serverInfo.getPort()
     connected = False
     timeout = 20
     while timeout > 0:

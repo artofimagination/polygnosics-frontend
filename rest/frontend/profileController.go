@@ -1,4 +1,4 @@
-package restfrontend
+package frontend
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 // ProfileHandler renders the profile page template.
-func (c *RESTFrontend) ProfileHandler(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent(ErrFailedToParseForm))
 		return
@@ -24,7 +24,7 @@ func (c *RESTFrontend) ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, "profile", content)
 }
 
-func (c *RESTFrontend) ProfileEdit(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) ProfileEdit(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		content, err := c.ContentController.BuildProfileContent(c.ContentController.User.ID)
 		if err != nil {

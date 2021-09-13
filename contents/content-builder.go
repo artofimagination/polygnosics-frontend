@@ -3,7 +3,7 @@ package contents
 import (
 	"net/http"
 
-	"github.com/artofimagination/polygnosics-frontend/restbackend"
+	"github.com/artofimagination/polygnosics-frontend/backend"
 )
 
 const (
@@ -70,8 +70,8 @@ var FutureFeature = "future_feature"
 
 // TODO Issue#40: Replace  user/product/project data with redis storage.
 type ContentController struct {
-	User        *restbackend.User
-	RESTBackend *restbackend.RESTBackend
+	User        *backend.User
+	RESTBackend *backend.RESTController
 }
 
 func (c *ContentController) BuildProductWizardContent() (map[string]interface{}, error) {

@@ -1,17 +1,17 @@
-package restfrontend
+package frontend
 
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/artofimagination/polygnosics-frontend/restfrontend/session"
+	"github.com/artofimagination/polygnosics-frontend/frontend/session"
 
 	"github.com/pkg/errors"
 )
 
 // LoginHandler checks the user email and password.
 // On success generates and stores a cookie in the session sotre and adds it to the response
-func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		content := c.ContentController.BuildLoginContent()
 		c.RenderTemplate(w, IndexLoginPage, content)
@@ -58,7 +58,7 @@ func (c *RESTFrontend) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c *RESTFrontend) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := session.Store.Get(r, "cookie-name")
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to get cookie. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(IndexPage))
@@ -76,7 +76,7 @@ func (c *RESTFrontend) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, c.URI(IndexPage), http.StatusSeeOther)
 }
 
-func (c *RESTFrontend) SignupHandler(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	content := c.ContentController.BuildSignupContent()
 	if r.Method == http.MethodGet {
 		c.RenderTemplate(w, "auth_signup", content)

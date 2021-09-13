@@ -1,4 +1,4 @@
-package restbackend
+package backend
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ const (
 	ResourcesURIAddFile         = "/add-file"
 )
 
-func (c *RESTBackend) GetTutorials() ([]interface{}, error) {
+func (c *RESTController) GetTutorials() ([]interface{}, error) {
 	data, err := get(BusinessLogicServerAddress, ResourcesURIGetTutorials, "")
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func (c *RESTBackend) GetTutorials() ([]interface{}, error) {
 	return data.([]interface{}), nil
 }
 
-func (c *RESTBackend) GetArticle(r *http.Request) (map[string]interface{}, error) {
+func (c *RESTController) GetArticle(r *http.Request) (map[string]interface{}, error) {
 	data, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (c *RESTBackend) GetArticle(r *http.Request) (map[string]interface{}, error
 	return data.(map[string]interface{}), nil
 }
 
-func (c *RESTBackend) GetFAQs() ([]interface{}, error) {
+func (c *RESTController) GetFAQs() ([]interface{}, error) {
 	data, err := get(BusinessLogicServerAddress, ResourcesURIGetFAQs, "")
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (c *RESTBackend) GetFAQs() ([]interface{}, error) {
 	return data.([]interface{}), nil
 }
 
-func (c *RESTBackend) GetFAQ(id string) (map[string]interface{}, error) {
+func (c *RESTController) GetFAQ(id string) (map[string]interface{}, error) {
 	params := fmt.Sprintf("?id=%s", id)
 	data, err := get(BusinessLogicServerAddress, ResourcesURIGetFAQ, params)
 	if err != nil {
@@ -58,7 +58,7 @@ func (c *RESTBackend) GetFAQ(id string) (map[string]interface{}, error) {
 	return data.(map[string]interface{}), nil
 }
 
-func (c *RESTBackend) GetTutorial(id string) (map[string]interface{}, error) {
+func (c *RESTController) GetTutorial(id string) (map[string]interface{}, error) {
 	params := fmt.Sprintf("?id=%s", id)
 	data, err := get(BusinessLogicServerAddress, ResourcesURIGetTutorial, params)
 	if err != nil {
@@ -68,7 +68,7 @@ func (c *RESTBackend) GetTutorial(id string) (map[string]interface{}, error) {
 	return data.(map[string]interface{}), nil
 }
 
-func (c *RESTBackend) GetFAQGroups() ([]interface{}, error) {
+func (c *RESTController) GetFAQGroups() ([]interface{}, error) {
 	data, err := get(BusinessLogicServerAddress, ResourcesURIGetFAQGroups, "")
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (c *RESTBackend) GetFAQGroups() ([]interface{}, error) {
 	return data.([]interface{}), nil
 }
 
-func (c *RESTBackend) GetFiles() ([]interface{}, error) {
+func (c *RESTController) GetFiles() ([]interface{}, error) {
 	data, err := get(BusinessLogicServerAddress, ResourcesURIGetFiles, "")
 	if err != nil {
 		return nil, err
@@ -86,16 +86,16 @@ func (c *RESTBackend) GetFiles() ([]interface{}, error) {
 	return data.([]interface{}), nil
 }
 
-func (c *RESTBackend) GetNewsFeed() (map[string]interface{}, error) {
+func (c *RESTController) GetNewsFeed() ([]interface{}, error) {
 	data, err := get(BusinessLogicServerAddress, ResourcesURIGetNewsFeed, "")
 	if err != nil {
 		return nil, err
 	}
 
-	return data.(map[string]interface{}), nil
+	return data.([]interface{}), nil
 }
 
-func (c *RESTBackend) GetNewsItem(id string) (map[string]interface{}, error) {
+func (c *RESTController) GetNewsItem(id string) (map[string]interface{}, error) {
 	params := fmt.Sprintf("?id=%s", id)
 	data, err := get(BusinessLogicServerAddress, ResourcesURIGetNewsItem, params)
 	if err != nil {
@@ -105,7 +105,7 @@ func (c *RESTBackend) GetNewsItem(id string) (map[string]interface{}, error) {
 	return data.(map[string]interface{}), nil
 }
 
-func (c *RESTBackend) GetFilesSection(id string) (map[string]interface{}, error) {
+func (c *RESTController) GetFilesSection(id string) (map[string]interface{}, error) {
 	params := fmt.Sprintf("?id=%s", id)
 	data, err := get(BusinessLogicServerAddress, ResourcesURIGetFilesSection, params)
 	if err != nil {
@@ -115,7 +115,7 @@ func (c *RESTBackend) GetFilesSection(id string) (map[string]interface{}, error)
 	return data.(map[string]interface{}), nil
 }
 
-func (c *RESTBackend) AddNewsItem(r *http.Request) error {
+func (c *RESTController) AddNewsItem(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -124,7 +124,7 @@ func (c *RESTBackend) AddNewsItem(r *http.Request) error {
 	return nil
 }
 
-func (c *RESTBackend) AddFileItem(r *http.Request) error {
+func (c *RESTController) AddFileSection(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -133,7 +133,7 @@ func (c *RESTBackend) AddFileItem(r *http.Request) error {
 	return nil
 }
 
-func (c *RESTBackend) AddTutorialItem(r *http.Request) error {
+func (c *RESTController) AddTutorialItem(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -142,7 +142,7 @@ func (c *RESTBackend) AddTutorialItem(r *http.Request) error {
 	return nil
 }
 
-func (c *RESTBackend) AddFAQItem(r *http.Request) error {
+func (c *RESTController) AddFAQItem(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -151,7 +151,7 @@ func (c *RESTBackend) AddFAQItem(r *http.Request) error {
 	return nil
 }
 
-func (c *RESTBackend) UpdateFAQItem(r *http.Request) error {
+func (c *RESTController) UpdateFAQItem(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -160,7 +160,7 @@ func (c *RESTBackend) UpdateFAQItem(r *http.Request) error {
 	return nil
 }
 
-func (c *RESTBackend) UpdateTutorialItem(r *http.Request) error {
+func (c *RESTController) UpdateTutorialItem(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -169,7 +169,7 @@ func (c *RESTBackend) UpdateTutorialItem(r *http.Request) error {
 	return nil
 }
 
-func (c *RESTBackend) UpdateNewsItem(r *http.Request) error {
+func (c *RESTController) UpdateNewsItem(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -178,7 +178,7 @@ func (c *RESTBackend) UpdateNewsItem(r *http.Request) error {
 	return nil
 }
 
-func (c *RESTBackend) UpdateFilesSection(r *http.Request) error {
+func (c *RESTController) UpdateFilesSection(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err

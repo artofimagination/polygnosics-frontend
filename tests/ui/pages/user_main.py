@@ -10,10 +10,11 @@ from pages.content_header import ContentHeader
 from pages.footer import Footer
 from pages.page_object import PageObject
 from selenium.webdriver.common.by import By
+import serverInfo
 
 
 class UserMainPage(PageObject):
-    URL = "http://0.0.0.0:8085/user-main"
+    URL = "http://0.0.0.0:" + serverInfo.getPort() + "/user-main"
 
     NEWS_TITLE = (
       By.XPATH,

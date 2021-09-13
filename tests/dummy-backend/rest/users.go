@@ -162,9 +162,9 @@ func (c *Controller) addProduct(w http.ResponseWriter, r *http.Request) {
 	productData[DetailsKey] = make(map[string]interface{})
 	details := productData[DetailsKey].(map[string]interface{})
 
-	assets[ProductAvatarKey] = fmt.Sprintf("/user-assets/uploads/avatar.jpg")
-	assets[ProductMainAppKey] = fmt.Sprintf("/user-assets/uploads/main-app.tar.gz")
-	assets[ProductClientAppKey] = fmt.Sprintf("/user-assets/uploads/client-app.tar.gz")
+	assets[ProductAvatarKey] = fmt.Sprintf("/backend/uploads/avatar.jpg")
+	assets[ProductMainAppKey] = fmt.Sprintf("/backend/uploads/main-app.tar.gz")
+	assets[ProductClientAppKey] = fmt.Sprintf("/backend/uploads/client-app.tar.gz")
 
 	details[ProductNameKey] = r.FormValue(ProductNameKey)
 	details[ProductPriceKey] = r.FormValue(ProductPriceKey)

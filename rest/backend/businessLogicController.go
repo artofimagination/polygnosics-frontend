@@ -1,4 +1,4 @@
-package restbackend
+package backend
 
 import (
 	"encoding/json"
@@ -41,7 +41,7 @@ type Project struct {
 	Details map[string]interface{}
 }
 
-func (c *RESTBackend) GetProduct(id string) (*Product, error) {
+func (c *RESTController) GetProduct(id string) (*Product, error) {
 	params := fmt.Sprintf("?id=%s", id)
 	product := &Product{}
 	data, err := get(BusinessLogicServerAddress, ProductPathGet, params)
@@ -59,7 +59,7 @@ func (c *RESTBackend) GetProduct(id string) (*Product, error) {
 	return product, nil
 }
 
-func (c *RESTBackend) GetProductsByUserID(userID string) ([]*Product, error) {
+func (c *RESTController) GetProductsByUserID(userID string) ([]*Product, error) {
 	products := make([]*Product, 0)
 	params := fmt.Sprintf("?user-id=%s", userID)
 	data, err := get(BusinessLogicServerAddress, ProductPathGetByUser, params)
@@ -77,7 +77,7 @@ func (c *RESTBackend) GetProductsByUserID(userID string) ([]*Product, error) {
 	return products, nil
 }
 
-func (c *RESTBackend) AddProduct(w http.ResponseWriter, r *http.Request) error {
+func (c *RESTController) AddProduct(w http.ResponseWriter, r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -85,7 +85,7 @@ func (c *RESTBackend) AddProduct(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func (c *RESTBackend) UpdateProduct(r *http.Request) error {
+func (c *RESTController) UpdateProduct(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -93,7 +93,7 @@ func (c *RESTBackend) UpdateProduct(r *http.Request) error {
 	return nil
 }
 
-func (c *RESTBackend) DeleteProduct(productID string) error {
+func (c *RESTController) DeleteProduct(productID string) error {
 	params := make(map[string]interface{})
 	params["id"] = productID
 	err := post(BusinessLogicServerAddress, ProductPathDelete, params)
@@ -103,7 +103,7 @@ func (c *RESTBackend) DeleteProduct(productID string) error {
 	return nil
 }
 
-func (c *RESTBackend) GetCategoriesMap() (map[string]interface{}, error) {
+func (c *RESTController) GetCategoriesMap() (map[string]interface{}, error) {
 	categories := make(map[string]interface{})
 	_, err := get(BusinessLogicServerAddress, CategoriesPathGet, "?nil")
 	if err != nil {
@@ -112,7 +112,7 @@ func (c *RESTBackend) GetCategoriesMap() (map[string]interface{}, error) {
 	return categories, nil
 }
 
-func (c *RESTBackend) CreateProject(r *http.Request) error {
+func (c *RESTController) CreateProject(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -120,7 +120,7 @@ func (c *RESTBackend) CreateProject(r *http.Request) error {
 	return nil
 }
 
-func (c *RESTBackend) GetProject(id string) (*Project, error) {
+func (c *RESTController) GetProject(id string) (*Project, error) {
 	params := fmt.Sprintf("?id=%s", id)
 	project := &Project{}
 	data, err := get(BusinessLogicServerAddress, ProjectPathGet, params)
@@ -138,7 +138,7 @@ func (c *RESTBackend) GetProject(id string) (*Project, error) {
 	return project, nil
 }
 
-func (c *RESTBackend) CheckProjectState(id string) (string, error) {
+func (c *RESTController) CheckProjectState(id string) (string, error) {
 	params := fmt.Sprintf("?id=%s", id)
 	_, err := get(BusinessLogicServerAddress, ProjectPathState, params)
 	if err != nil {
@@ -147,7 +147,7 @@ func (c *RESTBackend) CheckProjectState(id string) (string, error) {
 	return "", nil
 }
 
-func (c *RESTBackend) RunProject(userID string, projectID string) error {
+func (c *RESTController) RunProject(userID string, projectID string) error {
 	params := fmt.Sprintf("?user-id=%s&project-id=%s&state=run", userID, projectID)
 	_, err := get(BusinessLogicServerAddress, ProjectPathRequestState, params)
 	if err != nil {
@@ -156,7 +156,7 @@ func (c *RESTBackend) RunProject(userID string, projectID string) error {
 	return nil
 }
 
-func (c *RESTBackend) GetProjectsByUserID(userID string) ([]*Project, error) {
+func (c *RESTController) GetProjectsByUserID(userID string) ([]*Project, error) {
 	projects := make([]*Project, 0)
 	params := fmt.Sprintf("?user-id=%s", userID)
 	data, err := get(BusinessLogicServerAddress, ProjectPathGetByUser, params)
@@ -174,7 +174,7 @@ func (c *RESTBackend) GetProjectsByUserID(userID string) ([]*Project, error) {
 	return projects, nil
 }
 
-func (c *RESTBackend) DeleteProject(projectID string) error {
+func (c *RESTController) DeleteProject(projectID string) error {
 	params := make(map[string]interface{})
 	params["id"] = projectID
 	err := post(BusinessLogicServerAddress, ProjectPathDelete, params)
@@ -184,7 +184,7 @@ func (c *RESTBackend) DeleteProject(projectID string) error {
 	return nil
 }
 
-func (c *RESTBackend) UpdateProject(r *http.Request) error {
+func (c *RESTController) UpdateProject(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -204,7 +204,7 @@ func (c *RESTBackend) UpdateProject(r *http.Request) error {
 // 	c.HandleError(w, fmt.Sprintf("Failed to start frontend webrtc. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
 // 	return
 // }
-func (c *RESTBackend) InitStatsWebRTC(r *http.Request) error {
+func (c *RESTController) InitStatsWebRTC(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err

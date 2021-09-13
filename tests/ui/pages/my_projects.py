@@ -9,10 +9,11 @@ from pages.news_feed import NewsFeed
 from pages.content_header import ContentHeader
 from pages.footer import Footer
 from pages.page_object import PageObject
+import serverInfo
 
 
 class MyProjectsPage(PageObject):
-    URL = "http://0.0.0.0:8085/user-main/my-projects"
+    URL = "http://0.0.0.0:" + serverInfo.getPort() + "/user-main/my-projects"
 
     def __init__(self, browser, pageObjects=None):
         super().__init__(browser, pageObjects)

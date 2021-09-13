@@ -9,11 +9,12 @@ from pages.content_header import ContentHeader
 from pages.footer import Footer
 from pages.side_bar import Sidebar
 from selenium.webdriver.common.by import By
+import serverInfo
 
 
 class EditNewsEntry(PageObject):
-    URL = "http://localhost:8085/resources/\
-edit-news-item?id=d2b75a47-52f9-4401-af1b-a397005c14c3"
+    URL = "http://localhost:" + serverInfo.getPort() +\
+        "/resources/edit-news-item?id=d2b75a47-52f9-4401-af1b-a397005c14c3"
 
     EDITOR_TOOLBAR = (
       By.XPATH,

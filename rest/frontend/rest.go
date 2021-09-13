@@ -1,4 +1,4 @@
-package restfrontend
+package frontend
 
 import (
 	"fmt"
@@ -6,17 +6,17 @@ import (
 	"os"
 	"text/template"
 
+	"github.com/artofimagination/polygnosics-frontend/backend"
 	"github.com/artofimagination/polygnosics-frontend/contents"
-	"github.com/artofimagination/polygnosics-frontend/restbackend"
-	"github.com/artofimagination/polygnosics-frontend/restfrontend/session"
+	"github.com/artofimagination/polygnosics-frontend/frontend/session"
 
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
 
-type RESTFrontend struct {
+type RESTController struct {
 	ContentController *contents.ContentController
-	RESTBackend       *restbackend.RESTBackend
+	RESTBackend       *backend.RESTController
 }
 
 var ErrFailedToParseForm = "Failed to parse form"
@@ -143,7 +143,7 @@ const (
 	IndexNews      = "general-news"
 )
 
-func (c *RESTFrontend) URI(html string) string {
+func (c *RESTController) URI(html string) string {
 	return fmt.Sprintf("/%s", html)
 }
 
@@ -154,10 +154,10 @@ func parseItemID(r *http.Request) (string, error) {
 	return r.FormValue("item-id"), nil
 }
 
-func NewRESTController() *RESTFrontend {
-	backend := &restbackend.RESTBackend{}
+func NewRESTController() *RESTController {
+	backend := &backend.RESTController{}
 
-	controller := &RESTFrontend{
+	controller := &RESTController{
 		ContentController: &contents.ContentController{
 			RESTBackend: backend,
 		},
@@ -167,7 +167,7 @@ func NewRESTController() *RESTFrontend {
 }
 
 // MakeHandler creates the page handler and check the route validity.
-func (c *RESTFrontend) MakeHandler(fn func(http.ResponseWriter, *http.Request), router *mux.Router, isPublicPage bool) http.HandlerFunc {
+func (c *RESTController) MakeHandler(fn func(http.ResponseWriter, *http.Request), router *mux.Router, isPublicPage bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// TODO Issue#71: Figure out the proper settings and fix UI code that breaks because of CSP
 		//w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -210,7 +210,7 @@ func (c *RESTFrontend) MakeHandler(fn func(http.ResponseWriter, *http.Request), 
 }
 
 // RenderTemplate renders html.
-func (c *RESTFrontend) RenderTemplate(w http.ResponseWriter, tmpl string, p map[string]interface{}) {
+func (c *RESTController) RenderTemplate(w http.ResponseWriter, tmpl string, p map[string]interface{}) {
 	wd, err := os.Getwd()
 	if err != nil {
 		c.HandleError(w, err.Error(), http.StatusInternalServerError, c.URI(IndexPage))
@@ -231,7 +231,7 @@ func (c *RESTFrontend) RenderTemplate(w http.ResponseWriter, tmpl string, p map[
 }
 
 // HandleError creates page details and renders html template for an error modal.
-func (c *RESTFrontend) HandleError(w http.ResponseWriter, errorStr string, statusCode int, backPage string) {
+func (c *RESTController) HandleError(w http.ResponseWriter, errorStr string, statusCode int, backPage string) {
 	content := make(map[string]interface{})
 	content["parent_page"] = "Error"
 	content["status_code"] = statusCode

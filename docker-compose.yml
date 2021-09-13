@@ -13,21 +13,26 @@ services:
     image: artofimagination/dummy-backend
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${USER_STORE}:${USER_STORE_DOCKER}
+      - ${BACKEND}:${BACKEND_DOCKER}
     ports:
       - 8184:8184
     networks: 
       test-network:
         ipv4_address: 172.18.0.4
   frontend:
-    build: ./
-    image: artofimagination/polygnosics
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        SERVER_PORT: ${FRONTEND_SERVER_PORT}
+    image: artofimagination/polygnosics-frontend
     ports:
-      - 8085:8085
-    volumes:
-      - ${USER_STORE}:${USER_STORE_DOCKER}
+      - ${FRONTEND_SERVER_PORT}:${FRONTEND_SERVER_PORT}
     networks: 
-      test-network:
-        ipv4_address: 172.18.0.5
+      - test-network
+    environment:
+      SERVER_PORT: ${FRONTEND_SERVER_PORT}
+    volumes:
+      - ${BACKEND}:${BACKEND_DOCKER}
     depends_on:
       - dummy-backend

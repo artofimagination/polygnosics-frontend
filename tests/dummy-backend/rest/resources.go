@@ -96,12 +96,12 @@ func (c *Controller) addFAQ(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := WriteToFile("/user-assets/new-faq-answer-entry.txt", r.FormValue("answer")); err != nil {
+	if err := WriteToFile("/backend/new-faq-answer-entry.txt", r.FormValue("answer")); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 		return
 	}
 
-	if err := WriteToFile("/user-assets/new-faq-question-entry.txt", r.FormValue("question")); err != nil {
+	if err := WriteToFile("/backend/new-faq-question-entry.txt", r.FormValue("question")); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 		return
 	}
@@ -109,8 +109,8 @@ func (c *Controller) addFAQ(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	data["id"] = uuid.New().String()
 	data["group"] = r.FormValue("group")
-	data["question"] = "/user-assets/new-faq-question-entry.txt"
-	data["answer"] = "/user-assets/new-faq-answer-entry.txt"
+	data["question"] = "/backend/new-faq-question-entry.txt"
+	data["answer"] = "/backend/new-faq-answer-entry.txt"
 
 	c.TestData["faqs"] = append(c.TestData["faqs"].([]interface{}), data)
 	writeData("OK", w, http.StatusCreated)
@@ -151,7 +151,7 @@ func (c *Controller) addTutorial(w http.ResponseWriter, r *http.Request) {
 	data["id"] = uuid.New().String()
 	data["avatar_type"] = r.FormValue("avatar_type")
 	if data["avatar_type"] == "image" {
-		data["avatar"] = "/user-assets/uploads/new-tutorial-image.jpg"
+		data["avatar"] = "/backend/uploads/new-tutorial-image.jpg"
 		if err := uploadFile("avatar_image", "new-tutorial-image.jpg", r); err != nil {
 			writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 			return
@@ -164,8 +164,8 @@ func (c *Controller) addTutorial(w http.ResponseWriter, r *http.Request) {
 	data["last_updated"] = "today"
 	data["content"] = ""
 	if r.FormValue("article") != "" {
-		data["content"] = "/user-assets/new-tutorial-entry.txt"
-		if err := WriteToFile("/user-assets/new-tutorial-entry.txt", r.FormValue("article")); err != nil {
+		data["content"] = "/backend/new-tutorial-entry.txt"
+		if err := WriteToFile("/backend/new-tutorial-entry.txt", r.FormValue("article")); err != nil {
 			writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 			return
 		}
@@ -202,7 +202,7 @@ func (c *Controller) updateTutorial(w http.ResponseWriter, r *http.Request) {
 	for _, v := range c.TestData[TutorialsKey].([]interface{}) {
 		if v.(map[string]interface{})["id"] == r.FormValue("id") {
 			if v.(map[string]interface{})["content"] == "" && r.FormValue("article") != "" {
-				v.(map[string]interface{})["content"] = "/user-assets/update-tutorial-entry.txt"
+				v.(map[string]interface{})["content"] = "/backend/update-tutorial-entry.txt"
 			}
 			if err := WriteToFile(v.(map[string]interface{})["content"].(string), r.FormValue("article")); err != nil {
 				writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
@@ -210,7 +210,7 @@ func (c *Controller) updateTutorial(w http.ResponseWriter, r *http.Request) {
 			}
 			v.(map[string]interface{})["avatar_type"] = r.FormValue("avatar_type")
 			if r.FormValue("avatar_type") == "image" {
-				v.(map[string]interface{})["avatar"] = "/user-assets/uploads/new-tutorial-image.jpg"
+				v.(map[string]interface{})["avatar"] = "/backend/uploads/new-tutorial-image.jpg"
 				if err := uploadFile("avatar_image", "new-tutorial-image.jpg", r); err != nil {
 					writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 					return
@@ -349,13 +349,13 @@ func (c *Controller) addNewsFeed(w http.ResponseWriter, r *http.Request) {
 	year := strconv.Itoa(dt.Year())
 	day := strconv.Itoa(dt.Day())
 
-	err = WriteToFile("/user-assets/new-news-entry.txt", r.FormValue("news"))
+	err = WriteToFile("/backend/new-news-entry.txt", r.FormValue("news"))
 	if err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 		return
 	}
 	newsItem["id"] = uuid.New().String()
-	newsItem[NewsTextKey] = "/user-assets/new-news-entry.txt"
+	newsItem[NewsTextKey] = "/backend/new-news-entry.txt"
 	newsItem[NewsDayKey] = day
 	newsItem[NewsMonthKey] = dt.Month().String()[0:3]
 	newsList = append(newsList, newsItem)

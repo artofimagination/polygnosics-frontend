@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/artofimagination/polygnosics-frontend/restbackend"
+	"github.com/artofimagination/polygnosics-frontend/backend"
 )
 
 // Details and assets field keys
@@ -31,7 +31,7 @@ const (
 )
 
 // GetUserContent fills a string nested map with all user details and assets info
-func (c *ContentController) GetUserContent(user *restbackend.User) map[string]interface{} {
+func (c *ContentController) GetUserContent(user *backend.User) map[string]interface{} {
 	content := make(map[string]interface{})
 	content[FutureFeature] = 1
 	content[CreateItemKey] = ""

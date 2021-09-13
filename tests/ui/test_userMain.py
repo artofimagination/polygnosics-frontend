@@ -1,5 +1,6 @@
 import pytest
 import common
+import serverInfo
 from pages.user_main import UserMainPage
 from pages.signin import SigninPage
 from pages.error import ErrorPage
@@ -392,7 +393,8 @@ createTestData = [
         # Expected
         {
             'title': 'Polygnosics - User',
-            'url': "http://0.0.0.0:8085/resources/create-news-item"
+            'url': "http://0.0.0.0:" + serverInfo.getPort() + \
+            "/resources/create-news-item"
         }
     ),
 ]
@@ -430,7 +432,8 @@ createTestData = [
         # Expected
         {
             'title': 'Polygnosics - User',
-            'url': "http://0.0.0.0:8085/resources/news"
+            'url': "http://0.0.0.0:" + serverInfo.getPort() +\
+            "/resources/news"
         }
     ),
 ]
@@ -467,13 +470,19 @@ createTestData = [
         },
         # Expected
         {
-            'project-browser': "http://0.0.0.0:8085/user-main/project-browser",
-            'my-projects': "http://0.0.0.0:8085/user-main/my-projects",
-            'marketplace': "http://0.0.0.0:8085/user-main/store",
-            'my-products': "http://0.0.0.0:8085/user-main/my-products",
-            'news': "http://0.0.0.0:8085/resources/news",
+            'project-browser': "http://0.0.0.0:" + serverInfo.getPort() +\
+            "/user-main/project-browser",
+            'my-projects': "http://0.0.0.0:" + serverInfo.getPort() +\
+            "/user-main/my-projects",
+            'marketplace': "http://0.0.0.0:" + serverInfo.getPort() +\
+            "/user-main/store",
+            'my-products': "http://0.0.0.0:" + serverInfo.getPort() +\
+            "/user-main/my-products",
+            'news': "http://0.0.0.0:" + serverInfo.getPort() +\
+            "/resources/news",
             'copyright': "https://github.com/artofimagination/",
-            'faq': "http://0.0.0.0:8085/resources/faq"
+            'faq': "http://0.0.0.0:" + serverInfo.getPort() +\
+            "/resources/faq"
         }
     ),
 ]
@@ -510,7 +519,8 @@ def test_CommonComponents(browser, data, expected):
 #         # Expected
 #         {
 #             'title': 'Polygnosics - User',
-#             'url': "http://0.0.0.0:8085/user-main/my-projects"
+#             'url': "http://0.0.0.0:" + serverInfo.getPort() +\
+#             "/user-main/my-projects"
 #         }
 #     ),
 # ]
@@ -548,7 +558,8 @@ def test_CommonComponents(browser, data, expected):
 #         # Expected
 #         {
 #             'title': 'Polygnosics - User',
-#             'url': "http://0.0.0.0:8085/user-main/my-products"
+#             'url': "http://0.0.0.0:" + serverInfo.getPort() +\
+#             "/user-main/my-products"
 #         }
 #     ),
 # ]

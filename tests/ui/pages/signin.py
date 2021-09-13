@@ -6,10 +6,11 @@ the page object for the signup page.
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from pages.page_object import PageObject
+import serverInfo
 
 
 class SigninPage(PageObject):
-    URL = "http://0.0.0.0:8085/auth_login"
+    URL = "http://0.0.0.0:" + serverInfo.getPort() + "/auth_login"
 
     EMAIL_FIELD = (By.ID, 'email')
     PSW_FIELD = (By.ID, 'password')

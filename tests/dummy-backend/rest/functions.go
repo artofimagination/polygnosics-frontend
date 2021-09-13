@@ -119,7 +119,7 @@ func uploadFile(key string, fileName string, r *http.Request) error {
 	defer file.Close()
 
 	// Create file
-	dst, err := os.Create(fmt.Sprintf("/user-assets/uploads/%s", fileName))
+	dst, err := os.Create(fmt.Sprintf("/backend/uploads/%s", fileName))
 	if err != nil {
 		return err
 	}
@@ -155,7 +155,7 @@ func WriteToFile(filename string, data string) error {
 }
 
 func NewController() (*Controller, error) {
-	data, err := ioutil.ReadFile("/user-assets/testData.json")
+	data, err := ioutil.ReadFile("/backend/testData.json")
 	if err != nil {
 		return nil, err
 	}

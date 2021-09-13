@@ -5,10 +5,11 @@ the page object for the header of the main index page.
 
 from selenium.webdriver.common.by import By
 from pages.page_object import PageObject
+import serverInfo
 
 
 class IndexPageHeader(PageObject):
-    URL = "http://0.0.0.0:8085/index"
+    URL = "http://0.0.0.0:" + serverInfo.getPort() + "/index"
 
     SIGNUP_BUTTON = (By.XPATH, "//a[@href='/auth_signup']")
     SIGNIN_BUTTON = (By.LINK_TEXT, 'Sign In')

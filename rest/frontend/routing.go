@@ -1,4 +1,4 @@
-package restfrontend
+package frontend
 
 import (
 	"flag"
@@ -35,7 +35,7 @@ func (m FileSystem) Open(name string) (result http.File, err error) {
 }
 
 // CreateRouter creates the page path structure.
-func (c *RESTFrontend) CreateRouter() *mux.Router {
+func (c *RESTController) CreateRouter() *mux.Router {
 	r := mux.NewRouter()
 	// Publicly accessable pages
 	r.HandleFunc("/auth_signup", c.MakeHandler(c.SignupHandler, r, true))
@@ -118,7 +118,7 @@ func (c *RESTFrontend) CreateRouter() *mux.Router {
 	flag.StringVar(&dirUserAssets, "dirUserAssets", os.Getenv("USER_STORE_DOCKER"), "the directory to serve user asset files from. Defaults to the current dir")
 	flag.Parse()
 	handlerUserAssets := http.FileServer(FileSystem{http.Dir(dirUserAssets)})
-	r.PathPrefix("/user-assets/").Handler(http.StripPrefix("/user-assets/", handlerUserAssets))
+	r.PathPrefix("/backend/").Handler(http.StripPrefix("/backend/", handlerUserAssets))
 
 	err := r.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
 		pathTemplate, err := route.GetPathTemplate()
