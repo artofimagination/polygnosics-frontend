@@ -3,7 +3,7 @@ package contents
 import (
 	"fmt"
 
-	"github.com/artofimagination/polygnosics-frontend/restbackend"
+	"github.com/artofimagination/polygnosics-frontend/rest/backend"
 )
 
 // Details and assets field keys
@@ -49,7 +49,7 @@ func ValidateVisibility(value string) error {
 }
 
 // generateProjectContent fills a string nested map with all project details and assets info
-func (c *ContentController) generateProjectContent(projectData *restbackend.Project) map[string]interface{} {
+func (c *ContentController) generateProjectContent(projectData *backend.Project) map[string]interface{} {
 	content := projectData.Details
 	for k, v := range projectData.Assets {
 		content[k] = v

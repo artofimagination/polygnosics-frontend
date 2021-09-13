@@ -1,16 +1,14 @@
 package context
 
-import (
-	"github.com/artofimagination/polygnosics-frontend/restfrontend"
-)
+import "github.com/artofimagination/polygnosics-frontend/rest/frontend"
 
 type Context struct {
-	RESTFrontend *restfrontend.RESTFrontend
+	RESTFrontend *frontend.RESTController
 }
 
 func NewContext() (*Context, error) {
 	context := &Context{
-		RESTFrontend: restfrontend.NewRESTController(),
+		RESTFrontend: frontend.NewRESTController(),
 	}
 
 	return context, nil

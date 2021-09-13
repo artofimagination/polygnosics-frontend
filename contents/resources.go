@@ -1,6 +1,7 @@
 package contents
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -22,8 +23,11 @@ const (
 
 	FilesKey = "files"
 
-	NewsFeedKey     = "news_feed"
-	NewsFeedTextKey = "news_text"
+	NewsFeedKey      = "news_feed"
+	NewsFeedTextKey  = "news_text"
+	NewsFeedYearKey  = "news_year"
+	NewsFeedMonthKey = "news_month"
+	NewsFeedDayKey   = "news_day"
 
 	CreateItemKey   = "create_item"
 	ResourceContent = "resource_content"
@@ -120,19 +124,34 @@ func (c *ContentController) prepareNewsFeed(content map[string]interface{}) erro
 		return err
 	}
 
-	for year, newsYearItem := range news {
-		for index, newsItem := range newsYearItem.([]interface{}) {
-			if val, ok := newsItem.(map[string]interface{})[NewsFeedTextKey]; ok {
-				text, err := parseContent(val.(string))
-				if err != nil {
-					return err
-				}
-				news[year].([]interface{})[index].(map[string]interface{})[NewsFeedTextKey] = text
-				news[year].([]interface{})[index].(map[string]interface{})[EditKey] = fmt.Sprintf("/resources/edit-news-item?id=%s", newsItem.(map[string]interface{})[IDKey])
+	newsMap := make(map[string]interface{})
+	for _, entry := range news {
+		year := ""
+		if val, ok := entry.(map[string]interface{})[NewsFeedYearKey]; ok {
+			year = val.(string)
+		} else {
+			return errors.New("Years key missing")
+		}
+
+		if _, ok := newsMap[year]; !ok {
+			newsMap[year] = make([]interface{}, 0)
+		}
+
+		if val, ok := entry.(map[string]interface{})[NewsFeedTextKey]; ok {
+			text, err := parseContent(val.(string))
+			if err != nil {
+				return err
 			}
+			newsEntry := make(map[string]interface{})
+
+			newsEntry[NewsFeedTextKey] = text
+			newsEntry[NewsFeedMonthKey] = entry.(map[string]interface{})[NewsFeedMonthKey]
+			newsEntry[NewsFeedDayKey] = entry.(map[string]interface{})[NewsFeedDayKey]
+			newsEntry[EditKey] = fmt.Sprintf("/resources/edit-news-item?id=%s", entry.(map[string]interface{})[IDKey])
+			newsMap[year] = append(newsMap[year].([]interface{}), newsEntry)
 		}
 	}
-	content[NewsFeedKey] = news
+	content[NewsFeedKey] = newsMap
 	return nil
 }
 

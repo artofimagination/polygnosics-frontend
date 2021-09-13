@@ -8,10 +8,11 @@ from pages.side_bar import Sidebar
 from pages.content_header import ContentHeader
 from pages.page_object import PageObject
 from selenium.webdriver.common.by import By
+import serverInfo
 
 
 class TutorialsPage(PageObject):
-    URL = "http://0.0.0.0:8085/resources/tutorials"
+    URL = "http://0.0.0.0:" + serverInfo.getPort() + "/resources/tutorials"
 
     VIDEO_ITEM_LINK = (
       By.XPATH,

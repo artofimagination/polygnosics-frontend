@@ -1,4 +1,4 @@
-package restfrontend
+package frontend
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (c *RESTFrontend) MyProjects(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) MyProjects(w http.ResponseWriter, r *http.Request) {
 	content, err := c.ContentController.BuildMyProjectsContent()
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to get project content. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
@@ -18,7 +18,7 @@ func (c *RESTFrontend) MyProjects(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, MyProjects, content)
 }
 
-func (c *RESTFrontend) ProjectDetails(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) ProjectDetails(w http.ResponseWriter, r *http.Request) {
 	projectID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse project id. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
@@ -34,7 +34,7 @@ func (c *RESTFrontend) ProjectDetails(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, UserMainProjectDetails, content)
 }
 
-func (c *RESTFrontend) CreateProject(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) CreateProject(w http.ResponseWriter, r *http.Request) {
 	productID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse product id. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
@@ -68,7 +68,7 @@ func (c *RESTFrontend) CreateProject(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c *RESTFrontend) HandleStatusRequest(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) HandleStatusRequest(w http.ResponseWriter, r *http.Request) {
 	projectID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse project id. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
@@ -89,7 +89,7 @@ func (c *RESTFrontend) HandleStatusRequest(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusOK)
 }
 
-func (c *RESTFrontend) RunProject(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) RunProject(w http.ResponseWriter, r *http.Request) {
 	projectID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse project id. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
@@ -110,7 +110,7 @@ func (c *RESTFrontend) RunProject(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, "show", content)
 }
 
-func (c *RESTFrontend) ShowProject(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) ShowProject(w http.ResponseWriter, r *http.Request) {
 	projectID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse project id. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))
@@ -126,7 +126,7 @@ func (c *RESTFrontend) ShowProject(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, "show", content)
 }
 
-func (c *RESTFrontend) DeleteProject(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		projectID, err := parseItemID(r)
 		if err != nil {
@@ -143,7 +143,7 @@ func (c *RESTFrontend) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c *RESTFrontend) EditProject(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) EditProject(w http.ResponseWriter, r *http.Request) {
 	projectID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse project id. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))

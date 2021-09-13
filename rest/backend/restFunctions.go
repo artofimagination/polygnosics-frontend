@@ -1,4 +1,4 @@
-package restbackend
+package backend
 
 import (
 	"bytes"
@@ -7,12 +7,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/artofimagination/polygnosics-frontend/rest"
 )
 
 var BusinessLogicServerAddress string = "http://172.18.0.4:8184"
 var StatsServerAddress string = "http://172.18.0.6:8086"
 
-type RESTBackend struct {
+type RESTController struct {
+	BackendAddress *rest.Server
 }
 
 func forwardRequest(address string, r *http.Request) (interface{}, error) {

@@ -1,4 +1,4 @@
-package restbackend
+package backend
 
 import (
 	"encoding/json"
@@ -23,7 +23,7 @@ type User struct {
 	Settings map[string]interface{}
 }
 
-func (c *RESTBackend) Login(email string, password []byte) (*User, error) {
+func (c *RESTController) Login(email string, password []byte) (*User, error) {
 	params := fmt.Sprintf("?email=%s&password=%s", email, password)
 	userData, err := get(BusinessLogicServerAddress, UserPathLogin, params)
 	if err != nil {
@@ -42,7 +42,7 @@ func (c *RESTBackend) Login(email string, password []byte) (*User, error) {
 	return user, nil
 }
 
-func (c *RESTBackend) GetUserByID(requestedID string) (*User, error) {
+func (c *RESTController) GetUserByID(requestedID string) (*User, error) {
 	params := fmt.Sprintf("?requestedID=%s", requestedID)
 	userData, err := get(BusinessLogicServerAddress, UserPathLogin, params)
 	if err != nil {
@@ -61,7 +61,7 @@ func (c *RESTBackend) GetUserByID(requestedID string) (*User, error) {
 	return user, nil
 }
 
-func (c *RESTBackend) UpdateUserAvatar(r *http.Request) error {
+func (c *RESTController) UpdateUserAvatar(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err
@@ -69,7 +69,7 @@ func (c *RESTBackend) UpdateUserAvatar(r *http.Request) error {
 	return nil
 }
 
-func (c *RESTBackend) AddUser(username string, email string, password []byte, group string) error {
+func (c *RESTController) AddUser(username string, email string, password []byte, group string) error {
 	params := make(map[string]interface{})
 	params["username"] = username
 	params["email"] = email
@@ -82,7 +82,7 @@ func (c *RESTBackend) AddUser(username string, email string, password []byte, gr
 	return nil
 }
 
-func (c *RESTBackend) DetectRootUser() (bool, error) {
+func (c *RESTController) DetectRootUser() (bool, error) {
 	data, err := get(BusinessLogicServerAddress, UserPathDetectRootUser, "?nil")
 	if err != nil {
 		return false, err
@@ -95,7 +95,7 @@ func (c *RESTBackend) DetectRootUser() (bool, error) {
 	return found, nil
 }
 
-func (c *RESTBackend) UpdateUser(r *http.Request) error {
+func (c *RESTController) UpdateUser(r *http.Request) error {
 	_, err := forwardRequest(BusinessLogicServerAddress, r)
 	if err != nil {
 		return err

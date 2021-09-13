@@ -3,7 +3,7 @@ package contents
 import (
 	"fmt"
 
-	"github.com/artofimagination/polygnosics-frontend/restbackend"
+	"github.com/artofimagination/polygnosics-frontend/rest/backend"
 )
 
 // Details and assets field keys
@@ -36,7 +36,7 @@ const (
 )
 
 /// GenerateProductContent fills a string nested map with all product details and assets info
-func (c *ContentController) generateProductContent(productData *restbackend.Product) map[string]interface{} {
+func (c *ContentController) generateProductContent(productData *backend.Product) map[string]interface{} {
 	content := productData.Details
 	for k, v := range productData.Assets {
 		content[k] = v

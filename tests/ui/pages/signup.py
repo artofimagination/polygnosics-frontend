@@ -8,10 +8,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from pages.page_object import PageObject
+import serverInfo
 
 
 class SignupPage(PageObject):
-    URL = "http://0.0.0.0:8085/auth_signup"
+    URL = "http://0.0.0.0:" + serverInfo.getPort() + "/auth_signup"
 
     USERNAME_FIELD = (By.ID, 'username')
     EMAIL_FIELD = (By.ID, 'email')

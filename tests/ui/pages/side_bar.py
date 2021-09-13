@@ -107,7 +107,7 @@ class Sidebar(PageObject):
 
     PROFILE_PHOTO = (
         By.XPATH,
-        "//img[@src='/user-assets/avatar-test.jpg']")
+        "//img[@src='/backend/avatar-test.jpg']")
 
     USERNAME = (
         By.XPATH,

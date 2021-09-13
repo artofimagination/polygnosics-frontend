@@ -9,10 +9,12 @@ from pages.content_header import ContentHeader
 from pages.footer import Footer
 from pages.side_bar import Sidebar
 from selenium.webdriver.common.by import By
+import serverInfo
 
 
 class AddNewsEntry(PageObject):
-    URL = "http://0.0.0.0:8085/resources/create-news-item"
+    URL = "http://0.0.0.0:" + serverInfo.getPort() +\
+        "/resources/create-news-item"
 
     EDITOR_TOOLBAR = (
       By.XPATH,

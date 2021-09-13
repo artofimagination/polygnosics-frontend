@@ -37,19 +37,19 @@
                       <div id="radio-list_{{$i}}" class="radio-list">
                         <label class="radio-inline p-0 mr-10">
                           <div class="radio radio-info">
-                            <input type="radio" name="type_{{$i}}" id="link_{{$i}}" value="link" {{if eq (index $a "type") "link"}}checked{{end}}>
+                            <input type="radio" name="type_{{index $a "type"}}" id="link_{{$i}}" value="link" {{if eq (index $a "type") "link"}}checked{{end}}>
                             <label for="link_{{$i}}">Repo Link</label>
                           </div>
                         </label>
                         <label class="radio-inline">
                           <div class="radio radio-info">
-                            <input type="radio" name="type_{{$i}}" id="file_{{$i}}" value="file" {{if eq (index $a "type") "file"}}checked{{end}}>
+                            <input type="radio" name="type_{{index $a "type"}}" id="file_{{$i}}" value="file" {{if eq (index $a "type") "file"}}checked{{end}}>
                             <label for="file_{{$i}}">File</label>
                           </div>
                         </label>
                       </div>
-                      <input type="url" class="form-control" id="repo_link_{{$i}}" name="repo_link_{{$i}}" value="{{index $a "ref"}}">
-                      <input type="file" class="btn btn-primary form-control" id="upload_file_{{$i}}" name="upload_file_{{$i}}">
+                      <input type="url" class="form-control" id="repo_link_{{$i}}" name="repo_link_{{index $a "type"}}" value="{{index $a "ref"}}">
+                      <input type="file" class="btn btn-primary form-control" id="upload_file_{{$i}}" name="upload_file_{{index $a "type"}}">
                     {{end}}
                     <button id="add-more" name="add-more" class="btn-sm btn-secondary mt-10">Add More</button>
                   </div>

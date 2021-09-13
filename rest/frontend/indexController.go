@@ -1,38 +1,40 @@
-package restfrontend
+package frontend
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/pkg/errors"
 )
 
-func (c *RESTFrontend) Contact(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) Contact(w http.ResponseWriter, r *http.Request) {
 	content := c.ContentController.BuildContactContent()
 	c.RenderTemplate(w, AboutContact, content)
 }
 
-func (c *RESTFrontend) Career(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) Career(w http.ResponseWriter, r *http.Request) {
 	content := make(map[string]interface{})
 	c.RenderTemplate(w, AboutCareer, content)
 }
 
-func (c *RESTFrontend) About(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) About(w http.ResponseWriter, r *http.Request) {
 	content := make(map[string]interface{})
 	c.RenderTemplate(w, AboutWhoWeAre, content)
 }
 
-func (c *RESTFrontend) GeneralContact(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) GeneralContact(w http.ResponseWriter, r *http.Request) {
 	content := make(map[string]interface{})
 	c.RenderTemplate(w, IndexContact, content)
 }
 
-func (c *RESTFrontend) GeneralNews(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) GeneralNews(w http.ResponseWriter, r *http.Request) {
 	content := make(map[string]interface{})
 	c.RenderTemplate(w, IndexNews, content)
 }
 
-func (c *RESTFrontend) IndexHandler(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) IndexHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Index")
 	content := make(map[string]interface{})
 	// TODO Issue#107: Replace this with proper way of detecting if root has already been created.
 	found, err := c.RESTBackend.DetectRootUser()

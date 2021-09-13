@@ -1,4 +1,4 @@
-package restfrontend
+package frontend
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (c *RESTFrontend) MyProducts(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) MyProducts(w http.ResponseWriter, r *http.Request) {
 	content, err := c.ContentController.BuildMyProductsContent()
 	if err != nil {
 		errString := fmt.Sprintf("Failed to get product content. %s", errors.WithStack(err))
@@ -17,7 +17,7 @@ func (c *RESTFrontend) MyProducts(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, UserMainMyProducts, content)
 }
 
-func (c *RESTFrontend) MyProductDetails(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) MyProductDetails(w http.ResponseWriter, r *http.Request) {
 	productID, err := parseItemID(r)
 	if err != nil {
 		c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent("Failed to parse product id"))
@@ -33,7 +33,7 @@ func (c *RESTFrontend) MyProductDetails(w http.ResponseWriter, r *http.Request) 
 	c.RenderTemplate(w, "details", content)
 }
 
-func (c *RESTFrontend) ProductDetails(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) ProductDetails(w http.ResponseWriter, r *http.Request) {
 	productID, err := parseItemID(r)
 	if err != nil {
 		c.RenderTemplate(w, UserMain, c.ContentController.BuildErrorContent("Failed to parse product id"))
@@ -49,7 +49,7 @@ func (c *RESTFrontend) ProductDetails(w http.ResponseWriter, r *http.Request) {
 	c.RenderTemplate(w, "details", content)
 }
 
-func (c *RESTFrontend) CreateProduct(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		content, err := c.ContentController.BuildProductWizardContent()
 		if err != nil {
@@ -73,7 +73,7 @@ func (c *RESTFrontend) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c *RESTFrontend) DeleteProduct(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		productID, err := parseItemID(r)
 		if err != nil {
@@ -90,7 +90,7 @@ func (c *RESTFrontend) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c *RESTFrontend) EditProduct(w http.ResponseWriter, r *http.Request) {
+func (c *RESTController) EditProduct(w http.ResponseWriter, r *http.Request) {
 	productID, err := parseItemID(r)
 	if err != nil {
 		c.HandleError(w, fmt.Sprintf("Failed to parse product id. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(UserMain))

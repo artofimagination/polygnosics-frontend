@@ -8,10 +8,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from pages.page_object import PageObject
 from pages.index_header import IndexPageHeader
+import serverInfo
 
 
 class IndexPage(PageObject):
-    URL = "http://0.0.0.0:8085/index"
+    URL = "http://0.0.0.0:" + serverInfo.getPort() + "/index"
 
     PRELOADER = (By.CLASS_NAME, 'loader-wrap')
 
