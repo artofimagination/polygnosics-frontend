@@ -8,5 +8,5 @@ def getPort():
     with open(fileName) as envFile:
         for line in envFile:
             name, var = line.partition("=")[::2]
-            variables[name.strip()] = var
+            variables[name.strip()] = var.strip()
         return variables["FRONTEND_SERVER_PORT"]

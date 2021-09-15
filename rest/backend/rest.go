@@ -11,11 +11,22 @@ import (
 	"github.com/artofimagination/polygnosics-frontend/rest"
 )
 
-var BusinessLogicServerAddress string = "http://172.18.0.4:8184"
 var StatsServerAddress string = "http://172.18.0.6:8086"
 
 type RESTController struct {
 	BackendAddress *rest.Server
+}
+
+func (c *RESTController) Post(path string, parameters interface{}) error {
+	return post(c.BackendAddress.GetAddress(), path, parameters)
+}
+
+func (c *RESTController) Get(path string, parameters string) (interface{}, error) {
+	return get(c.BackendAddress.GetAddress(), path, parameters)
+}
+
+func (c *RESTController) ForwardRequest(r *http.Request) (interface{}, error) {
+	return forwardRequest(c.BackendAddress.GetAddress(), r)
 }
 
 func forwardRequest(address string, r *http.Request) (interface{}, error) {
@@ -91,7 +102,7 @@ func get(address string, path string, parameters string) (interface{}, error) {
 	return nil, errors.New("Invalid response")
 }
 
-func post(address string, path string, parameters map[string]interface{}) error {
+func post(address string, path string, parameters interface{}) error {
 	reqBody, err := json.Marshal(parameters)
 	if err != nil {
 		return err

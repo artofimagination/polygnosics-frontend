@@ -19,9 +19,9 @@ type Config struct {
 	Port           int    `mapstructure:"server_port" default:"8080"`
 	Address        string `mapstructure:"server_address" default:"0.0.0.0"`
 	Name           string `mapstructure:"server_name" default:"Unknown"`
-	BackendPort    int    `mapstructure:"backend_port" default:"8080"`
-	BackendAddress string `mapstructure:"backend_address" default:"0.0.0.0"`
-	BackendName    string `mapstructure:"backend_name" default:"Unknown"`
+	BackendPort    int    `mapstructure:"backend_server_port" default:"8080"`
+	BackendAddress string `mapstructure:"backend_server_address" default:"0.0.0.0"`
+	BackendName    string `mapstructure:"backend_server_name" default:"Unknown"`
 }
 
 // InitConfig reads in config file and ENV variables if set.

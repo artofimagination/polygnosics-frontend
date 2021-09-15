@@ -6,9 +6,9 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/artofimagination/polygnosics-frontend/backend"
 	"github.com/artofimagination/polygnosics-frontend/contents"
-	"github.com/artofimagination/polygnosics-frontend/frontend/session"
+	"github.com/artofimagination/polygnosics-frontend/rest/backend"
+	"github.com/artofimagination/polygnosics-frontend/rest/frontend/session"
 
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
@@ -154,9 +154,7 @@ func parseItemID(r *http.Request) (string, error) {
 	return r.FormValue("item-id"), nil
 }
 
-func NewRESTController() *RESTController {
-	backend := &backend.RESTController{}
-
+func NewRESTController(backend *backend.RESTController) *RESTController {
 	controller := &RESTController{
 		ContentController: &contents.ContentController{
 			RESTBackend: backend,

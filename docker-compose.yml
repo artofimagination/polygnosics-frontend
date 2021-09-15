@@ -9,16 +9,23 @@ networks:
 
 services:
   dummy-backend:
-    build: ./tests/dummy-backend
+    build:
+      context: ./tests/dummy-backend
+      dockerfile: Dockerfile
+      args:
+        SERVER_PORT: ${BACKEND_SERVER_PORT}
     image: artofimagination/dummy-backend
+    container_name: ${BACKEND_SERVER_NAME}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${BACKEND}:${BACKEND_DOCKER}
     ports:
-      - 8184:8184
+      - ${BACKEND_SERVER_PORT}:${BACKEND_SERVER_PORT}
     networks: 
       test-network:
-        ipv4_address: 172.18.0.4
+        ipv4_address: ${BACKEND_SERVER_ADDRESS}
+    environment:
+      BACKEND_SERVER_PORT: ${BACKEND_SERVER_PORT}
   frontend:
     build:
       context: ./
@@ -26,12 +33,19 @@ services:
       args:
         SERVER_PORT: ${FRONTEND_SERVER_PORT}
     image: artofimagination/polygnosics-frontend
+    container_name: ${FRONTEND_SERVER_NAME}
     ports:
       - ${FRONTEND_SERVER_PORT}:${FRONTEND_SERVER_PORT}
     networks: 
-      - test-network
+      test-network:
+        ipv4_address: ${FRONTEND_SERVER_ADDRESS}
     environment:
       SERVER_PORT: ${FRONTEND_SERVER_PORT}
+      SERVER_ADDRESS: ${FRONTEND_SERVER_ADDRESS}
+      SERVER_NAME: ${FRONTEND_SERVER_NAME}
+      BACKEND_SERVER_PORT: ${BACKEND_SERVER_PORT}
+      BACKEND_SERVER_ADDRESS: ${BACKEND_SERVER_ADDRESS}
+      BACKEND_SERVER_NAME: ${BACKEND_SERVER_NAME}
     volumes:
       - ${BACKEND}:${BACKEND_DOCKER}
     depends_on:

@@ -11,7 +11,7 @@ def getPort():
     with open(fileName) as envFile:
         for line in envFile:
             name, var = line.partition("=")[::2]
-            variables[name.strip()] = var
+            variables[name.strip()] = var.strip()
         return variables
 
 
@@ -44,7 +44,8 @@ class HTTPConnectorFrontend():
 
 class HTTPConnectorDummyBackend():
     def __init__(self):
-        self.URL = "http://0.0.0.0:8184"
+        self.URL = "http://127.0.0.1:" + getPort()["BACKEND_SERVER_PORT"]
+        print(self.URL)
         connected = False
         timeout = 15
         while timeout > 0:

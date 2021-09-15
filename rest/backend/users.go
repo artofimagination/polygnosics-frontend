@@ -25,7 +25,7 @@ type User struct {
 
 func (c *RESTController) Login(email string, password []byte) (*User, error) {
 	params := fmt.Sprintf("?email=%s&password=%s", email, password)
-	userData, err := get(BusinessLogicServerAddress, UserPathLogin, params)
+	userData, err := c.Get(UserPathLogin, params)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (c *RESTController) Login(email string, password []byte) (*User, error) {
 
 func (c *RESTController) GetUserByID(requestedID string) (*User, error) {
 	params := fmt.Sprintf("?requestedID=%s", requestedID)
-	userData, err := get(BusinessLogicServerAddress, UserPathLogin, params)
+	userData, err := c.Get(UserPathLogin, params)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (c *RESTController) GetUserByID(requestedID string) (*User, error) {
 }
 
 func (c *RESTController) UpdateUserAvatar(r *http.Request) error {
-	_, err := forwardRequest(BusinessLogicServerAddress, r)
+	_, err := c.ForwardRequest(r)
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (c *RESTController) AddUser(username string, email string, password []byte,
 	params["email"] = email
 	params["password"] = string(password)
 	params["group"] = group
-	err := post(BusinessLogicServerAddress, UserPathAdd, params)
+	err := c.Post(UserPathAdd, params)
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func (c *RESTController) AddUser(username string, email string, password []byte,
 }
 
 func (c *RESTController) DetectRootUser() (bool, error) {
-	data, err := get(BusinessLogicServerAddress, UserPathDetectRootUser, "?nil")
+	data, err := c.Get(UserPathDetectRootUser, "?nil")
 	if err != nil {
 		return false, err
 	}
@@ -96,7 +96,7 @@ func (c *RESTController) DetectRootUser() (bool, error) {
 }
 
 func (c *RESTController) UpdateUser(r *http.Request) error {
-	_, err := forwardRequest(BusinessLogicServerAddress, r)
+	_, err := c.ForwardRequest(r)
 	if err != nil {
 		return err
 	}

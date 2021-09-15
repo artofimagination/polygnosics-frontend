@@ -44,7 +44,7 @@ type Project struct {
 func (c *RESTController) GetProduct(id string) (*Product, error) {
 	params := fmt.Sprintf("?id=%s", id)
 	product := &Product{}
-	data, err := get(BusinessLogicServerAddress, ProductPathGet, params)
+	data, err := c.Get(ProductPathGet, params)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (c *RESTController) GetProduct(id string) (*Product, error) {
 func (c *RESTController) GetProductsByUserID(userID string) ([]*Product, error) {
 	products := make([]*Product, 0)
 	params := fmt.Sprintf("?user-id=%s", userID)
-	data, err := get(BusinessLogicServerAddress, ProductPathGetByUser, params)
+	data, err := c.Get(ProductPathGetByUser, params)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (c *RESTController) GetProductsByUserID(userID string) ([]*Product, error) 
 }
 
 func (c *RESTController) AddProduct(w http.ResponseWriter, r *http.Request) error {
-	_, err := forwardRequest(BusinessLogicServerAddress, r)
+	_, err := c.ForwardRequest(r)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (c *RESTController) AddProduct(w http.ResponseWriter, r *http.Request) erro
 }
 
 func (c *RESTController) UpdateProduct(r *http.Request) error {
-	_, err := forwardRequest(BusinessLogicServerAddress, r)
+	_, err := c.ForwardRequest(r)
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func (c *RESTController) UpdateProduct(r *http.Request) error {
 func (c *RESTController) DeleteProduct(productID string) error {
 	params := make(map[string]interface{})
 	params["id"] = productID
-	err := post(BusinessLogicServerAddress, ProductPathDelete, params)
+	err := c.Post(ProductPathDelete, params)
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func (c *RESTController) DeleteProduct(productID string) error {
 
 func (c *RESTController) GetCategoriesMap() (map[string]interface{}, error) {
 	categories := make(map[string]interface{})
-	_, err := get(BusinessLogicServerAddress, CategoriesPathGet, "?nil")
+	_, err := c.Get(CategoriesPathGet, "?nil")
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func (c *RESTController) GetCategoriesMap() (map[string]interface{}, error) {
 }
 
 func (c *RESTController) CreateProject(r *http.Request) error {
-	_, err := forwardRequest(BusinessLogicServerAddress, r)
+	_, err := c.ForwardRequest(r)
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func (c *RESTController) CreateProject(r *http.Request) error {
 func (c *RESTController) GetProject(id string) (*Project, error) {
 	params := fmt.Sprintf("?id=%s", id)
 	project := &Project{}
-	data, err := get(BusinessLogicServerAddress, ProjectPathGet, params)
+	data, err := c.Get(ProjectPathGet, params)
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +140,7 @@ func (c *RESTController) GetProject(id string) (*Project, error) {
 
 func (c *RESTController) CheckProjectState(id string) (string, error) {
 	params := fmt.Sprintf("?id=%s", id)
-	_, err := get(BusinessLogicServerAddress, ProjectPathState, params)
+	_, err := c.Get(ProjectPathState, params)
 	if err != nil {
 		return "", err
 	}
@@ -149,7 +149,7 @@ func (c *RESTController) CheckProjectState(id string) (string, error) {
 
 func (c *RESTController) RunProject(userID string, projectID string) error {
 	params := fmt.Sprintf("?user-id=%s&project-id=%s&state=run", userID, projectID)
-	_, err := get(BusinessLogicServerAddress, ProjectPathRequestState, params)
+	_, err := c.Get(ProjectPathRequestState, params)
 	if err != nil {
 		return err
 	}
@@ -159,7 +159,7 @@ func (c *RESTController) RunProject(userID string, projectID string) error {
 func (c *RESTController) GetProjectsByUserID(userID string) ([]*Project, error) {
 	projects := make([]*Project, 0)
 	params := fmt.Sprintf("?user-id=%s", userID)
-	data, err := get(BusinessLogicServerAddress, ProjectPathGetByUser, params)
+	data, err := c.Get(ProjectPathGetByUser, params)
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +177,7 @@ func (c *RESTController) GetProjectsByUserID(userID string) ([]*Project, error) 
 func (c *RESTController) DeleteProject(projectID string) error {
 	params := make(map[string]interface{})
 	params["id"] = projectID
-	err := post(BusinessLogicServerAddress, ProjectPathDelete, params)
+	err := c.Post(ProjectPathDelete, params)
 	if err != nil {
 		return err
 	}
@@ -185,7 +185,7 @@ func (c *RESTController) DeleteProject(projectID string) error {
 }
 
 func (c *RESTController) UpdateProject(r *http.Request) error {
-	_, err := forwardRequest(BusinessLogicServerAddress, r)
+	_, err := c.ForwardRequest(r)
 	if err != nil {
 		return err
 	}
@@ -205,7 +205,7 @@ func (c *RESTController) UpdateProject(r *http.Request) error {
 // 	return
 // }
 func (c *RESTController) InitStatsWebRTC(r *http.Request) error {
-	_, err := forwardRequest(BusinessLogicServerAddress, r)
+	_, err := c.ForwardRequest(r)
 	if err != nil {
 		return err
 	}

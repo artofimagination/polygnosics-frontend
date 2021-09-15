@@ -1,6 +1,7 @@
 package ipresolver
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -18,18 +19,31 @@ type IPResolver struct {
 	BackendAddress    *rest.Server
 }
 
-func NewIPResolver(cfg *initialization.Config) *IPResolver {
+func NewIPResolver(backend *backend.RESTController, cfg *initialization.Config) *IPResolver {
 	backendServer := &rest.Server{
 		IP:   cfg.BackendAddress,
 		Port: cfg.BackendPort,
 		Name: cfg.BackendName,
 	}
 
+	prettyPrint(backendServer)
+
+	backend.BackendAddress = backendServer
+
 	ipresolver := &IPResolver{
 		BackendAddress: backendServer,
 	}
 
 	return ipresolver
+}
+
+func prettyPrint(v interface{}) {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err == nil {
+		fmt.Println(string(b))
+		return
+	}
+	fmt.Println("Failed to pretty print data")
 }
 
 // DetectValidAddresses waits 5 seconds to allow the IP resolver server to set the user and resource db addresses
@@ -54,18 +68,18 @@ func (c *IPResolver) DetectValidAddresses() error {
 }
 
 func (c *IPResolver) setBackendAddress(w http.ResponseWriter, r *http.Request) {
-	requestData, err := r.DecodeRequest()
-	if err != nil {
-		c.HandleError(w, fmt.Sprintf("Failed to get root user. %s", errors.WithStack(err)), http.StatusInternalServerError, c.URI(IndexPage))
-		w.WriteError(fmt.Sprintf("Frontend -> %s", err.Error()), http.StatusBadRequest)
+	data := make(map[string]interface{})
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		log.Fatalf("Failed to get backend address. %s\n", errors.WithStack(err))
 		return
 	}
 
-	c.BackendAddress.IP = requestData["ip"].(string)
-	c.BackendAddress.Port = requestData["port"].(int)
-	c.BackendAddress.Name = requestData["name"].(string)
+	c.BackendAddress.IP = data["ip"].(string)
+	c.BackendAddress.Port = data["port"].(int)
+	c.BackendAddress.Name = data["name"].(string)
 
-	w.WriteData("OK", http.StatusCreated)
+	w.WriteHeader(http.StatusCreated)
+	fmt.Fprint(w, "OK")
 }
 
 func (c *IPResolver) AddRouting(r *mux.Router) {

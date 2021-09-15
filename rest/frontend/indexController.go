@@ -2,7 +2,6 @@ package frontend
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/pkg/errors"
@@ -34,7 +33,6 @@ func (c *RESTController) GeneralNews(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *RESTController) IndexHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("Index")
 	content := make(map[string]interface{})
 	// TODO Issue#107: Replace this with proper way of detecting if root has already been created.
 	found, err := c.RESTBackend.DetectRootUser()

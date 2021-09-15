@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/artofimagination/polygnosics-frontend/backend"
+	"github.com/artofimagination/polygnosics-frontend/rest/backend"
 )
 
 // Details and assets field keys

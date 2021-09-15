@@ -11,21 +11,19 @@ import (
 	"time"
 
 	serverContext "github.com/artofimagination/polygnosics-frontend/context"
-	"github.com/artofimagination/polygnosics-frontend/initialization"
 
 	"github.com/pkg/errors"
 )
 
 func main() {
-	cfg := &initialization.Config{}
-	initialization.InitConfig(cfg)
+
 	context, err := serverContext.NewContext()
 	if err != nil {
 		log.Fatalf("Failed to initiate context. %s\n", errors.WithStack(err))
 	}
 
 	// Create Server and Route Handlers
-	port := fmt.Sprintf(":%d", cfg.Port)
+	port := fmt.Sprintf(":%d", context.Config.Port)
 	srv := &http.Server{
 		Handler:      context.RESTFrontend.CreateRouter(),
 		Addr:         port,

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/artofimagination/polygnosics-frontend/frontend/session"
+	"github.com/artofimagination/polygnosics-frontend/rest/frontend/session"
 
 	"github.com/pkg/errors"
 )
