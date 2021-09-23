@@ -24,14 +24,10 @@ const (
 )
 
 func (c *Controller) getTutorials(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
-
-	data["data"] = c.TestData[TutorialsKey]
-	encodeResponse(data, w)
+	writeData(c.TestData[TutorialsKey], w, http.StatusOK)
 }
 
 func (c *Controller) getArticle(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
@@ -40,22 +36,18 @@ func (c *Controller) getArticle(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
 	for _, v := range c.TestData[TutorialsKey].([]interface{}) {
 		if v.(map[string]interface{})["id"] == id {
-			data["data"] = v
-			break
+			writeData(v, w, http.StatusOK)
+			return
 		}
 	}
-	encodeResponse(data, w)
+	writeData(nil, w, http.StatusOK)
 }
 
 func (c *Controller) getFAQs(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
-
-	data["data"] = c.TestData[FAQsKey]
-	encodeResponse(data, w)
+	writeData(c.TestData[FAQsKey], w, http.StatusOK)
 }
 
 func (c *Controller) getFAQ(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
@@ -64,16 +56,15 @@ func (c *Controller) getFAQ(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
 	for _, v := range c.TestData[FAQsKey].([]interface{}) {
 		if v.(map[string]interface{})["id"] == id {
-			data["data"] = v
-			break
+			writeData(v, w, http.StatusOK)
+			return
 		}
 	}
 
-	encodeResponse(data, w)
+	writeData(nil, w, http.StatusOK)
 }
 
 func (c *Controller) getFilesSection(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
@@ -82,12 +73,12 @@ func (c *Controller) getFilesSection(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
 	for _, v := range c.TestData[FilesKey].([]interface{}) {
 		if v.(map[string]interface{})["id"] == id {
-			data["data"] = v
-			break
+			writeData(v, w, http.StatusOK)
+			return
 		}
 	}
 
-	encodeResponse(data, w)
+	writeData(nil, w, http.StatusOK)
 }
 
 func (c *Controller) addFAQ(w http.ResponseWriter, r *http.Request) {
@@ -186,11 +177,12 @@ func (c *Controller) getTutorial(w http.ResponseWriter, r *http.Request) {
 	for _, v := range c.TestData[TutorialsKey].([]interface{}) {
 		if v.(map[string]interface{})["id"] == id {
 			data["data"] = v
-			break
+			writeData(v, w, http.StatusOK)
+			return
 		}
 	}
 
-	encodeResponse(data, w)
+	writeData(nil, w, http.StatusOK)
 }
 
 func (c *Controller) updateTutorial(w http.ResponseWriter, r *http.Request) {
@@ -312,25 +304,21 @@ func (c *Controller) updateFilesItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) getFiles(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
-	data["data"] = c.TestData[FilesKey]
-	encodeResponse(data, w)
+	writeData(c.TestData[FilesKey], w, http.StatusOK)
 }
 
 func (c *Controller) getNewsFeed(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
-	data["data"] = c.TestData[NewsFeedKey]
-	encodeResponse(data, w)
+	writeData(c.TestData[NewsFeedKey], w, http.StatusOK)
 }
 
 func (c *Controller) addNewsFeed(w http.ResponseWriter, r *http.Request) {
@@ -365,7 +353,6 @@ func (c *Controller) addNewsFeed(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) getNewsItem(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
@@ -375,13 +362,13 @@ func (c *Controller) getNewsItem(w http.ResponseWriter, r *http.Request) {
 	for _, v := range c.TestData[NewsFeedKey].(map[string]interface{}) {
 		for _, news := range v.([]interface{}) {
 			if news.(map[string]interface{})["id"] == id {
-				data["data"] = news
-				break
+				writeData(news, w, http.StatusOK)
+				return
 			}
 		}
 	}
 
-	encodeResponse(data, w)
+	writeData(nil, w, http.StatusOK)
 }
 
 func (c *Controller) updateNewsItem(w http.ResponseWriter, r *http.Request) {
@@ -406,12 +393,10 @@ func (c *Controller) updateNewsItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) getFAQGroups(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
 
-	data["data"] = c.TestData[FAQGroupsKey]
-	encodeResponse(data, w)
+	writeData(c.TestData[FAQGroupsKey], w, http.StatusOK)
 }

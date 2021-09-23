@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 )
 
 const (
@@ -29,16 +28,15 @@ func (c *RESTController) Login(email string, password []byte) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	user := &User{}
 	userDataBytes, err := json.Marshal(userData)
 	if err != nil {
 		return nil, err
 	}
-
 	if err := json.Unmarshal(userDataBytes, user); err != nil {
 		return nil, err
 	}
+
 	return user, nil
 }
 
@@ -83,16 +81,12 @@ func (c *RESTController) AddUser(username string, email string, password []byte,
 }
 
 func (c *RESTController) DetectRootUser() (bool, error) {
-	data, err := c.Get(UserPathDetectRootUser, "?nil")
+	found, err := c.Get(UserPathDetectRootUser, "?nil")
 	if err != nil {
 		return false, err
 	}
 
-	found, err := strconv.ParseBool(data.(string))
-	if err != nil {
-		return false, err
-	}
-	return found, nil
+	return found.(bool), nil
 }
 
 func (c *RESTController) UpdateUser(r *http.Request) error {

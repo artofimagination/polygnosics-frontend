@@ -17,6 +17,11 @@ type RESTController struct {
 	BackendAddress *rest.Server
 }
 
+type ResponseData struct {
+	Error string      `json:"error" validation:"required"`
+	Data  interface{} `json:"data" validation:"required"`
+}
+
 func (c *RESTController) Post(path string, parameters interface{}) error {
 	return post(c.BackendAddress.GetAddress(), path, parameters)
 }
@@ -58,20 +63,16 @@ func forwardRequest(address string, r *http.Request) (interface{}, error) {
 		return nil, err
 	}
 
-	dataMap := make(map[string]interface{})
+	dataMap := &ResponseData{}
 	if err := json.Unmarshal(respBody, &dataMap); err != nil {
 		return nil, err
 	}
 
-	if val, ok := dataMap["error"]; ok {
-		return nil, errors.New(val.(string))
+	if dataMap.Error != "" {
+		return nil, errors.New(dataMap.Error)
 	}
 
-	if val, ok := dataMap["data"]; ok {
-		return val, nil
-	}
-
-	return nil, errors.New("Invalid response")
+	return dataMap.Data, nil
 }
 
 func get(address string, path string, parameters string) (interface{}, error) {
@@ -86,20 +87,16 @@ func get(address string, path string, parameters string) (interface{}, error) {
 		return nil, err
 	}
 
-	dataMap := make(map[string]interface{})
+	dataMap := &ResponseData{}
 	if err := json.Unmarshal(body, &dataMap); err != nil {
 		return nil, err
 	}
 
-	if val, ok := dataMap["error"]; ok {
-		return nil, errors.New(val.(string))
+	if dataMap.Error != "" {
+		return nil, errors.New(dataMap.Error)
 	}
 
-	if val, ok := dataMap["data"]; ok {
-		return val, nil
-	}
-
-	return nil, errors.New("Invalid response")
+	return dataMap.Data, nil
 }
 
 func post(address string, path string, parameters interface{}) error {
@@ -118,13 +115,13 @@ func post(address string, path string, parameters interface{}) error {
 		return err
 	}
 
-	dataMap := make(map[string]interface{})
+	dataMap := &ResponseData{}
 	if err := json.Unmarshal(body, &dataMap); err != nil {
 		return err
 	}
 
-	if val, ok := dataMap["error"]; ok {
-		return errors.New(val.(string))
+	if dataMap.Error != "" {
+		return errors.New(dataMap.Error)
 	}
 
 	return nil

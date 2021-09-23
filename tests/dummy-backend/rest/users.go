@@ -9,6 +9,7 @@ import (
 
 const (
 	UsersKey         = "users"
+	UsersDataMapKey  = "datamap"
 	UserProductsKey  = "user_products"
 	UsersProjectKey  = "user_projects"
 	UsersUsernameKey = "username"
@@ -71,7 +72,8 @@ func (c *Controller) addUser(w http.ResponseWriter, r *http.Request) {
 	userData := make(map[string]interface{})
 	userData[AssetsKey] = make(map[string]interface{})
 	userData[SettingsKey] = make(map[string]interface{})
-	userData[SettingsKey].(map[string]interface{})[UserGroupKey] = requestData[UserGroupKey]
+	userData[SettingsKey].(map[string]interface{})[UsersDataMapKey] = make(map[string]interface{})
+	userData[SettingsKey].(map[string]interface{})[UsersDataMapKey].(map[string]interface{})[UserGroupKey] = requestData[UserGroupKey]
 	userData[UsersUsernameKey] = requestData[UsersUsernameKey]
 	userData[UsersEmailKey] = requestData[UsersEmailKey]
 	userData[UsersPasswordKey] = requestData[UsersPasswordKey]
@@ -80,7 +82,6 @@ func (c *Controller) addUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) login(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
@@ -88,15 +89,15 @@ func (c *Controller) login(w http.ResponseWriter, r *http.Request) {
 
 	email := r.FormValue(UsersEmailKey)
 	pwd := r.FormValue(UsersPasswordKey)
-	data["data"] = make(map[string]interface{})
+	data := make(map[string]interface{})
 	for _, v := range c.TestData[UsersKey].(map[string]interface{}) {
 		if v.(map[string]interface{})[UsersEmailKey].(string) == email && v.(map[string]interface{})[UsersPasswordKey].(string) == pwd {
 			for k, value := range v.(map[string]interface{}) {
 				if k != UsersPasswordKey {
-					data["data"].(map[string]interface{})[k] = value
+					data[k] = value
 				}
 			}
-			encodeResponse(data, w)
+			writeData(data, w, http.StatusOK)
 			return
 		}
 	}
@@ -104,18 +105,16 @@ func (c *Controller) login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) detectRootUser(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	for _, v := range c.TestData[UsersKey].(map[string]interface{}) {
-		if v.(map[string]interface{})[SettingsKey].(map[string]interface{})[UserGroupKey] == "root" {
-			data["data"] = "true"
+		if v.(map[string]interface{})[SettingsKey].(map[string]interface{})[UsersDataMapKey].(map[string]interface{})[UserGroupKey] == "root" {
+			writeData(true, w, http.StatusOK)
+			return
 		}
 	}
-
-	encodeResponse(data, w)
+	writeData(false, w, http.StatusOK)
 }
 
 func (c *Controller) getUserByID(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
@@ -124,12 +123,12 @@ func (c *Controller) getUserByID(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue(UsersIDKey)
 	for k, v := range c.TestData[UsersKey].(map[string]interface{}) {
 		if k == id {
-			data["data"] = v
-			break
+			writeData(v, w, http.StatusOK)
+			return
 		}
 	}
 
-	encodeResponse(data, w)
+	writeData(nil, w, http.StatusOK)
 }
 
 func (c *Controller) addProduct(w http.ResponseWriter, r *http.Request) {
@@ -189,51 +188,47 @@ func (c *Controller) addProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) getProductsByUserID(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
-	data["data"] = make([]interface{}, 0)
+	data := make([]interface{}, 0)
 	id := r.FormValue(UsersIDKey)
 	for userKey, productKey := range c.TestData[UserProductsKey].(map[string]interface{}) {
 		if userKey == id {
 			for k, v := range c.TestData[ProductKey].(map[string]interface{}) {
 				if productKey == k {
-					data["data"] = append(data["data"].([]interface{}), v)
+					data = append(data, v)
 					break
 				}
 			}
 		}
 	}
 
-	encodeResponse(data, w)
+	writeData(data, w, http.StatusOK)
 }
 
 func (c *Controller) getProjectsByUserID(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
 	if err := c.ParseForm(r); err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusBadRequest)
 		return
 	}
-	data["data"] = make([]interface{}, 0)
+	data := make([]interface{}, 0)
 	id := r.FormValue(UsersIDKey)
 	for userKey, projectKey := range c.TestData[UsersProjectKey].(map[string]interface{}) {
 		if userKey == id {
 			for k, v := range c.TestData[ProjectKey].(map[string]interface{}) {
 				if projectKey == k {
-					data["data"] = append(data["data"].([]interface{}), v)
+					data = append(data, v)
 					break
 				}
 			}
 		}
 	}
 
-	encodeResponse(data, w)
+	writeData(data, w, http.StatusOK)
 }
 
 func (c *Controller) getCategoriesMap(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
-	data["data"] = c.TestData[CategoriesKey]
-	encodeResponse(data, w)
+	writeData(c.TestData[CategoriesKey], w, http.StatusOK)
 }

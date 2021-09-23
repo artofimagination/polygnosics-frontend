@@ -17,6 +17,11 @@ type Controller struct {
 	RequestData map[string]interface{}
 }
 
+type ResponseData struct {
+	Error string      `json:"error" validation:"required"`
+	Data  interface{} `json:"data" validation:"required"`
+}
+
 func prettyPrint(v interface{}) {
 	b, err := json.MarshalIndent(v, "", "  ")
 	if err == nil {
@@ -27,20 +32,26 @@ func prettyPrint(v interface{}) {
 }
 
 func writeError(message string, w http.ResponseWriter, statusCode int) {
-	writeResponse(fmt.Sprintf("{\"error\":\"%s\"}", message), w, statusCode)
+	response := ResponseData{
+		Error: message,
+	}
+	encodeResponse(response, w, statusCode)
 }
 
-func writeData(data string, w http.ResponseWriter, statusCode int) {
-	writeResponse(fmt.Sprintf("{\"data\":\"%s\"}", data), w, statusCode)
+func writeData(data interface{}, w http.ResponseWriter, statusCode int) {
+	response := ResponseData{
+		Data: data,
+	}
+	encodeResponse(response, w, statusCode)
 }
 
-func writeResponse(data string, w http.ResponseWriter, statusCode int) {
+func writeResponse(data []byte, w http.ResponseWriter, statusCode int) {
 	w.WriteHeader(statusCode)
-	fmt.Fprint(w, data)
+	w.Write(data)
 }
 
 func (c *Controller) getRequestData(w http.ResponseWriter, r *http.Request) {
-	encodeResponse(c.RequestData, w)
+	encodeStringResponse(c.RequestData, w)
 }
 
 func (c Controller) ParseForm(r *http.Request) error {
@@ -83,13 +94,23 @@ func (c *Controller) decodeRequest(r *http.Request) (map[string]interface{}, err
 	return data, nil
 }
 
-func encodeResponse(data map[string]interface{}, w http.ResponseWriter) {
+func encodeResponse(data interface{}, w http.ResponseWriter, statusCode int) {
 	b, err := json.Marshal(data)
 	if err != nil {
 		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
 		return
 	}
-	writeResponse(string(b), w, http.StatusOK)
+	writeResponse(b, w, statusCode)
+}
+
+func encodeStringResponse(data interface{}, w http.ResponseWriter) {
+	b, err := json.Marshal(data)
+	if err != nil {
+		writeError(fmt.Sprintf("Backend: %s", err.Error()), w, http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, string(b))
 }
 
 func (c *Controller) updateTestData(w http.ResponseWriter, r *http.Request) {
