@@ -205,15 +205,18 @@ func (c *ContentController) BuildUserMainContent() (map[string]interface{}, erro
 	if err != nil {
 		return nil, err
 	}
+
 	productsContent, err := c.GetRecentProductsContent(c.User.ID)
 	if err != nil {
 		return nil, err
 	}
+
 	content["product"] = productsContent
 	projectsContent, err := c.GetUserProjectContent(c.User.ID, 4)
 	if err != nil {
 		return nil, err
 	}
+
 	content["project"] = projectsContent
 	return content, nil
 }

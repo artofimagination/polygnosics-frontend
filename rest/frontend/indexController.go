@@ -44,9 +44,9 @@ func (c *RESTController) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	name := IndexPage
 	if !found {
 		if r.Host == "polygnosics.localhost" ||
-			r.Host == "0.0.0.0:8085" ||
-			r.Host == "localhost:8085" ||
-			r.Host == "127.0.0.1:8085" {
+			r.Host == "0.0.0.0:8182" ||
+			r.Host == "localhost:8182" ||
+			r.Host == "127.0.0.1:8182" {
 			name = "auth_signup"
 		} else {
 			c.HandleError(w, "Server is not configured yet", http.StatusInternalServerError, c.URI(IndexPage))

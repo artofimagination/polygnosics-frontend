@@ -6,21 +6,25 @@
 			"email": "root@test.com",
       "password": "123",
 			"assets": {
-				"avatar": "/backend/avatar-test.jpg"
+        "datamap": {
+				  "avatar": "/backend/avatar-test.jpg"
+        }
 			},
 			"settings": {
-        "privileges": {
-          "edit_page":1,
-          "main_dashboard":1,
-          "misuse_metrics":1,
-          "product_stats":1,
-          "project_stats":1,
-          "delete_user":1
-        },
-				"group": "root",
-        "country": "New Zealand",
-        "city": "Auckland"
-			}
+        "datamap": {
+          "privileges": {
+            "edit_page":1,
+            "main_dashboard":1,
+            "misuse_metrics":1,
+            "product_stats":1,
+            "project_stats":1,
+            "delete_user":1
+          },
+          "group": "root",
+          "country": "New Zealand",
+          "city": "Auckland"
+        }
+      }
 		},
 		"e057d6bb-1cd6-4072-bca8-c04f05ca5036": {
 			"id": "e057d6bb-1cd6-4072-bca8-c04f05ca5036",
@@ -28,21 +32,25 @@
 			"email": "developer@test.com",
       "password": "123",
 			"assets": {
-				"avatar": "/backend/avatar-test.jpg"
+        "datamap": {
+				  "avatar": "/backend/avatar-test.jpg"
+        }
 			},
 			"settings": {
-        "privileges": {
-          "edit_page":0,
-          "main_dashboard":0,
-          "misuse_metrics":0,
-          "product_stats":1,
-          "project_stats":1,
-          "delete_user":0
-        },
-				"group": "developer",
-        "country": "New Zealand",
-        "city": "Auckland"
-			}
+        "datamap": {
+          "privileges": {
+            "edit_page":0,
+            "main_dashboard":0,
+            "misuse_metrics":0,
+            "product_stats":1,
+            "project_stats":1,
+            "delete_user":0
+          },
+          "group": "developer",
+          "country": "New Zealand",
+          "city": "Auckland"
+        }
+      }
 		},
 		"e26d9dc6-f13a-4d54-8af0-a0be26a35ee5": {
 			"id": "e26d9dc6-f13a-4d54-8af0-a0be26a35ee5",
@@ -50,21 +58,25 @@
 			"email": "client@test.com",
       "password": "123",
 			"assets": {
-				"avatar": "/backend/avatar-test.jpg"
+        "datamap": {
+				  "avatar": "/backend/avatar-test.jpg"
+        }
 			},
 			"settings": {
-        "privileges": {
-          "edit_page":0,
-          "main_dashboard":0,
-          "misuse_metrics":0,
-          "product_stats":0,
-          "project_stats":1,
-          "delete_user":0
-        },
-				"group": "client",
-        "country": "New Zealand",
-        "city": "Auckland"
-			}
+        "datamap": {
+          "privileges": {
+            "edit_page":0,
+            "main_dashboard":0,
+            "misuse_metrics":0,
+            "product_stats":0,
+            "project_stats":1,
+            "delete_user":0
+          },
+          "group": "client",
+          "country": "New Zealand",
+          "city": "Auckland"
+        }
+      }
 		},
 		"eca3aaa4-94a9-4282-9ff3-303fc3c46b70": {
 			"id": "eca3aaa4-94a9-4282-9ff3-303fc3c46b70",
@@ -72,21 +84,25 @@
 			"email": "admin@test.com",
       "password": "123",
 			"assets": {
-				"avatar": "/backend/avatar-test.jpg"
+        "datamap": {
+				  "avatar": "/backend/avatar-test.jpg"
+        }
 			},
 			"settings": {
-        "privileges": {
-          "edit_page":1,
-          "main_dashboard":1,
-          "misuse_metrics":1,
-          "product_stats":1,
-          "project_stats":1,
-          "delete_user":1
-        },
-				"group": "admin",
-        "country": "New Zealand",
-        "city": "Auckland"
-			}
+        "datamap": {
+          "privileges": {
+            "edit_page":1,
+            "main_dashboard":1,
+            "misuse_metrics":1,
+            "product_stats":1,
+            "project_stats":1,
+            "delete_user":1
+          },
+          "group": "admin",
+          "country": "New Zealand",
+          "city": "Auckland"
+        }
+      }
 		},
 		"d479e0dd-c4b8-40ff-9e25-96edb1b1fd54": {
 			"id": "d479e0dd-c4b8-40ff-9e25-96edb1b1fd54",
@@ -94,20 +110,24 @@
 			"email": "visitor@test.com",
       "password": "123",
 			"assets": {
-				"avatar": "/backend/avatar-test.jpg"
+        "datamap": {
+				  "avatar": "/backend/avatar-test.jpg"
+        }
 			},
 			"settings": {
-        "privileges": {
-          "edit_page":0,
-          "main_dashboard":0,
-          "misuse_metrics":0,
-          "product_stats":0,
-          "project_stats":0,
-          "delete_user":0
-        },
-				"group": "visitor",
-        "country": "New Zealand",
-        "city": "Auckland"
+        "datamap": {
+          "privileges": {
+            "edit_page":0,
+            "main_dashboard":0,
+            "misuse_metrics":0,
+            "product_stats":0,
+            "project_stats":0,
+            "delete_user":0
+          },
+          "group": "visitor",
+          "country": "New Zealand",
+          "city": "Auckland"
+        }
 			}
 		}
 
